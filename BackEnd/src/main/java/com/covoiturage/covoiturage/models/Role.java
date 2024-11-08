@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("utilisateur")
+@Document(collection = "roles")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Utilisateur {
+public class Role {
     @Id
     private String id;
-    private String name;
-    private String password;
+    private ERole name;
+
 }
