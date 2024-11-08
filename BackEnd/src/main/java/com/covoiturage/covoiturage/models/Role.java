@@ -6,17 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
-
-@Document(collection = "message")
+@Document(collection = "roles")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
+public class Role {
     @Id
     private String id;
-    private String contenu;
-    private Date dateEnvoi;
-    private User conducteur;
-    private User passager;
+    private ERole name;
+
 }
