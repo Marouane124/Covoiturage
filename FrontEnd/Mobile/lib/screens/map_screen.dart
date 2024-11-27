@@ -162,107 +162,225 @@ class _MapScreenState extends State<MapScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Container(
-            width: 336,
-            height: 54,
-            decoration: ShapeDecoration(
-              color: Color(0xFFE2F5ED),
-              shape: RoundedRectangleBorder(
-                side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
+          // Bouton Rental
+          Positioned(
+            top: -70,
+            left: 1,
+            child: Container(
+              width: 172,
+              height: 54,
+              padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15.50),
+              decoration: ShapeDecoration(
+                color: Color(0xFF008955),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Where would you go?',
-                      hintStyle: TextStyle(
-                        color: Color(0xFFA0A0A0),
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w500,
-                      ),
-                      border: InputBorder.none,
-                    ),
-                    onSubmitted: (value) => _searchLocation(),
+              ),
+              child: Center(
+                child: Text(
+                  'Rental',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
-                  onPressed: () {
-                    // Ajoutez ici la logique pour les favoris
-                  },
-                ),
-              ],
+              ),
             ),
           ),
-          Row(
+          // Bouton de localisation à droite
+          Positioned(
+            top: -70,
+            right: 1,
+            child: Container(
+              width: 54,
+              height: 54,
+              decoration: ShapeDecoration(
+                color: Color(0xFF008955),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: IconButton(
+                icon: Icon(Icons.my_location, color: Colors.white),
+                onPressed: () {
+                  _getCurrentLocation();
+                },
+              ),
+            ),
+          ),
+          // Contenu principal
+          Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                width: 168,
-                height: 48,
-                decoration: ShapeDecoration(
-                  color: Color(0xFF008955),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    'Transport',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: 168,
-                height: 48,
+                width: 336,
+                height: 54,
                 decoration: ShapeDecoration(
                   color: Color(0xFFE2F5ED),
                   shape: RoundedRectangleBorder(
+                    side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Center(
-                  child: Text(
-                    'Delivery',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF414141),
-                      fontSize: 16,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Where would you go?',
+                          hintStyle: TextStyle(
+                            color: Color(0xFFA0A0A0),
+                            fontSize: 16,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w500,
+                          ),
+                          border: InputBorder.none,
+                        ),
+                        onSubmitted: (value) => _searchLocation(),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
+                      onPressed: () {
+                        // Ajoutez ici la logique pour les favoris
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    width: 168,
+                    height: 48,
+                    decoration: ShapeDecoration(
+                      color: Color(0xFF008955),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Transport',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  Container(
+                    width: 168,
+                    height: 48,
+                    decoration: ShapeDecoration(
+                      color: Color(0xFFE2F5ED),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Delivery',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF414141),
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 24,
+                    height: 24,
+                    padding: const EdgeInsets.only(top: 2, left: 2, right: 3, bottom: 3),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Transform(
+                          transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(3.14),
+                          child: Container(width: 19, height: 19, child: Stack()),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMenuItem(IconData icon, String label, Color color) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, color: color),
+        SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWalletButton() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Color(0xFF08B783),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.account_balance_wallet, color: Colors.white),
+        ),
+        SizedBox(height: 4),
+        Text(
+          'Wallet',
+          style: TextStyle(
+            color: Color(0xFF414141),
+            fontSize: 12,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 
@@ -318,7 +436,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           Positioned(
             bottom: 160,
-            left: 16,
+            left: 1,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -327,8 +445,8 @@ class _MapScreenState extends State<MapScreen> {
                   top: -70,  // Ajusté pour éloigner le container "Rental" du rectangle principal
                   left: 1,  // Aligné à droite avec le rectangle principal
                   child: Container( 
-                    width: 172,
-                    height: 54,
+                    width: 24,
+                    height: 24,
                     padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15.50),
                     decoration: ShapeDecoration(
                       color: Color(0xFF008955),
@@ -349,6 +467,36 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildMenuItem(Icons.home, 'Home', Color(0xFF08B783)),
+                  _buildMenuItem(Icons.favorite_border, 'Favourite', Color(0xFF414141)),
+                  _buildWalletButton(),
+                  _buildMenuItem(Icons.local_offer, 'Offer', Color(0xFF414141)),
+                  _buildMenuItem(Icons.person, 'Profile', Color(0xFF414141)),
+                ],
+              ),
             ),
           ),
         ],
