@@ -151,50 +151,124 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('simooo'),
-        backgroundColor: Colors.blueAccent,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+  Widget _buildMainContainer() {
+    return Container(
+      width: 364,
+      height: 141,
+      decoration: ShapeDecoration(
+        color: Color(0xFFB9E5D1),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(width: 1, color: Color(0xFF08B783)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+            width: 336,
+            height: 54,
+            decoration: ShapeDecoration(
+              color: Color(0xFFE2F5ED),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
             child: Row(
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
+                ),
                 Expanded(
                   child: TextField(
                     controller: _searchController,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                    ),
                     decoration: InputDecoration(
-                      hintText: 'Rechercher un lieu...',
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                      hintText: 'Where would you go?',
+                      hintStyle: TextStyle(
+                        color: Color(0xFFA0A0A0),
+                        fontSize: 16,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
                       ),
+                      border: InputBorder.none,
                     ),
                     onSubmitted: (value) => _searchLocation(),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: _searchLocation,
+                  icon: Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
+                  onPressed: () {
+                    // Ajoutez ici la logique pour les favoris
+                  },
                 ),
-                IconButton(
-                  icon: Icon(Icons.my_location),
-                  onPressed: _getCurrentLocation,
-                ),
-                if (_tracking)
-                  IconButton(
-                    icon: Icon(Icons.stop),
-                    onPressed: _stopTracking,
-                  ),
               ],
             ),
           ),
-        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                width: 168,
+                height: 48,
+                decoration: ShapeDecoration(
+                  color: Color(0xFF008955),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'Transport',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                width: 168,
+                height: 48,
+                decoration: ShapeDecoration(
+                  color: Color(0xFFE2F5ED),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'Delivery',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xFF414141),
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       body: Stack(
         children: [
           FlutterMap(
@@ -203,7 +277,7 @@ class _MapScreenState extends State<MapScreen> {
               minZoom: 5,
               maxZoom: 25,
               onTap: (_, latLng) {
-                _onMapTapped(latLng); // Clic sur la carte pour générer l'itinéraire
+                _onMapTapped(latLng);
               },
             ),
             children: [
@@ -215,7 +289,6 @@ class _MapScreenState extends State<MapScreen> {
                   'id': 'mapbox/streets-v11',
                 },
               ),
-              // Affichage du trajet sur la carte
               if (_route.isNotEmpty)
                 PolylineLayer(
                   polylines: [
@@ -249,107 +322,7 @@ class _MapScreenState extends State<MapScreen> {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                Container(
-                  width: 364,
-                  height: 141,
-                  decoration: ShapeDecoration(
-                    color: Color(0xFFB9E5D1),
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(width: 1, color: Color(0xFF08B783)),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: 336,
-                        height: 54,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFFE2F5ED),
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16.0),
-                              child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: Text(
-                                  'Where would you go?',
-                                  style: TextStyle(
-                                    color: Color(0xFFA0A0A0),
-                                    fontSize: 16,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 16.0),
-                              child: Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            width: 168,
-                            height: 48,
-                            decoration: ShapeDecoration(
-                              color: Color(0xFF008955),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Transport',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 168,
-                            height: 48,
-                            decoration: ShapeDecoration(
-                              color: Color(0xFFE2F5ED),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Delivery',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFF414141),
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                _buildMainContainer(),
                 Positioned(
                   top: -70,  // Ajusté pour éloigner le container "Rental" du rectangle principal
                   left: 1,  // Aligné à droite avec le rectangle principal
@@ -383,3 +356,4 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
+
