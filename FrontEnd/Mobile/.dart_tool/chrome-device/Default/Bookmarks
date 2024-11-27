@@ -1,0 +1,62 @@
+{
+   "checksum": "0475914ac6fefc39ae923ea2da8f5e95",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13241816287142432",
+            "date_last_used": "13342542321833191",
+            "guid": "621eb7d4-b9f7-4a1f-88be-f9c843b906c4",
+            "id": "6",
+            "name": "Learn to code at home | freeCodeCamp.org",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://www.freecodecamp.org/",
+            "visit_count": 0
+         }, {
+            "date_added": "13242256450750082",
+            "date_last_used": "13355676386035771",
+            "guid": "4bb80ab7-7fb4-42e3-b04f-6b6ff6dce9c2",
+            "id": "7",
+            "name": "Des cours en ligne quand vous voulez, où vous voulez | Udemy",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://www.udemy.com/home/my-courses/learning/",
+            "visit_count": 0
+         } ],
+         "date_added": "13377117918721206",
+         "date_last_used": "0",
+         "date_modified": "13242256450750082",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Barre des favoris",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [  ],
+         "date_added": "13377117918721210",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Autres favoris",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13377117918721215",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Favoris de l’appareil mobile",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "CkEKHgiIgQISCPjGoWmTAQAAKg4QABgBIAAoBTAAOABAABIAKhg3QzhQRzFDeUxiYWg1dUY4Und1NlB3PT1IA6AGDBKsAQgGEqcBChx6a3pObmNkK2tjaFp4cURCY3RSRUREWHFGRFk9EiQ4MDE4M2NiMC00Zjk5LTRiNzctYjU1YS0yMDYxYzAyM2JiMWQYACAAKAAwpO212ssxOIr1lNb2L0CK9ZTW9i9KHHRqYWFtenpHd25tMkpIMm1NU3Y5OXRFYnZJUT1aHiIcaFpaOVUzTXUzY1dDOVVqdndXQU1IVG1xUWJ3PWV3iSLtwj4CYAUSjgEIARKJAQoceXhKLzZmdmtlY3I3a3A1RVF6QjR0V0xwZGJFPRIkMzFjMjUwMjEtMmEyMy01ODc1LWE2MjktNDNmZjFhMWE5ZjI0GAAgACgAMOCM3PO8LjiD7ZTW9i9Ag+2U1vYvShxhUkNXTGdoRjliNUlucUtJRHZ1Si9qdlFrRmM9WgBlAAAAAMI+AmAAEo4BCAISiQEKHFljU1RvbnZFU1B3cUNzNEwyY3JWaHY2OEw5OD0SJDc1YjA5OGVmLWZlYzgtNTM4YS1iNTY2LTQzYzEwN2RmZWM4ZBgAIAAoADDhjNzzvC44o+2U1vYvQKPtlNb2L0ocb1BWa2h3QlJiVjY1S0NXUjIrSU9OSFdvT3U4PVoAZQAAAADCPgJgABKtAQgHEqgBChxUOW1DVFB4ZjdUYmU2U3pGU1Zwdm5MWXRSazg9EiQ3MTY1YTkzNi02MDEwLTRjYzMtYjZiOS1lNDdhM2M1NzMzYmIYACAAKAAwirWJ3eYxOOj1lNb2L0Do9ZTW9i9KHFBzM2svaERLeGFHMUFsSnQzN3ZYYXh5NGwxUT1aHyIdtFRMWFFnMFJIREY5TVIwelh3WTc2WklWczc0az1lBKLWB8I+AmAFEo4BCAMSiQEKHG5qZ0R1ODhlQ3J2WHA4NnBEN2ZIR2NxRnA4OD0SJGVlYzVkMDRhLTg4OTUtNWQ5Yi05NTIwLWU3YzZlNDQ5NWEyNhgAIAAoADDljNzzvC448e2U1vYvQPHtlNb2L0oceXpOQjAxY241NEE3Y1JVMHVUKy9QZ21UdFVvPVoAZQAAAADCPgJgADAAOAA=",
+   "version": 1
+}
