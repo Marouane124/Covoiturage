@@ -1,0 +1,1 @@
+ C:\\Users\\Mceom\\OneDrive\\Bureau\\5IIR\\13\ Covoiturage\\Covoiturage\\FrontEnd\\Mobile\\.dart_tool\\flutter_build\\30495c9d40698f8f2d180ceee2a0d197\\native_assets.yaml: 

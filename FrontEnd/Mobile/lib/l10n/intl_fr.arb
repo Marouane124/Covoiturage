@@ -1,0 +1,28 @@
+{
+  "welcome_screen_title": "Bienvenue",
+  "welcome_screen_message": "Vivez une meilleure expérience de partage",
+  "welcome_screen_signUp": "Créer un compte",
+  "welcome_screen_signIn": "Se connecter",
+  
+  "login_screen_title": "Connectez-vous",
+  "login_screen_email": "Email ou Numéro de téléphone",
+  "login_screen_password": "Entrez votre mot de passe",
+  "login_screen_forgot_password": "Mot de passe oublié ?",
+  "login_screen_signIn": "Se connecter",
+  "login_screen_or": "ou",
+  "login_screen_sign_in_with_google": "Se connecter avec Google",
+  "login_screen_sign_in_with_facebook": "Se connecter avec Facebook",
+  "login_screen_sign_in_with_apple": "Se connecter avec Apple",
+  "login_screen_signUp": "Vous n'avez pas de compte ? Créez-en un",
+
+  "register_screen_title": "Créer un compte",
+  "register_screen_name": "Nom",
+  "register_screen_email": "Email",
+  "register_screen_phone": "Numéro de téléphone",
+  "register_screen_gender": "Genre",
+  "register_screen_signUp": "Créer un compte",
+  "register_screen_or": "ou",
+  "register_screen_sign_up_with_google": "Créer un compte avec Google",
+  "register_screen_sign_up_with_facebook": "Créer un compte avec Facebook",
+  "register_screen_sign_up_with_apple": "Créer un compte avec Apple"
+}
