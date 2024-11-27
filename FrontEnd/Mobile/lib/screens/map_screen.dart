@@ -168,7 +168,7 @@ class _MapScreenState extends State<MapScreen> {
           // Bouton Rental
           Positioned(
             top: -70,
-            left: 1,
+            left: 16,
             child: Container(
               width: 172,
               height: 54,
@@ -436,7 +436,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           Positioned(
             bottom: 160,
-            left: 1,
+            left: 16,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -497,6 +497,76 @@ class _MapScreenState extends State<MapScreen> {
                   _buildMenuItem(Icons.person, 'Profile', Color(0xFF414141)),
                 ],
               ),
+            ),
+          ),
+          Positioned(
+            top: 40,
+            left: 16,
+            right: 16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF08B783),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.menu),
+                    color: Colors.black,
+                    onPressed: () {
+                      // Action pour le menu
+                    },
+                  ),
+                ),
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.notifications_none),
+                        color: Colors.black,
+                        onPressed: () {
+                          // Action pour les notifications
+                        },
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
