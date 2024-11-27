@@ -35,6 +35,9 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled;
+  
+
+  
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -192,50 +195,189 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ),
       ),
-      body: FlutterMap(
-        mapController: _mapController,
-        options: MapOptions(
-          minZoom: 5,
-          maxZoom: 25,
-          onTap: (_, latLng) {
-            _onMapTapped(latLng); // Clic sur la carte pour générer l'itinéraire
-          },
-        ),
+      body: Stack(
         children: [
-          TileLayer(
-            urlTemplate:
-                'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-            additionalOptions: {
-              'accessToken': mapboxAccessToken,
-              'id': 'mapbox/streets-v11',
-            },
-          ),
-          // Affichage du trajet sur la carte
-          if (_route.isNotEmpty)
-            PolylineLayer(
-              polylines: [
-                Polyline(
-                  points: _route,
-                  strokeWidth: 4.0,
-                  color: Colors.blue,
-                ),
-              ],
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              minZoom: 5,
+              maxZoom: 25,
+              onTap: (_, latLng) {
+                _onMapTapped(latLng); // Clic sur la carte pour générer l'itinéraire
+              },
             ),
-          if (_currentPosition != null)
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: _currentPosition!,
-                  width: 30.0,
-                  height: 30.0,
-                  child: Icon(
-                    Icons.location_on,
-                    size: 30,
-                    color: Colors.red,
+            children: [
+              TileLayer(
+                urlTemplate:
+                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                additionalOptions: {
+                  'accessToken': mapboxAccessToken,
+                  'id': 'mapbox/streets-v11',
+                },
+              ),
+              // Affichage du trajet sur la carte
+              if (_route.isNotEmpty)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: _route,
+                      strokeWidth: 4.0,
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
+              if (_currentPosition != null)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _currentPosition!,
+                      width: 30.0,
+                      height: 30.0,
+                      child: Icon(
+                        Icons.location_on,
+                        size: 30,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          Positioned(
+            bottom: 160,
+            left: 16,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 364,
+                  height: 141,
+                  decoration: ShapeDecoration(
+                    color: Color(0xFFB9E5D1),
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(width: 1, color: Color(0xFF08B783)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 336,
+                        height: 54,
+                        decoration: ShapeDecoration(
+                          color: Color(0xFFE2F5ED),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  'Where would you go?',
+                                  style: TextStyle(
+                                    color: Color(0xFFA0A0A0),
+                                    fontSize: 16,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 16.0),
+                              child: Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            width: 168,
+                            height: 48,
+                            decoration: ShapeDecoration(
+                              color: Color(0xFF008955),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Transport',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 168,
+                            height: 48,
+                            decoration: ShapeDecoration(
+                              color: Color(0xFFE2F5ED),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Delivery',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xFF414141),
+                                  fontSize: 16,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: -70,  // Ajusté pour éloigner le container "Rental" du rectangle principal
+                  left: 1,  // Aligné à droite avec le rectangle principal
+                  child: Container( 
+                    width: 172,
+                    height: 54,
+                    padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15.50),
+                    decoration: ShapeDecoration(
+                      color: Color(0xFF008955),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Rental',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
+          ),
         ],
       ),
     );
