@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:map_flutter/screens/history.dart';
 import 'package:map_flutter/screens/map_screen.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
 
-  Widget _buildMenuItem(IconData icon, String title) {
+  Widget _buildMenuItem(BuildContext context, IconData icon, String title) {
     return ListTile(
       leading: Icon(
         icon,
@@ -21,7 +22,12 @@ class SideMenu extends StatelessWidget {
         ),
       ),
       onTap: () {
-        // Action when menu item is tapped
+        if (title == 'History') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const History()),
+          );
+        }
       },
     );
   }
@@ -30,6 +36,7 @@ class SideMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 249,
+      height: 853,
       decoration: const ShapeDecoration(
         color: Colors.white,
         shape: RoundedRectangleBorder(
@@ -99,12 +106,18 @@ class SideMenu extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildMenuItem(Icons.history, 'History'),
-                    _buildMenuItem(Icons.warning_outlined, 'Complain'),
-                    _buildMenuItem(Icons.people_outline, 'Referral'),
-                    _buildMenuItem(Icons.info_outline, 'About Us'),
-                    _buildMenuItem(Icons.settings_outlined, 'Settings'),
-                    _buildMenuItem(Icons.help_outline, 'Help and Support'),
+                    _buildMenuItem(context, Icons.history, 'History'),
+                    const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                    _buildMenuItem(context, Icons.warning_outlined, 'Complain'),
+                    const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                    _buildMenuItem(context, Icons.people_outline, 'Referral'),
+                    const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                    _buildMenuItem(context, Icons.info_outline, 'About Us'),
+                    const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                    _buildMenuItem(context, Icons.settings_outlined, 'Settings'),
+                    const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                    _buildMenuItem(context, Icons.help_outline, 'Help and Support'),
+                    const Divider(height: 1, color: Color(0xFFE0E0E0)),
                   ],
                 ),
               ),
@@ -112,7 +125,7 @@ class SideMenu extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
-              child: _buildMenuItem(Icons.logout, 'Logout'),
+              child: _buildMenuItem(context, Icons.logout, 'Logout'),
             ),
           ],
         ),
