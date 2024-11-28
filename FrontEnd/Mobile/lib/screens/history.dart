@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:map_flutter/screens/map_screen.dart';
 
 class History extends StatefulWidget {
   const History({super.key});
@@ -67,7 +68,10 @@ class _HistoryState extends State<History> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MapScreen()),
+          ),
         ),
         title: const Text(
           'History',

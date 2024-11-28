@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/history.dart';
 import 'package:map_flutter/screens/map_screen.dart';
+import 'package:map_flutter/screens/complain.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -26,6 +27,11 @@ class SideMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const History()),
+          );
+        } else if (title == 'Complain') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Complain()),
           );
         }
       },
