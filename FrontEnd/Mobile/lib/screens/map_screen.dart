@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'notification.dart';
+import 'sidemenu.dart';
+import 'dart:ui';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2ltb2FpdGVsZ2F6emFyIiwiYSI6ImNtMzVzeXYyazA2bWkybHMzb2Fxb3p6aGIifQ.ORYyvkZ2Z1H8WmouDkXtvQ';
@@ -23,8 +25,8 @@ class _MapScreenState extends State<MapScreen> {
   final TextEditingController _searchController = TextEditingController();
   LatLng? _currentPosition;
   bool _tracking = false;
-  List<LatLng> _route = []; 
-  
+  List<LatLng> _route = [];
+  bool _isMenuOpen = false;
 
   @override
   void initState() {
@@ -36,9 +38,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled;
-  
 
-  
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -110,9 +110,8 @@ class _MapScreenState extends State<MapScreen> {
       final data = json.decode(response.body);
       if (data['routes'].isNotEmpty) {
         final route = data['routes'][0]['geometry']['coordinates'];
-        List<LatLng> routePoints = route
-            .map<LatLng>((point) => LatLng(point[1], point[0]))
-            .toList();
+        List<LatLng> routePoints =
+            route.map<LatLng>((point) => LatLng(point[1], point[0])).toList();
 
         setState(() {
           _route = routePoints;
@@ -127,7 +126,8 @@ class _MapScreenState extends State<MapScreen> {
         }
 
         // Calculer le centre moyen
-        LatLng center = LatLng(latSum / routePoints.length, lonSum / routePoints.length);
+        LatLng center =
+            LatLng(latSum / routePoints.length, lonSum / routePoints.length);
 
         // Mettre à jour la carte pour centrer le trajet
         _mapController.move(center, 14); // Ajuster le niveau de zoom ici (14)
@@ -173,7 +173,8 @@ class _MapScreenState extends State<MapScreen> {
             child: Container(
               width: 172,
               height: 54,
-              padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15.50),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 60, vertical: 15.50),
               decoration: ShapeDecoration(
                 color: Color(0xFF008955),
                 shape: RoundedRectangleBorder(
@@ -258,7 +259,8 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
+                      icon:
+                          Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
                       onPressed: () {
                         // Ajoutez ici la logique pour les favoris
                       },
@@ -316,15 +318,19 @@ class _MapScreenState extends State<MapScreen> {
                   Container(
                     width: 24,
                     height: 24,
-                    padding: const EdgeInsets.only(top: 2, left: 2, right: 3, bottom: 3),
+                    padding: const EdgeInsets.only(
+                        top: 2, left: 2, right: 3, bottom: 3),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Transform(
-                          transform: Matrix4.identity()..translate(0.0, 0.0)..rotateZ(3.14),
-                          child: Container(width: 19, height: 19, child: Stack()),
+                          transform: Matrix4.identity()
+                            ..translate(0.0, 0.0)
+                            ..rotateZ(3.14),
+                          child:
+                              Container(width: 19, height: 19, child: Stack()),
                         ),
                       ],
                     ),
@@ -443,15 +449,18 @@ class _MapScreenState extends State<MapScreen> {
               children: [
                 _buildMainContainer(),
                 Positioned(
-                  top: -70,  // Ajusté pour éloigner le container "Rental" du rectangle principal
-                  left: 1,  // Aligné à droite avec le rectangle principal
-                  child: Container( 
+                  top:
+                      -70, // Ajusté pour éloigner le container "Rental" du rectangle principal
+                  left: 1, // Aligné à droite avec le rectangle principal
+                  child: Container(
                     width: 24,
                     height: 24,
-                    padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15.50),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 60, vertical: 15.50),
                     decoration: ShapeDecoration(
                       color: Color(0xFF008955),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                     child: Center(
                       child: Text(
@@ -492,7 +501,8 @@ class _MapScreenState extends State<MapScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildMenuItem(Icons.home, 'Home', Color(0xFF08B783)),
-                  _buildMenuItem(Icons.favorite_border, 'Favourite', Color(0xFF414141)),
+                  _buildMenuItem(
+                      Icons.favorite_border, 'Favourite', Color(0xFF414141)),
                   _buildWalletButton(),
                   _buildMenuItem(Icons.local_offer, 'Offer', Color(0xFF414141)),
                   _buildMenuItem(Icons.person, 'Profile', Color(0xFF414141)),
@@ -525,7 +535,9 @@ class _MapScreenState extends State<MapScreen> {
                     icon: Icon(Icons.menu),
                     color: Colors.black,
                     onPressed: () {
-                      // Action pour le menu
+                      setState(() {
+                        _isMenuOpen = !_isMenuOpen;  // Toggle the menu state
+                      });
                     },
                   ),
                 ),
@@ -575,6 +587,22 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
           ),
+          if (_isMenuOpen)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+                child: Container(
+                  color: Colors.black.withOpacity(0.02),
+                ),
+              ),
+            ),
+          if (_isMenuOpen)
+            const Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: SideMenu(),
+            ),
         ],
       ),
     );
