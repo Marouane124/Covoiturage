@@ -58,6 +58,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get register_screen_email => 'Email';
 
   @override
+  String get register_screen_password => 'Password';
+
+  @override
   String get register_screen_phone => 'Numéro de téléphone';
 
   @override
@@ -77,4 +80,43 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get register_screen_sign_up_with_apple => 'Créer un compte avec Apple';
+
+  @override
+  String get error_username_required => 'Username is required';
+
+  @override
+  String get error_invalid_email => 'Please enter a valid email';
+
+  @override
+  String get error_phone_required => 'Phone number is required';
+
+  @override
+  String get error_password_short => 'Password must be at least 6 characters';
+
+  @override
+  String get error_gender_required => 'Please select a gender';
+
+  @override
+  String get error_role_required => 'Please select a role';
+
+  @override
+  String get register_screen_success => 'Registration successful';
+
+  @override
+  String get register_screen_error => 'Registration failed';
+
+  @override
+  String get login_screen_empty_fields => 'Please fill in all fields';
+
+  @override
+  String get login_screen_username => 'Username';
+
+  @override
+  String get login_screen_login_success => 'Login successful!';
+
+  @override
+  String get login_screen_login_failed => 'Login failed. Please try again.';
+
+  @override
+  String get register_screen_role => 'Select Role';
 }

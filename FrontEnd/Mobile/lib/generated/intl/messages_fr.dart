@@ -41,14 +41,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Se connecter avec Google"),
         "login_screen_title":
             MessageLookupByLibrary.simpleMessage("Connectez-vous"),
-        "register_screen_confirm_password":
-            MessageLookupByLibrary.simpleMessage("Confirmer le mot de passe"),
         "register_screen_email": MessageLookupByLibrary.simpleMessage("Email"),
         "register_screen_gender": MessageLookupByLibrary.simpleMessage("Genre"),
         "register_screen_name": MessageLookupByLibrary.simpleMessage("Nom"),
         "register_screen_or": MessageLookupByLibrary.simpleMessage("ou"),
-        "register_screen_password":
-            MessageLookupByLibrary.simpleMessage("Mot de passe"),
         "register_screen_phone":
             MessageLookupByLibrary.simpleMessage("Numéro de téléphone"),
         "register_screen_signUp":

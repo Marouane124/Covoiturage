@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -81,47 +82,44 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        User user = new User(signUpRequest.getUsername(),
+        User user = new User(
+                signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+                encoder.encode(signUpRequest.getPassword()),
+                signUpRequest.getPhone(),
+                signUpRequest.getGender()
+        );
 
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
 
-        if (strRoles == null) {
+        if (strRoles == null || strRoles.isEmpty()) {
             Role userRole = roleRepository.findByName(ERole.PASSAGER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ADMIN)
+                switch (role.toLowerCase()) {
+                    case "conducteur":
+                        Role adminRole = roleRepository.findByName(ERole.CONDUCTEUR)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
                         break;
-                    case "conducteur":
-                        Role conducteurRole = roleRepository.findByName(ERole.CONDUCTEUR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(conducteurRole);
-                        break;
+
+                    case "passager":
                     default:
-                        Role passagerRole = roleRepository.findByName(ERole.PASSAGER)
+                        Role userRole = roleRepository.findByName(ERole.PASSAGER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(passagerRole);
+                        roles.add(userRole);
                 }
             });
         }
@@ -131,6 +129,7 @@ public class UserController {
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
 
     @PostMapping("/utilisateur/{id}/proposerTrajet")
     public void proposerTrajet(@PathVariable String id, @RequestBody Trajet trajet) {

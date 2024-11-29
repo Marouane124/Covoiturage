@@ -197,6 +197,12 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get register_screen_email;
 
+  /// No description provided for @register_screen_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get register_screen_password;
+
   /// No description provided for @register_screen_phone.
   ///
   /// In en, this message translates to:
@@ -238,6 +244,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign up with Apple'**
   String get register_screen_sign_up_with_apple;
+
+  /// No description provided for @error_username_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get error_username_required;
+
+  /// No description provided for @error_invalid_email.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get error_invalid_email;
+
+  /// No description provided for @error_phone_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get error_phone_required;
+
+  /// No description provided for @error_password_short.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get error_password_short;
+
+  /// No description provided for @error_gender_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a gender'**
+  String get error_gender_required;
+
+  /// No description provided for @error_role_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a role'**
+  String get error_role_required;
+
+  /// No description provided for @register_screen_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration successful'**
+  String get register_screen_success;
+
+  /// No description provided for @register_screen_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed'**
+  String get register_screen_error;
+
+  /// No description provided for @login_screen_empty_fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all fields'**
+  String get login_screen_empty_fields;
+
+  /// No description provided for @login_screen_username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get login_screen_username;
+
+  /// No description provided for @login_screen_login_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful!'**
+  String get login_screen_login_success;
+
+  /// No description provided for @login_screen_login_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed. Please try again.'**
+  String get login_screen_login_failed;
+
+  /// No description provided for @register_screen_role.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Role'**
+  String get register_screen_role;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

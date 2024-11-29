@@ -220,6 +220,16 @@ class S {
     );
   }
 
+  /// `Password`
+  String get register_screen_password {
+    return Intl.message(
+      'Password',
+      name: 'register_screen_password',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Phone Number`
   String get register_screen_phone {
     return Intl.message(
@@ -235,26 +245,6 @@ class S {
     return Intl.message(
       'Gender',
       name: 'register_screen_gender',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Password`
-  String get register_screen_password {
-    return Intl.message(
-      'Password',
-      name: 'register_screen_password',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Confirm Password`
-  String get register_screen_confirm_password {
-    return Intl.message(
-      'Confirm Password',
-      name: 'register_screen_confirm_password',
       desc: '',
       args: [],
     );
@@ -305,6 +295,136 @@ class S {
     return Intl.message(
       'Sign up with Apple',
       name: 'register_screen_sign_up_with_apple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Username is required`
+  String get error_username_required {
+    return Intl.message(
+      'Username is required',
+      name: 'error_username_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid email`
+  String get error_invalid_email {
+    return Intl.message(
+      'Please enter a valid email',
+      name: 'error_invalid_email',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone number is required`
+  String get error_phone_required {
+    return Intl.message(
+      'Phone number is required',
+      name: 'error_phone_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must be at least 6 characters`
+  String get error_password_short {
+    return Intl.message(
+      'Password must be at least 6 characters',
+      name: 'error_password_short',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select a gender`
+  String get error_gender_required {
+    return Intl.message(
+      'Please select a gender',
+      name: 'error_gender_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select a role`
+  String get error_role_required {
+    return Intl.message(
+      'Please select a role',
+      name: 'error_role_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration successful`
+  String get register_screen_success {
+    return Intl.message(
+      'Registration successful',
+      name: 'register_screen_success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration failed`
+  String get register_screen_error {
+    return Intl.message(
+      'Registration failed',
+      name: 'register_screen_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please fill in all fields`
+  String get login_screen_empty_fields {
+    return Intl.message(
+      'Please fill in all fields',
+      name: 'login_screen_empty_fields',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Username`
+  String get login_screen_username {
+    return Intl.message(
+      'Username',
+      name: 'login_screen_username',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Login successful!`
+  String get login_screen_login_success {
+    return Intl.message(
+      'Login successful!',
+      name: 'login_screen_login_success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Login failed. Please try again.`
+  String get login_screen_login_failed {
+    return Intl.message(
+      'Login failed. Please try again.',
+      name: 'login_screen_login_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Role`
+  String get register_screen_role {
+    return Intl.message(
+      'Select Role',
+      name: 'register_screen_role',
       desc: '',
       args: [],
     );

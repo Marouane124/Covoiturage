@@ -1,4 +1,4 @@
-package com.covoiturage.covoiturage.security;
+package com.covoiturage.covoiturage.security.config;
 
 import com.covoiturage.covoiturage.security.jwt.AuthEntryPointJwt;
 import com.covoiturage.covoiturage.security.jwt.AuthTokenFilter;

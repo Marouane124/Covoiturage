@@ -22,10 +22,28 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "error_gender_required":
+            MessageLookupByLibrary.simpleMessage("Please select a gender"),
+        "error_invalid_email":
+            MessageLookupByLibrary.simpleMessage("Please enter a valid email"),
+        "error_password_short": MessageLookupByLibrary.simpleMessage(
+            "Password must be at least 6 characters"),
+        "error_phone_required":
+            MessageLookupByLibrary.simpleMessage("Phone number is required"),
+        "error_role_required":
+            MessageLookupByLibrary.simpleMessage("Please select a role"),
+        "error_username_required":
+            MessageLookupByLibrary.simpleMessage("Username is required"),
         "login_screen_email":
             MessageLookupByLibrary.simpleMessage("Email or Phone Number"),
+        "login_screen_empty_fields":
+            MessageLookupByLibrary.simpleMessage("Please fill in all fields"),
         "login_screen_forgot_password":
             MessageLookupByLibrary.simpleMessage("Forgot Password?"),
+        "login_screen_login_failed": MessageLookupByLibrary.simpleMessage(
+            "Login failed. Please try again."),
+        "login_screen_login_success":
+            MessageLookupByLibrary.simpleMessage("Login successful!"),
         "login_screen_or": MessageLookupByLibrary.simpleMessage("or"),
         "login_screen_password":
             MessageLookupByLibrary.simpleMessage("Enter Your Password"),
@@ -39,9 +57,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_screen_sign_in_with_google":
             MessageLookupByLibrary.simpleMessage("Sign in with Google"),
         "login_screen_title": MessageLookupByLibrary.simpleMessage("Sign in"),
-        "register_screen_confirm_password":
-            MessageLookupByLibrary.simpleMessage("Confirm Password"),
+        "login_screen_username":
+            MessageLookupByLibrary.simpleMessage("Username"),
         "register_screen_email": MessageLookupByLibrary.simpleMessage("Email"),
+        "register_screen_error":
+            MessageLookupByLibrary.simpleMessage("Registration failed"),
         "register_screen_gender":
             MessageLookupByLibrary.simpleMessage("Gender"),
         "register_screen_name": MessageLookupByLibrary.simpleMessage("Name"),
@@ -50,6 +70,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Password"),
         "register_screen_phone":
             MessageLookupByLibrary.simpleMessage("Phone Number"),
+        "register_screen_role":
+            MessageLookupByLibrary.simpleMessage("Select Role"),
         "register_screen_signUp":
             MessageLookupByLibrary.simpleMessage("Sign Up"),
         "register_screen_sign_up_with_apple":
@@ -58,6 +80,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sign up with Facebook"),
         "register_screen_sign_up_with_google":
             MessageLookupByLibrary.simpleMessage("Sign up with Google"),
+        "register_screen_success":
+            MessageLookupByLibrary.simpleMessage("Registration successful"),
         "register_screen_title":
             MessageLookupByLibrary.simpleMessage("Sign up"),
         "welcome_screen_message": MessageLookupByLibrary.simpleMessage(
