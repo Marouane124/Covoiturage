@@ -28,6 +28,7 @@ class _MapScreenState extends State<MapScreen> {
   bool _tracking = false;
   List<LatLng> _route = [];
   bool _isMenuOpen = false;
+  bool _showAddressForm = false;
 
   @override
   void initState() {
@@ -153,6 +154,121 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  void _showAddressSelector() {
+    setState(() {
+      _showAddressForm = true;
+    });
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: 570,
+        decoration: const ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+        ),
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Select address',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ),
+            // Champ "From"
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.location_on_outlined),
+                  hintText: 'From',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+            // Champ "To"
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.location_on_outlined),
+                  hintText: 'To',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+            // Section "Recent places"
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Recent places',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
+            ),
+            // Liste des lieux récents
+            _buildRecentPlace('Office', '2.7km', 'Old Town Road 1234'),
+            _buildRecentPlace('Coffee shop', '1.8km', 'New Street 5678'),
+            _buildRecentPlace('Shopping center', '4.9km', 'Market Square 910'),
+            _buildRecentPlace('Shopping mall', '4.5km', 'Mall Avenue 1112'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Méthode helper pour construire un lieu récent
+  Widget _buildRecentPlace(String title, String distance, String address) {
+    return ListTile(
+      leading: const Icon(Icons.location_on_outlined),
+      title: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.black,
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: Text(
+        address,
+        style: const TextStyle(
+          color: Colors.grey,
+          fontFamily: 'Poppins',
+        ),
+      ),
+      trailing: Text(
+        distance,
+        style: const TextStyle(
+          color: Colors.grey,
+          fontFamily: 'Poppins',
+        ),
+      ),
+    );
+  }
+
   Widget _buildMainContainer() {
     return Container(
       width: 364,
@@ -167,10 +283,10 @@ class _MapScreenState extends State<MapScreen> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Bouton Rental
+          // Bouton Rental - Ajusté pour s'aligner avec le container principal
           Positioned(
             top: -70,
-            left: 16,
+            left: 0,
             child: Container(
               width: 172,
               height: 54,
@@ -256,7 +372,8 @@ class _MapScreenState extends State<MapScreen> {
                           ),
                           border: InputBorder.none,
                         ),
-                        onSubmitted: (value) => _searchLocation(),
+                        onTap: _showAddressSelector,
+                        readOnly: true,
                       ),
                     ),
                     IconButton(
