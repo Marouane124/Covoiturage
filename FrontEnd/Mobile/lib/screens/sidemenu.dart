@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/history.dart';
 import 'package:map_flutter/screens/map_screen.dart';
 import 'package:map_flutter/screens/complain.dart';
+import 'package:map_flutter/screens/referral.dart';
+import 'package:map_flutter/screens/aboutus.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -32,6 +34,16 @@ class SideMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const Complain()),
+          );
+        } else if (title == 'Referral') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ReferralScreen()),
+          );
+        } else if (title == 'About Us') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AboutUsScreen()),
           );
         }
       },
