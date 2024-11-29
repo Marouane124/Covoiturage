@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+import 'package:map_flutter/screens/favorite.dart';
 import 'notification.dart';
 import 'sidemenu.dart';
 import 'dart:ui';
@@ -344,23 +345,26 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String label, Color color) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: color),
-        SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: color,
-            fontSize: 12,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
+  Widget _buildMenuItem(IconData icon, String label, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: color),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -500,12 +504,17 @@ class _MapScreenState extends State<MapScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildMenuItem(Icons.home, 'Home', Color(0xFF08B783)),
+                  _buildMenuItem(Icons.home, 'Home', Color(0xFF08B783), () {}),
                   _buildMenuItem(
-                      Icons.favorite_border, 'Favourite', Color(0xFF414141)),
+                      Icons.favorite_border, 'Favourite', Color(0xFF414141), () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FavoriteScreen()),
+                    );
+                  }),
                   _buildWalletButton(),
-                  _buildMenuItem(Icons.local_offer, 'Offer', Color(0xFF414141)),
-                  _buildMenuItem(Icons.person, 'Profile', Color(0xFF414141)),
+                  _buildMenuItem(Icons.local_offer, 'Offer', Color(0xFF414141), () {}),
+                  _buildMenuItem(Icons.person, 'Profile', Color(0xFF414141), () {}),
                 ],
               ),
             ),

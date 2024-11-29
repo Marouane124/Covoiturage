@@ -13,10 +13,13 @@ class AboutUsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MapScreen()),
-          ),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const MapScreen()),
+              (route) => false,
+            );
+          },
         ),
         title: const Text(
           'About Us',
