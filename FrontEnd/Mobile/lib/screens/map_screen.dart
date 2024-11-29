@@ -154,10 +154,158 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  void _showLocationConfirmation() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: const ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Barre horizontale en haut
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'Select address',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Current Location
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  const Icon(Icons.location_on, color: Colors.red),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Current location',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          '2972 Westheimer Rd. Santa Ana, Illinois 85486',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Office Location
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  const Icon(Icons.location_on, color: Color(0xFF08B783)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Office',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          '1901 Thornridge Cir. Shiloh, Hawaii 81063',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    '1.1km',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Confirm Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    // Ajoutez ici la logique pour la confirmation
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF08B783),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Confirm Location',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Modifier les gestionnaires d'événements dans _showAddressSelector
   void _showAddressSelector() {
-    setState(() {
-      _showAddressForm = true;
-    });
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -175,6 +323,16 @@ class _MapScreenState extends State<MapScreen> {
         ),
         child: Column(
           children: [
+            // Barre horizontale en haut
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
@@ -187,35 +345,77 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
             ),
-            // Champ "From"
+            // Champ From
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: TextField(
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.location_on_outlined),
+                  prefixIcon: Icon(Icons.my_location_outlined, color: Colors.grey[400]),
                   hintText: 'From',
+                  hintStyle: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[400]!),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
+                onSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    Navigator.pop(context);
+                    _showLocationConfirmation();
+                  }
+                },
               ),
             ),
-            // Champ "To"
+            // Champ To
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: TextField(
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.location_on_outlined),
+                  prefixIcon: Icon(Icons.location_on_outlined, color: Colors.grey[400]),
                   hintText: 'To',
+                  hintStyle: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey[400]!),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
+                onSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    Navigator.pop(context);
+                    _showLocationConfirmation();
+                  }
+                },
               ),
             ),
-            // Section "Recent places"
+            // Recent places title
             const Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.only(left: 16.0, top: 24.0, bottom: 8.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -240,10 +440,9 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  // Méthode helper pour construire un lieu récent
   Widget _buildRecentPlace(String title, String distance, String address) {
     return ListTile(
-      leading: const Icon(Icons.location_on_outlined),
+      leading: const Icon(Icons.location_on_outlined, color: Colors.black),
       title: Text(
         title,
         style: const TextStyle(
@@ -254,18 +453,24 @@ class _MapScreenState extends State<MapScreen> {
       ),
       subtitle: Text(
         address,
-        style: const TextStyle(
-          color: Colors.grey,
+        style: TextStyle(
+          color: Colors.grey[600],
+          fontSize: 12,
           fontFamily: 'Poppins',
         ),
       ),
       trailing: Text(
         distance,
-        style: const TextStyle(
-          color: Colors.grey,
+        style: TextStyle(
+          color: Colors.grey[600],
+          fontSize: 12,
           fontFamily: 'Poppins',
         ),
       ),
+      onTap: () {
+        Navigator.pop(context);
+        _showLocationConfirmation();
+      },
     );
   }
 
