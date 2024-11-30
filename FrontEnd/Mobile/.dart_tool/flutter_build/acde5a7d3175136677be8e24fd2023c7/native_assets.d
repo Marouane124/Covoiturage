@@ -1,1 +1,0 @@
- C:\\Etude5eme\\ProjetCovoiturage\\Covoiturage\\FrontEnd\\Mobile\\.dart_tool\\flutter_build\\acde5a7d3175136677be8e24fd2023c7\\native_assets.yaml: 
