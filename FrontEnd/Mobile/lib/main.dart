@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+//import 'package:map_flutter/screens/auth/splash_screen.dart';
+//import 'package:map_flutter/screens/map_screen.dart';
+//import 'package:map_flutter/screens/auth/welcome_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
-import 'screens/transport/screens/select_transport_screen.dart';
-
-void main() {
-  runApp(const MyApp());
-}
+//import 'package:map_flutter/screens/map_screen.dart';
+//import 'package:map_flutter/screens/profil_screen.dart';
+import 'package:map_flutter/screens/settings/settings_screen.dart';
+import 'package:map_flutter/screens/settings/change_password_screen.dart';
+import 'package:map_flutter/screens/settings/change_language_screen.dart';
+import 'package:map_flutter/screens/settings/privacy_policy_screen.dart';
+import 'package:map_flutter/screens/settings/contact_us_screen.dart';
+import 'package:map_flutter/screens/settings/delete_account_screen.dart';
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -13,12 +20,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF008955)),
-        useMaterial3: true,
-      ),
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -26,7 +27,18 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      home: const SelectTransportScreen(),
+      title: 'Material App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+      home: const SettingsScreen(),
+      routes: {
+        '/settings': (context) => const SettingsScreen(),
+        '/change-password': (context) => const ChangePasswordScreen(),
+        '/change-language': (context) => const ChangeLanguageScreen(),
+        '/privacy-policy': (context) => const PrivacyPolicyScreen(),
+        '/contact-us': (context) => const ContactUsScreen(),
+        '/delete-account': (context) => const DeleteAccountScreen(),
+      },
     );
   }
 }
