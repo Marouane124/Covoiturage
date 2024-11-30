@@ -23,6 +23,8 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private String phone;
+    private String gender;
     private String adresse;
     private String photo;
 
@@ -36,10 +38,12 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
-    public User(String username, String email, String encodedPassword) {
+    public User(String username, String email, String encodedPassword,String phone,String gender) {
         this.username=username;
         this.email=email;
         this.password=encodedPassword;
+        this.phone=phone;
+        this.gender=gender;
     }
     public void proposerTrajet(Trajet trajet) {
         if (roles.contains("CONDUCTEUR")) {
