@@ -58,6 +58,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get register_screen_email => 'Email';
 
   @override
+  String get register_screen_password => 'Mot de passe';
+
+  @override
   String get register_screen_phone => 'Numéro de téléphone';
 
   @override
@@ -152,4 +155,49 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get verify => 'Vérifier';
+
+  @override
+  String get error_username_required => 'Le nom d\'utilisateur est requis';
+
+  @override
+  String get error_invalid_email => 'Veuillez entrer un email valide';
+
+  @override
+  String get error_phone_required => 'Le numéro de téléphone est requis';
+
+  @override
+  String get error_password_short => 'Le mot de passe doit contenir au moins 6 caractères';
+
+  @override
+  String get error_gender_required => 'Veuillez sélectionner un genre';
+
+  @override
+  String get error_role_required => 'Veuillez sélectionner un rôle';
+
+  @override
+  String get register_screen_success => 'Inscription réussie';
+
+  @override
+  String get register_screen_error => 'Échec de l\'inscription';
+
+  @override
+  String get login_screen_empty_fields => 'Veuillez remplir tous les champs';
+
+  @override
+  String get login_screen_username => 'Nom d\'utilisateur';
+
+  @override
+  String get login_screen_login_success => 'Connexion réussie !';
+
+  @override
+  String get login_screen_login_failed => 'Échec de la connexion. Veuillez réessayer.';
+
+  @override
+  String get register_screen_role => 'Sélectionner un rôle';
+
+  @override
+  String get gender_male => 'Homme';
+
+  @override
+  String get gender_female => 'Femme';
 }

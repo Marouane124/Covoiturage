@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/verification_screen.dart';
 import '../../generated/l10n.dart';
+import '../../services/auth_service.dart';
+import 'package:map_flutter/screens/auth/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -11,16 +13,48 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _cityController = TextEditingController();
 
-  bool _obscureText = true; // For password visibility toggle
+  String? _selectedRole;
+  final List<String> roles = ['PASSAGER', 'CONDUCTEUR'];
+  String? _selectedGender;
+  bool _obscureText = true;
 
-  // Add city field controller
-  final TextEditingController _cityController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _selectedGender = S.of(context).gender_male;
+      });
+    });
+  }
 
   @override
   void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
     _cityController.dispose();
     super.dispose();
+  }
+
+  void _register() {
+    if (_formKey.currentState!.validate()) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const VerificationScreen(),
+        ),
+      );
+    }
   }
 
   @override
@@ -32,15 +66,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            // This will navigate back to the previous screen in the stack
             Navigator.pop(context);
           },
         ),
       ),
-      backgroundColor: Colors.white, // Set background color to white
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          // Added this widget to make the screen scrollable
           child: Form(
             key: _formKey,
             child: Padding(
@@ -58,8 +90,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Name Field
+                  // Name Field with controller
                   TextField(
+                    controller: _usernameController,
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_name,
                       border: OutlineInputBorder(
@@ -70,8 +103,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Email Field
+                  // Email Field with controller
                   TextField(
+                    controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_email,
@@ -83,8 +117,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Phone Number Field
+                  // Password Field with controller and visibility toggle
                   TextField(
+                    controller: _passwordController,
+                    obscureText: _obscureText,
+                    decoration: InputDecoration(
+                      labelText: S.of(context).register_screen_password,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Phone Number Field with controller
+                  TextField(
+                    controller: _phoneController,
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_phone,
@@ -96,28 +157,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Gender Field
+                  // Gender Field with selection
                   DropdownButtonFormField<String>(
+                    value: _selectedGender,
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_gender,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Colors.white, // Add white background
                     ),
-                    items:
-                        <String>['Male', 'Female', 'Other'].map((String value) {
+                    items: [
+                      S.of(context).gender_male,
+                      S.of(context).gender_female,
+                    ].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(value),
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                              color: Colors.black), // Ensure text is black
+                        ),
                       );
                     }).toList(),
-                    onChanged: (String? value) {},
+                    onChanged: (String? value) {
+                      setState(() {
+                        _selectedGender = value;
+                      });
+                    },
+                    dropdownColor:
+                        Colors.white, // Make dropdown background white
                   ),
                   const SizedBox(height: 20),
 
-                  // Add City Field
+                  // City Field with controller
                   TextField(
                     controller: _cityController,
                     decoration: InputDecoration(
@@ -130,18 +204,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Sign Up Button
+                  // Sign Up Button with navigation
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const VerificationScreen(),
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: _register, // Using simplified register method
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                       backgroundColor: const Color(0xFF008955),
@@ -158,7 +223,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
 
                   // OR Divider
                   Center(

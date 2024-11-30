@@ -36,6 +36,20 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Inscription Conducteur"),
         "enter_otp_code":
             MessageLookupByLibrary.simpleMessage("Entrez votre code OTP"),
+        "error_gender_required": MessageLookupByLibrary.simpleMessage(
+            "Veuillez sélectionner un genre"),
+        "error_invalid_email": MessageLookupByLibrary.simpleMessage(
+            "Veuillez entrer un email valide"),
+        "error_password_short": MessageLookupByLibrary.simpleMessage(
+            "Le mot de passe doit contenir au moins 6 caractères"),
+        "error_phone_required": MessageLookupByLibrary.simpleMessage(
+            "Le numéro de téléphone est requis"),
+        "error_role_required": MessageLookupByLibrary.simpleMessage(
+            "Veuillez sélectionner un rôle"),
+        "error_username_required": MessageLookupByLibrary.simpleMessage(
+            "Le nom d\'utilisateur est requis"),
+        "gender_female": MessageLookupByLibrary.simpleMessage("Femme"),
+        "gender_male": MessageLookupByLibrary.simpleMessage("Homme"),
         "invalid_year": MessageLookupByLibrary.simpleMessage(
             "Veuillez entrer une année valide"),
         "leave_page": MessageLookupByLibrary.simpleMessage("Quitter la page"),
@@ -53,8 +67,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Numéro d\'Immatriculation"),
         "login_screen_email": MessageLookupByLibrary.simpleMessage(
             "Email ou Numéro de téléphone"),
+        "login_screen_empty_fields": MessageLookupByLibrary.simpleMessage(
+            "Veuillez remplir tous les champs"),
         "login_screen_forgot_password":
             MessageLookupByLibrary.simpleMessage("Mot de passe oublié ?"),
+        "login_screen_login_failed": MessageLookupByLibrary.simpleMessage(
+            "Échec de la connexion. Veuillez réessayer."),
+        "login_screen_login_success":
+            MessageLookupByLibrary.simpleMessage("Connexion réussie !"),
         "login_screen_or": MessageLookupByLibrary.simpleMessage("ou"),
         "login_screen_password":
             MessageLookupByLibrary.simpleMessage("Entrez votre mot de passe"),
@@ -70,17 +90,25 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Se connecter avec Google"),
         "login_screen_title":
             MessageLookupByLibrary.simpleMessage("Connectez-vous"),
+        "login_screen_username":
+            MessageLookupByLibrary.simpleMessage("Nom d\'utilisateur"),
         "no": MessageLookupByLibrary.simpleMessage("Non"),
         "phone_verification":
             MessageLookupByLibrary.simpleMessage("Vérification du téléphone"),
         "register": MessageLookupByLibrary.simpleMessage("S\'inscrire"),
         "register_screen_city": MessageLookupByLibrary.simpleMessage("Ville"),
         "register_screen_email": MessageLookupByLibrary.simpleMessage("Email"),
+        "register_screen_error":
+            MessageLookupByLibrary.simpleMessage("Échec de l\'inscription"),
         "register_screen_gender": MessageLookupByLibrary.simpleMessage("Genre"),
         "register_screen_name": MessageLookupByLibrary.simpleMessage("Nom"),
         "register_screen_or": MessageLookupByLibrary.simpleMessage("ou"),
+        "register_screen_password":
+            MessageLookupByLibrary.simpleMessage("Mot de passe"),
         "register_screen_phone":
             MessageLookupByLibrary.simpleMessage("Numéro de téléphone"),
+        "register_screen_role":
+            MessageLookupByLibrary.simpleMessage("Sélectionner un rôle"),
         "register_screen_signUp":
             MessageLookupByLibrary.simpleMessage("Créer un compte"),
         "register_screen_sign_up_with_apple":
@@ -90,6 +118,8 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Créer un compte avec Facebook"),
         "register_screen_sign_up_with_google":
             MessageLookupByLibrary.simpleMessage("Créer un compte avec Google"),
+        "register_screen_success":
+            MessageLookupByLibrary.simpleMessage("Inscription réussie"),
         "register_screen_title":
             MessageLookupByLibrary.simpleMessage("Créer un compte"),
         "required_field":

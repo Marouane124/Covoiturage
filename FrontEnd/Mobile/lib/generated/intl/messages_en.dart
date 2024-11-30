@@ -36,6 +36,20 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Driver Registration"),
         "enter_otp_code":
             MessageLookupByLibrary.simpleMessage("Enter your OTP code"),
+        "error_gender_required":
+            MessageLookupByLibrary.simpleMessage("Please select a gender"),
+        "error_invalid_email":
+            MessageLookupByLibrary.simpleMessage("Please enter a valid email"),
+        "error_password_short": MessageLookupByLibrary.simpleMessage(
+            "Password must be at least 6 characters"),
+        "error_phone_required":
+            MessageLookupByLibrary.simpleMessage("Phone number is required"),
+        "error_role_required":
+            MessageLookupByLibrary.simpleMessage("Please select a role"),
+        "error_username_required":
+            MessageLookupByLibrary.simpleMessage("Username is required"),
+        "gender_female": MessageLookupByLibrary.simpleMessage("Female"),
+        "gender_male": MessageLookupByLibrary.simpleMessage("Male"),
         "invalid_year":
             MessageLookupByLibrary.simpleMessage("Please enter a valid year"),
         "leave_page": MessageLookupByLibrary.simpleMessage("Leave Page"),
@@ -53,8 +67,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("License Plate Number"),
         "login_screen_email":
             MessageLookupByLibrary.simpleMessage("Email or Phone Number"),
+        "login_screen_empty_fields":
+            MessageLookupByLibrary.simpleMessage("Please fill in all fields"),
         "login_screen_forgot_password":
             MessageLookupByLibrary.simpleMessage("Forgot Password?"),
+        "login_screen_login_failed": MessageLookupByLibrary.simpleMessage(
+            "Login failed. Please try again."),
+        "login_screen_login_success":
+            MessageLookupByLibrary.simpleMessage("Login successful!"),
         "login_screen_or": MessageLookupByLibrary.simpleMessage("or"),
         "login_screen_password":
             MessageLookupByLibrary.simpleMessage("Enter Your Password"),
@@ -68,18 +88,26 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_screen_sign_in_with_google":
             MessageLookupByLibrary.simpleMessage("Sign in with Google"),
         "login_screen_title": MessageLookupByLibrary.simpleMessage("Sign in"),
+        "login_screen_username":
+            MessageLookupByLibrary.simpleMessage("Username"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
         "phone_verification":
             MessageLookupByLibrary.simpleMessage("Phone verification"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),
         "register_screen_city": MessageLookupByLibrary.simpleMessage("City"),
         "register_screen_email": MessageLookupByLibrary.simpleMessage("Email"),
+        "register_screen_error":
+            MessageLookupByLibrary.simpleMessage("Registration failed"),
         "register_screen_gender":
             MessageLookupByLibrary.simpleMessage("Gender"),
         "register_screen_name": MessageLookupByLibrary.simpleMessage("Name"),
         "register_screen_or": MessageLookupByLibrary.simpleMessage("or"),
+        "register_screen_password":
+            MessageLookupByLibrary.simpleMessage("Password"),
         "register_screen_phone":
             MessageLookupByLibrary.simpleMessage("Phone Number"),
+        "register_screen_role":
+            MessageLookupByLibrary.simpleMessage("Select Role"),
         "register_screen_signUp":
             MessageLookupByLibrary.simpleMessage("Sign Up"),
         "register_screen_sign_up_with_apple":
@@ -88,6 +116,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sign up with Facebook"),
         "register_screen_sign_up_with_google":
             MessageLookupByLibrary.simpleMessage("Sign up with Google"),
+        "register_screen_success":
+            MessageLookupByLibrary.simpleMessage("Registration successful"),
         "register_screen_title":
             MessageLookupByLibrary.simpleMessage("Sign up"),
         "required_field":

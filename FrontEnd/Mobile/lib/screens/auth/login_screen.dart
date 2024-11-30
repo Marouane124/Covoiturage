@@ -1,16 +1,211 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/register_screen.dart';
+import 'package:map_flutter/screens/auth/welcome_screen.dart';
+import 'package:map_flutter/services/auth_service.dart'; // Import the AuthService
 import '../../generated/l10n.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String? initialUsername;
+  final String? initialPassword;
+
+  const LoginScreen({
+    Key? key, 
+    this.initialUsername,
+    this.initialPassword,
+  }) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _obscureText = true; // For password visibility toggle
+  bool _obscureText = true; // Toggles password visibility
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialUsername != null) {
+      _usernameController.text = widget.initialUsername!;
+    }
+    if (widget.initialPassword != null) {
+      _passwordController.text = widget.initialPassword!;
+    }
+  }
+
+  // Helper methods for building fields and buttons
+  Widget _buildUsernameField(BuildContext context) {
+    return TextField(
+      controller: _usernameController,
+      keyboardType: TextInputType.emailAddress,
+      style: const TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        labelText: S.of(context).login_screen_username,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        prefixIcon: const Icon(Icons.email),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(BuildContext context) {
+    return TextField(
+      controller: _passwordController,
+      obscureText: _obscureText,
+      style: const TextStyle(color: Colors.black),
+      decoration: InputDecoration(
+        labelText: S.of(context).login_screen_password,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        prefixIcon: const Icon(Icons.lock),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscureText ? Icons.visibility : Icons.visibility_off,
+            color: Colors.grey,
+          ),
+          onPressed: () => setState(() => _obscureText = !_obscureText),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignInButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        String username = _usernameController.text;
+        String password = _passwordController.text;
+
+        if (username.isEmpty || password.isEmpty) {
+          // Show error if fields are empty
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(S.of(context).login_screen_empty_fields)),
+          );
+          return;
+        }
+
+        try {
+          // Call the login method
+          final response = await _authService.login(username: username, password: password);
+
+          // Handle successful login response (e.g., save JWT token, navigate to another screen)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(S.of(context).login_screen_login_success)),
+          );
+
+          // Navigate to LoginScreen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+    );
+
+          // Optionally, navigate to another screen (e.g., Dashboard)
+          // Navigator.pushReplacementNamed(context, '/dashboard');
+          
+        } catch (e) {
+          // Handle failed login
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(S.of(context).login_screen_login_failed)),
+          );
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(double.infinity, 50),
+        backgroundColor: const Color(0xFF008955),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: Text(
+        S.of(context).login_screen_signIn,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSocialButton(BuildContext context,
+      {required IconData icon,
+      required String text,
+      required Color color,
+      required VoidCallback onPressed}) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, color: Colors.white),
+      label: Text(
+        text,
+        style: const TextStyle(color: Colors.white),
+      ),
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(double.infinity, 50),
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  Widget _buildSocialMediaButtons(BuildContext context) {
+    return Column(
+      children: [
+        _buildSocialButton(
+          context,
+          icon: Icons.email,
+          text: S.of(context).login_screen_sign_in_with_google,
+          color: Colors.red,
+          onPressed: () {
+            // Gmail sign-in logic
+          },
+        ),
+        const SizedBox(height: 10),
+        _buildSocialButton(
+          context,
+          icon: Icons.facebook,
+          text: S.of(context).login_screen_sign_in_with_facebook,
+          color: Colors.blue,
+          onPressed: () {
+            // Facebook sign-in logic
+          },
+        ),
+        const SizedBox(height: 10),
+        _buildSocialButton(
+          context,
+          icon: Icons.apple,
+          text: S.of(context).login_screen_sign_in_with_apple,
+          color: Colors.black,
+          onPressed: () {
+            // Apple sign-in logic
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSignUpLink(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const RegisterScreen()),
+        );
+      },
+      child: Text(
+        S.of(context).login_screen_signUp,
+        style: const TextStyle(color: Colors.green, fontSize: 14),
+      ),
+    );
+  }
+
+  Widget _buildForgotPasswordLink(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Forgot password logic
+      },
+      child: Text(
+        S.of(context).login_screen_forgot_password,
+        style: const TextStyle(color: Colors.red, fontSize: 14),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,228 +215,73 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            // This will navigate back to the previous screen in the stack
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      backgroundColor: Colors.white, // Set background color to white
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          // Added this widget to make the screen scrollable
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  S.of(context).login_screen_title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                S.of(context).login_screen_title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
                 ),
-                const SizedBox(height: 20),
-
-                // Email or Phone Number Field
-                TextField(
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: S.of(context).login_screen_email,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.email),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Password Field
-                TextField(
-                  obscureText: _obscureText,
-                  decoration: InputDecoration(
-                    labelText: S.of(context).login_screen_password,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureText ? Icons.visibility : Icons.visibility_off,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Forget Password Link
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: () {
-                      // Implement the forget password logic
-                    },
-                    child: Text(
-                      S.of(context).login_screen_forgot_password,
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 40),
-
-                // Sign In Button
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle sign in logic
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: const Color(0xFF008955), // Green color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    S.of(context).login_screen_signIn,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // OR Divider
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          color: Colors.black.withOpacity(0.6),
-                          thickness: 1,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          S.of(context).login_screen_or,
-                          style: TextStyle(
-                            color: Colors.black.withOpacity(0.6),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          color: Colors.black.withOpacity(0.6),
-                          thickness: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Social Media Buttons (Gmail, Facebook, Apple)
-                Column(
+              ),
+              const SizedBox(height: 20),
+              _buildUsernameField(context),
+              const SizedBox(height: 20),
+              _buildPasswordField(context),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerRight,
+                child: _buildForgotPasswordLink(context),
+              ),
+              const SizedBox(height: 40),
+              _buildSignInButton(context),
+              const SizedBox(height: 20),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Gmail Button
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Implement Gmail sign-in logic
-                      },
-                      icon: const Icon(Icons.email, color: Colors.white),
-                      label: Text(
-                        S.of(context).login_screen_sign_in_with_google,
-                        style: TextStyle(color: Colors.white),
+                    Expanded(
+                      child: Divider(
+                        color: Colors.black.withOpacity(0.6),
+                        thickness: 1,
                       ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Colors.red, // Gmail color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        S.of(context).login_screen_or,
+                        style: TextStyle(
+                          color: Colors.black.withOpacity(0.6),
+                          fontSize: 14,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-
-                    // Facebook Button
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Implement Facebook sign-in logic
-                      },
-                      icon: const Icon(Icons.facebook, color: Colors.white),
-                      label: Text(
-                        S.of(context).login_screen_sign_in_with_facebook,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Colors.blue, // Facebook color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Apple Button
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Implement Apple sign-in logic
-                      },
-                      icon: const Icon(Icons.apple, color: Colors.white),
-                      label: Text(
-                        S.of(context).login_screen_sign_in_with_apple,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Colors.black, // Apple color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Sign Up Text
-                    Align(
-                      alignment: Alignment.center,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const RegisterScreen()),
-                          );
-                        },
-                        child: Text(
-                          S.of(context).login_screen_signUp,
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontSize: 14,
-                          ),
-                        ),
+                    Expanded(
+                      child: Divider(
+                        color: Colors.black.withOpacity(0.6),
+                        thickness: 1,
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+              _buildSocialMediaButtons(context),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.center,
+                child: _buildSignUpLink(context),
+              ),
+            ],
           ),
         ),
       ),

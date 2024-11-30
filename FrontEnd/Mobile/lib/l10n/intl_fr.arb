@@ -55,5 +55,21 @@
   "enter_otp_code": "Entrez votre code OTP",
   "didnt_receive_code": "Vous n'avez pas reçu le code ?",
   "resend_again": "Renvoyer",
-  "verify": "Vérifier"
+  "verify": "Vérifier",
+  "register_screen_password": "Mot de passe",
+  "error_username_required": "Le nom d'utilisateur est requis",
+  "error_invalid_email": "Veuillez entrer un email valide",
+  "error_phone_required": "Le numéro de téléphone est requis",
+  "error_password_short": "Le mot de passe doit contenir au moins 6 caractères",
+  "error_gender_required": "Veuillez sélectionner un genre",
+  "error_role_required": "Veuillez sélectionner un rôle",
+  "register_screen_success": "Inscription réussie",
+  "register_screen_error": "Échec de l'inscription",
+  "login_screen_empty_fields": "Veuillez remplir tous les champs",
+  "login_screen_username": "Nom d'utilisateur",
+  "login_screen_login_success": "Connexion réussie !",
+  "login_screen_login_failed": "Échec de la connexion. Veuillez réessayer.",
+  "register_screen_role": "Sélectionner un rôle",
+  "gender_male": "Homme",
+  "gender_female": "Femme"
 }
