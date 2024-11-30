@@ -1,7 +1,9 @@
 <div id="map" style="width: 100%; height: 100vh; position: relative; background-color: #f0f0f0;">
     <!-- Les boutons superposés sur la carte -->
     <div style="position: absolute; top: 20px; left: 20px; z-index: 999;">
-        <button (click)="getCurrentLocation()">Get My Location</button>
+        <button class="location-button" (click)="getCurrentLocation()">
+            <i class="fas fa-location-arrow"></i>
+        </button>
         <button (click)="getLocation('Paris')">Go to Paris</button>
         <button (click)="getLocation('New York')">Go to New York</button>
         <button (click)="getLocation('London')">Go to London</button>
