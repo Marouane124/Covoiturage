@@ -79,6 +79,14 @@ flutter:
   assets:
     - assets/Illustration.png
     - assets/Logo.png
+    - assets/flags/gb.png
+    - assets/flags/sa.png
+    - assets/flags/in.png
+    - assets/flags/fr.png
+    - assets/flags/de.png
+    - assets/flags/pt.png
+    - assets/flags/tr.png
+    - assets/flags/nl.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
