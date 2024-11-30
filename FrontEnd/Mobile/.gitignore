@@ -4,3 +4,6 @@
 .flutter-plugins-dependencies
 .packages
 build/
+# Ignore generated files
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugins.cmake
