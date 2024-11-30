@@ -22,14 +22,35 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "automatic": MessageLookupByLibrary.simpleMessage("Automatic"),
+        "available_cars_for_ride":
+            MessageLookupByLibrary.simpleMessage("Available cars for ride"),
         "become_driver":
             MessageLookupByLibrary.simpleMessage("Become a Driver"),
         "become_driver_message": MessageLookupByLibrary.simpleMessage(
             "Would you like to become a driver?"),
         "become_driver_title":
             MessageLookupByLibrary.simpleMessage("Become a Driver"),
+        "bike": MessageLookupByLibrary.simpleMessage("Bike"),
+        "book_later": MessageLookupByLibrary.simpleMessage("Book later"),
+        "booking_success_message": MessageLookupByLibrary.simpleMessage(
+            "Your booking has been placed and is sent to driver"),
+        "capacity": MessageLookupByLibrary.simpleMessage("Capacity"),
+        "car": MessageLookupByLibrary.simpleMessage("Car"),
+        "car_features": MessageLookupByLibrary.simpleMessage("Car features"),
+        "cars_found": MessageLookupByLibrary.simpleMessage("cars found"),
+        "cash": MessageLookupByLibrary.simpleMessage("Cash"),
+        "charge": MessageLookupByLibrary.simpleMessage("Charge"),
+        "color": MessageLookupByLibrary.simpleMessage("Color"),
+        "confirm_booking":
+            MessageLookupByLibrary.simpleMessage("Confirm Booking"),
+        "confirm_ride": MessageLookupByLibrary.simpleMessage("Confirm Ride"),
         "continue_registration":
             MessageLookupByLibrary.simpleMessage("Continue Registration"),
+        "current_location":
+            MessageLookupByLibrary.simpleMessage("Current location"),
+        "cycle": MessageLookupByLibrary.simpleMessage("Cycle"),
+        "date": MessageLookupByLibrary.simpleMessage("Date"),
         "didnt_receive_code":
             MessageLookupByLibrary.simpleMessage("Didn\'t receive code?"),
         "driver_registration":
@@ -48,10 +69,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please select a role"),
         "error_username_required":
             MessageLookupByLibrary.simpleMessage("Username is required"),
+        "fuel": MessageLookupByLibrary.simpleMessage("Fuel"),
+        "fuel_type": MessageLookupByLibrary.simpleMessage("Fuel type"),
+        "gear_type": MessageLookupByLibrary.simpleMessage("Gear type"),
         "gender_female": MessageLookupByLibrary.simpleMessage("Female"),
         "gender_male": MessageLookupByLibrary.simpleMessage("Male"),
         "invalid_year":
             MessageLookupByLibrary.simpleMessage("Please enter a valid year"),
+        "km_away": MessageLookupByLibrary.simpleMessage("km away"),
         "leave_page": MessageLookupByLibrary.simpleMessage("Leave Page"),
         "leave_registration_message": MessageLookupByLibrary.simpleMessage(
             "If you leave now, all entered information will be lost. Are you sure you want to leave?"),
@@ -90,9 +115,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_screen_title": MessageLookupByLibrary.simpleMessage("Sign in"),
         "login_screen_username":
             MessageLookupByLibrary.simpleMessage("Username"),
+        "max_power": MessageLookupByLibrary.simpleMessage("Max power"),
+        "max_speed": MessageLookupByLibrary.simpleMessage("Max speed"),
+        "model": MessageLookupByLibrary.simpleMessage("Model"),
+        "mustang": MessageLookupByLibrary.simpleMessage("Mustang"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
+        "octane": MessageLookupByLibrary.simpleMessage("Octane"),
+        "office": MessageLookupByLibrary.simpleMessage("Office"),
+        "per_100_km": MessageLookupByLibrary.simpleMessage("9L/100km"),
         "phone_verification":
             MessageLookupByLibrary.simpleMessage("Phone verification"),
+        "red": MessageLookupByLibrary.simpleMessage("Red"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),
         "register_screen_city": MessageLookupByLibrary.simpleMessage("City"),
         "register_screen_email": MessageLookupByLibrary.simpleMessage("Email"),
@@ -120,12 +153,32 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Registration successful"),
         "register_screen_title":
             MessageLookupByLibrary.simpleMessage("Sign up"),
+        "request_for_rent":
+            MessageLookupByLibrary.simpleMessage("Request for rent"),
         "required_field":
             MessageLookupByLibrary.simpleMessage("This field is required"),
         "resend_again": MessageLookupByLibrary.simpleMessage("Resend again"),
+        "reviews": MessageLookupByLibrary.simpleMessage("reviews"),
+        "ride_now": MessageLookupByLibrary.simpleMessage("Ride Now"),
+        "seats": MessageLookupByLibrary.simpleMessage("seats"),
+        "select_payment_method":
+            MessageLookupByLibrary.simpleMessage("Select payment method"),
+        "select_transport":
+            MessageLookupByLibrary.simpleMessage("Select transport"),
+        "select_your_transport":
+            MessageLookupByLibrary.simpleMessage("Select your transport"),
+        "specifications":
+            MessageLookupByLibrary.simpleMessage("Specifications"),
+        "taxi": MessageLookupByLibrary.simpleMessage("Taxi"),
+        "thank_you": MessageLookupByLibrary.simpleMessage("Thank you"),
+        "time": MessageLookupByLibrary.simpleMessage("Time"),
+        "vat": MessageLookupByLibrary.simpleMessage("VAT tax"),
         "vehicle_model": MessageLookupByLibrary.simpleMessage("Vehicle Model"),
         "vehicle_year": MessageLookupByLibrary.simpleMessage("Year"),
         "verify": MessageLookupByLibrary.simpleMessage("Verify"),
+        "view_car_details":
+            MessageLookupByLibrary.simpleMessage("View car details"),
+        "view_car_list": MessageLookupByLibrary.simpleMessage("View car list"),
         "welcome_screen_message": MessageLookupByLibrary.simpleMessage(
             "Have a better sharing experience"),
         "welcome_screen_signIn": MessageLookupByLibrary.simpleMessage("Log In"),

@@ -79,6 +79,7 @@ flutter:
   assets:
     - assets/Illustration.png
     - assets/Logo.png
+    - assets/car_placeholder.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
