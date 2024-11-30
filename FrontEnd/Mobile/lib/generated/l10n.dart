@@ -240,26 +240,6 @@ class S {
     );
   }
 
-  /// `Password`
-  String get register_screen_password {
-    return Intl.message(
-      'Password',
-      name: 'register_screen_password',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Confirm Password`
-  String get register_screen_confirm_password {
-    return Intl.message(
-      'Confirm Password',
-      name: 'register_screen_confirm_password',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Sign Up`
   String get register_screen_signUp {
     return Intl.message(
@@ -305,6 +285,256 @@ class S {
     return Intl.message(
       'Sign up with Apple',
       name: 'register_screen_sign_up_with_apple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Become a Driver`
+  String get become_driver_title {
+    return Intl.message(
+      'Become a Driver',
+      name: 'become_driver_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Would you like to become a driver?`
+  String get become_driver_message {
+    return Intl.message(
+      'Would you like to become a driver?',
+      name: 'become_driver_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Become a Driver`
+  String get become_driver {
+    return Intl.message(
+      'Become a Driver',
+      name: 'become_driver',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No`
+  String get no {
+    return Intl.message(
+      'No',
+      name: 'no',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `City`
+  String get register_screen_city {
+    return Intl.message(
+      'City',
+      name: 'register_screen_city',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Driver Registration`
+  String get driver_registration {
+    return Intl.message(
+      'Driver Registration',
+      name: 'driver_registration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `License Number`
+  String get license_number {
+    return Intl.message(
+      'License Number',
+      name: 'license_number',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Vehicle Model`
+  String get vehicle_model {
+    return Intl.message(
+      'Vehicle Model',
+      name: 'vehicle_model',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Year`
+  String get vehicle_year {
+    return Intl.message(
+      'Year',
+      name: 'vehicle_year',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `License Plate Number`
+  String get license_plate {
+    return Intl.message(
+      'License Plate Number',
+      name: 'license_plate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This field is required`
+  String get required_field {
+    return Intl.message(
+      'This field is required',
+      name: 'required_field',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid year`
+  String get invalid_year {
+    return Intl.message(
+      'Please enter a valid year',
+      name: 'invalid_year',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Register`
+  String get register {
+    return Intl.message(
+      'Register',
+      name: 'register',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave Registration`
+  String get leave_registration_title {
+    return Intl.message(
+      'Leave Registration',
+      name: 'leave_registration_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `If you leave now, all entered information will be lost. Are you sure you want to leave?`
+  String get leave_registration_message {
+    return Intl.message(
+      'If you leave now, all entered information will be lost. Are you sure you want to leave?',
+      name: 'leave_registration_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue Registration`
+  String get continue_registration {
+    return Intl.message(
+      'Continue Registration',
+      name: 'continue_registration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave Page`
+  String get leave_page {
+    return Intl.message(
+      'Leave Page',
+      name: 'leave_page',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `License Images`
+  String get license_images {
+    return Intl.message(
+      'License Images',
+      name: 'license_images',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Front`
+  String get license_front {
+    return Intl.message(
+      'Front',
+      name: 'license_front',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back`
+  String get license_back {
+    return Intl.message(
+      'Back',
+      name: 'license_back',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone verification`
+  String get phone_verification {
+    return Intl.message(
+      'Phone verification',
+      name: 'phone_verification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter your OTP code`
+  String get enter_otp_code {
+    return Intl.message(
+      'Enter your OTP code',
+      name: 'enter_otp_code',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Didn't receive code?`
+  String get didnt_receive_code {
+    return Intl.message(
+      'Didn\'t receive code?',
+      name: 'didnt_receive_code',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Resend again`
+  String get resend_again {
+    return Intl.message(
+      'Resend again',
+      name: 'resend_again',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verify`
+  String get verify {
+    return Intl.message(
+      'Verify',
+      name: 'verify',
       desc: '',
       args: [],
     );

@@ -22,6 +22,35 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "become_driver":
+            MessageLookupByLibrary.simpleMessage("Become a Driver"),
+        "become_driver_message": MessageLookupByLibrary.simpleMessage(
+            "Would you like to become a driver?"),
+        "become_driver_title":
+            MessageLookupByLibrary.simpleMessage("Become a Driver"),
+        "continue_registration":
+            MessageLookupByLibrary.simpleMessage("Continue Registration"),
+        "didnt_receive_code":
+            MessageLookupByLibrary.simpleMessage("Didn\'t receive code?"),
+        "driver_registration":
+            MessageLookupByLibrary.simpleMessage("Driver Registration"),
+        "enter_otp_code":
+            MessageLookupByLibrary.simpleMessage("Enter your OTP code"),
+        "invalid_year":
+            MessageLookupByLibrary.simpleMessage("Please enter a valid year"),
+        "leave_page": MessageLookupByLibrary.simpleMessage("Leave Page"),
+        "leave_registration_message": MessageLookupByLibrary.simpleMessage(
+            "If you leave now, all entered information will be lost. Are you sure you want to leave?"),
+        "leave_registration_title":
+            MessageLookupByLibrary.simpleMessage("Leave Registration"),
+        "license_back": MessageLookupByLibrary.simpleMessage("Back"),
+        "license_front": MessageLookupByLibrary.simpleMessage("Front"),
+        "license_images":
+            MessageLookupByLibrary.simpleMessage("License Images"),
+        "license_number":
+            MessageLookupByLibrary.simpleMessage("License Number"),
+        "license_plate":
+            MessageLookupByLibrary.simpleMessage("License Plate Number"),
         "login_screen_email":
             MessageLookupByLibrary.simpleMessage("Email or Phone Number"),
         "login_screen_forgot_password":
@@ -39,15 +68,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_screen_sign_in_with_google":
             MessageLookupByLibrary.simpleMessage("Sign in with Google"),
         "login_screen_title": MessageLookupByLibrary.simpleMessage("Sign in"),
-        "register_screen_confirm_password":
-            MessageLookupByLibrary.simpleMessage("Confirm Password"),
+        "no": MessageLookupByLibrary.simpleMessage("No"),
+        "phone_verification":
+            MessageLookupByLibrary.simpleMessage("Phone verification"),
+        "register": MessageLookupByLibrary.simpleMessage("Register"),
+        "register_screen_city": MessageLookupByLibrary.simpleMessage("City"),
         "register_screen_email": MessageLookupByLibrary.simpleMessage("Email"),
         "register_screen_gender":
             MessageLookupByLibrary.simpleMessage("Gender"),
         "register_screen_name": MessageLookupByLibrary.simpleMessage("Name"),
         "register_screen_or": MessageLookupByLibrary.simpleMessage("or"),
-        "register_screen_password":
-            MessageLookupByLibrary.simpleMessage("Password"),
         "register_screen_phone":
             MessageLookupByLibrary.simpleMessage("Phone Number"),
         "register_screen_signUp":
@@ -60,6 +90,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sign up with Google"),
         "register_screen_title":
             MessageLookupByLibrary.simpleMessage("Sign up"),
+        "required_field":
+            MessageLookupByLibrary.simpleMessage("This field is required"),
+        "resend_again": MessageLookupByLibrary.simpleMessage("Resend again"),
+        "vehicle_model": MessageLookupByLibrary.simpleMessage("Vehicle Model"),
+        "vehicle_year": MessageLookupByLibrary.simpleMessage("Year"),
+        "verify": MessageLookupByLibrary.simpleMessage("Verify"),
         "welcome_screen_message": MessageLookupByLibrary.simpleMessage(
             "Have a better sharing experience"),
         "welcome_screen_signIn": MessageLookupByLibrary.simpleMessage("Log In"),

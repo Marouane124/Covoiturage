@@ -238,6 +238,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign up with Apple'**
   String get register_screen_sign_up_with_apple;
+
+  /// No description provided for @become_driver_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a Driver'**
+  String get become_driver_title;
+
+  /// No description provided for @become_driver_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to become a driver?'**
+  String get become_driver_message;
+
+  /// No description provided for @become_driver.
+  ///
+  /// In en, this message translates to:
+  /// **'Become a Driver'**
+  String get become_driver;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @register_screen_city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get register_screen_city;
+
+  /// No description provided for @driver_registration.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Registration'**
+  String get driver_registration;
+
+  /// No description provided for @license_number.
+  ///
+  /// In en, this message translates to:
+  /// **'License Number'**
+  String get license_number;
+
+  /// No description provided for @vehicle_model.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Model'**
+  String get vehicle_model;
+
+  /// No description provided for @vehicle_year.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get vehicle_year;
+
+  /// No description provided for @license_plate.
+  ///
+  /// In en, this message translates to:
+  /// **'License Plate Number'**
+  String get license_plate;
+
+  /// No description provided for @required_field.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get required_field;
+
+  /// No description provided for @invalid_year.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid year'**
+  String get invalid_year;
+
+  /// No description provided for @register.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get register;
+
+  /// No description provided for @leave_registration_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Registration'**
+  String get leave_registration_title;
+
+  /// No description provided for @leave_registration_message.
+  ///
+  /// In en, this message translates to:
+  /// **'If you leave now, all entered information will be lost. Are you sure you want to leave?'**
+  String get leave_registration_message;
+
+  /// No description provided for @continue_registration.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Registration'**
+  String get continue_registration;
+
+  /// No description provided for @leave_page.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Page'**
+  String get leave_page;
+
+  /// No description provided for @license_images.
+  ///
+  /// In en, this message translates to:
+  /// **'License Images'**
+  String get license_images;
+
+  /// No description provided for @license_front.
+  ///
+  /// In en, this message translates to:
+  /// **'Front'**
+  String get license_front;
+
+  /// No description provided for @license_back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get license_back;
+
+  /// No description provided for @phone_verification.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone verification'**
+  String get phone_verification;
+
+  /// No description provided for @enter_otp_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your OTP code'**
+  String get enter_otp_code;
+
+  /// No description provided for @didnt_receive_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive code?'**
+  String get didnt_receive_code;
+
+  /// No description provided for @resend_again.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend again'**
+  String get resend_again;
+
+  /// No description provided for @verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verify;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
