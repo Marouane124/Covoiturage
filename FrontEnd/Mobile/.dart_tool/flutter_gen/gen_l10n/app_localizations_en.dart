@@ -200,4 +200,133 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gender_female => 'Female';
+
+  @override
+  String get select_transport => 'Select transport';
+
+  @override
+  String get select_your_transport => 'Select your transport';
+
+  @override
+  String get car => 'Car';
+
+  @override
+  String get bike => 'Bike';
+
+  @override
+  String get cycle => 'Cycle';
+
+  @override
+  String get taxi => 'Taxi';
+
+  @override
+  String get available_cars_for_ride => 'Available cars for ride';
+
+  @override
+  String get cars_found => 'cars found';
+
+  @override
+  String get view_car_list => 'View car list';
+
+  @override
+  String get automatic => 'Automatic';
+
+  @override
+  String get seats => 'seats';
+
+  @override
+  String get octane => 'Octane';
+
+  @override
+  String get km_away => 'km away';
+
+  @override
+  String get view_car_details => 'View car details';
+
+  @override
+  String get specifications => 'Specifications';
+
+  @override
+  String get car_features => 'Car features';
+
+  @override
+  String get max_power => 'Max power';
+
+  @override
+  String get fuel => 'Fuel';
+
+  @override
+  String get max_speed => 'Max speed';
+
+  @override
+  String get per_100_km => '9L/100km';
+
+  @override
+  String get model => 'Model';
+
+  @override
+  String get capacity => 'Capacity';
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get red => 'Red';
+
+  @override
+  String get fuel_type => 'Fuel type';
+
+  @override
+  String get gear_type => 'Gear type';
+
+  @override
+  String get book_later => 'Book later';
+
+  @override
+  String get ride_now => 'Ride Now';
+
+  @override
+  String get reviews => 'reviews';
+
+  @override
+  String get request_for_rent => 'Request for rent';
+
+  @override
+  String get current_location => 'Current location';
+
+  @override
+  String get office => 'Office';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get time => 'Time';
+
+  @override
+  String get select_payment_method => 'Select payment method';
+
+  @override
+  String get confirm_booking => 'Confirm Booking';
+
+  @override
+  String get cash => 'Cash';
+
+  @override
+  String get thank_you => 'Thank you';
+
+  @override
+  String get booking_success_message => 'Your booking has been placed and is sent to driver';
+
+  @override
+  String get confirm_ride => 'Confirm Ride';
+
+  @override
+  String get charge => 'Charge';
+
+  @override
+  String get mustang => 'Mustang';
+
+  @override
+  String get vat => 'VAT tax';
 }

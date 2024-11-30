@@ -200,4 +200,133 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get gender_female => 'Femme';
+
+  @override
+  String get select_transport => 'Sélectionner le transport';
+
+  @override
+  String get select_your_transport => 'Sélectionnez votre transport';
+
+  @override
+  String get car => 'Voiture';
+
+  @override
+  String get bike => 'Moto';
+
+  @override
+  String get cycle => 'Vélo';
+
+  @override
+  String get taxi => 'Taxi';
+
+  @override
+  String get available_cars_for_ride => 'Voitures disponibles';
+
+  @override
+  String get cars_found => 'voitures trouvées';
+
+  @override
+  String get view_car_list => 'Voir la liste des voitures';
+
+  @override
+  String get automatic => 'Automatique';
+
+  @override
+  String get seats => 'sièges';
+
+  @override
+  String get octane => 'Octane';
+
+  @override
+  String get km_away => 'km de distance';
+
+  @override
+  String get view_car_details => 'Voir les détails';
+
+  @override
+  String get specifications => 'Spécifications';
+
+  @override
+  String get car_features => 'Caractéristiques';
+
+  @override
+  String get max_power => 'Puissance max';
+
+  @override
+  String get fuel => 'Carburant';
+
+  @override
+  String get max_speed => 'Vitesse max';
+
+  @override
+  String get per_100_km => '9L/100km';
+
+  @override
+  String get model => 'Modèle';
+
+  @override
+  String get capacity => 'Capacité';
+
+  @override
+  String get color => 'Couleur';
+
+  @override
+  String get red => 'Rouge';
+
+  @override
+  String get fuel_type => 'Type de carburant';
+
+  @override
+  String get gear_type => 'Type de boîte';
+
+  @override
+  String get book_later => 'Réserver plus tard';
+
+  @override
+  String get ride_now => 'Réserver maintenant';
+
+  @override
+  String get reviews => 'avis';
+
+  @override
+  String get request_for_rent => 'Demande de location';
+
+  @override
+  String get current_location => 'Position actuelle';
+
+  @override
+  String get office => 'Bureau';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get time => 'Heure';
+
+  @override
+  String get select_payment_method => 'Sélectionner le mode de paiement';
+
+  @override
+  String get confirm_booking => 'Confirmer la réservation';
+
+  @override
+  String get cash => 'Espèces';
+
+  @override
+  String get thank_you => 'Merci';
+
+  @override
+  String get booking_success_message => 'Votre réservation a été effectuée et envoyée au chauffeur';
+
+  @override
+  String get confirm_ride => 'Confirmer le trajet';
+
+  @override
+  String get charge => 'Tarif';
+
+  @override
+  String get mustang => 'Mustang';
+
+  @override
+  String get vat => 'TVA';
 }

@@ -699,6 +699,436 @@ class S {
       args: [],
     );
   }
+
+  /// `Select transport`
+  String get select_transport {
+    return Intl.message(
+      'Select transport',
+      name: 'select_transport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select your transport`
+  String get select_your_transport {
+    return Intl.message(
+      'Select your transport',
+      name: 'select_your_transport',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Car`
+  String get car {
+    return Intl.message(
+      'Car',
+      name: 'car',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bike`
+  String get bike {
+    return Intl.message(
+      'Bike',
+      name: 'bike',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cycle`
+  String get cycle {
+    return Intl.message(
+      'Cycle',
+      name: 'cycle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Taxi`
+  String get taxi {
+    return Intl.message(
+      'Taxi',
+      name: 'taxi',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Available cars for ride`
+  String get available_cars_for_ride {
+    return Intl.message(
+      'Available cars for ride',
+      name: 'available_cars_for_ride',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `cars found`
+  String get cars_found {
+    return Intl.message(
+      'cars found',
+      name: 'cars_found',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View car list`
+  String get view_car_list {
+    return Intl.message(
+      'View car list',
+      name: 'view_car_list',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Automatic`
+  String get automatic {
+    return Intl.message(
+      'Automatic',
+      name: 'automatic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `seats`
+  String get seats {
+    return Intl.message(
+      'seats',
+      name: 'seats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Octane`
+  String get octane {
+    return Intl.message(
+      'Octane',
+      name: 'octane',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `km away`
+  String get km_away {
+    return Intl.message(
+      'km away',
+      name: 'km_away',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View car details`
+  String get view_car_details {
+    return Intl.message(
+      'View car details',
+      name: 'view_car_details',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Specifications`
+  String get specifications {
+    return Intl.message(
+      'Specifications',
+      name: 'specifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Car features`
+  String get car_features {
+    return Intl.message(
+      'Car features',
+      name: 'car_features',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Max power`
+  String get max_power {
+    return Intl.message(
+      'Max power',
+      name: 'max_power',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fuel`
+  String get fuel {
+    return Intl.message(
+      'Fuel',
+      name: 'fuel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Max speed`
+  String get max_speed {
+    return Intl.message(
+      'Max speed',
+      name: 'max_speed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `9L/100km`
+  String get per_100_km {
+    return Intl.message(
+      '9L/100km',
+      name: 'per_100_km',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Model`
+  String get model {
+    return Intl.message(
+      'Model',
+      name: 'model',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Capacity`
+  String get capacity {
+    return Intl.message(
+      'Capacity',
+      name: 'capacity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Color`
+  String get color {
+    return Intl.message(
+      'Color',
+      name: 'color',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Red`
+  String get red {
+    return Intl.message(
+      'Red',
+      name: 'red',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fuel type`
+  String get fuel_type {
+    return Intl.message(
+      'Fuel type',
+      name: 'fuel_type',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Gear type`
+  String get gear_type {
+    return Intl.message(
+      'Gear type',
+      name: 'gear_type',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Book later`
+  String get book_later {
+    return Intl.message(
+      'Book later',
+      name: 'book_later',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ride Now`
+  String get ride_now {
+    return Intl.message(
+      'Ride Now',
+      name: 'ride_now',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `reviews`
+  String get reviews {
+    return Intl.message(
+      'reviews',
+      name: 'reviews',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request for rent`
+  String get request_for_rent {
+    return Intl.message(
+      'Request for rent',
+      name: 'request_for_rent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current location`
+  String get current_location {
+    return Intl.message(
+      'Current location',
+      name: 'current_location',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Office`
+  String get office {
+    return Intl.message(
+      'Office',
+      name: 'office',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Date`
+  String get date {
+    return Intl.message(
+      'Date',
+      name: 'date',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Time`
+  String get time {
+    return Intl.message(
+      'Time',
+      name: 'time',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select payment method`
+  String get select_payment_method {
+    return Intl.message(
+      'Select payment method',
+      name: 'select_payment_method',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm Booking`
+  String get confirm_booking {
+    return Intl.message(
+      'Confirm Booking',
+      name: 'confirm_booking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cash`
+  String get cash {
+    return Intl.message(
+      'Cash',
+      name: 'cash',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thank you`
+  String get thank_you {
+    return Intl.message(
+      'Thank you',
+      name: 'thank_you',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your booking has been placed and is sent to driver`
+  String get booking_success_message {
+    return Intl.message(
+      'Your booking has been placed and is sent to driver',
+      name: 'booking_success_message',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm Ride`
+  String get confirm_ride {
+    return Intl.message(
+      'Confirm Ride',
+      name: 'confirm_ride',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Charge`
+  String get charge {
+    return Intl.message(
+      'Charge',
+      name: 'charge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mustang`
+  String get mustang {
+    return Intl.message(
+      'Mustang',
+      name: 'mustang',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `VAT tax`
+  String get vat {
+    return Intl.message(
+      'VAT tax',
+      name: 'vat',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

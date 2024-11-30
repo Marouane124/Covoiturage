@@ -484,6 +484,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Female'**
   String get gender_female;
+
+  /// No description provided for @select_transport.
+  ///
+  /// In en, this message translates to:
+  /// **'Select transport'**
+  String get select_transport;
+
+  /// No description provided for @select_your_transport.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your transport'**
+  String get select_your_transport;
+
+  /// No description provided for @car.
+  ///
+  /// In en, this message translates to:
+  /// **'Car'**
+  String get car;
+
+  /// No description provided for @bike.
+  ///
+  /// In en, this message translates to:
+  /// **'Bike'**
+  String get bike;
+
+  /// No description provided for @cycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get cycle;
+
+  /// No description provided for @taxi.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi'**
+  String get taxi;
+
+  /// No description provided for @available_cars_for_ride.
+  ///
+  /// In en, this message translates to:
+  /// **'Available cars for ride'**
+  String get available_cars_for_ride;
+
+  /// No description provided for @cars_found.
+  ///
+  /// In en, this message translates to:
+  /// **'cars found'**
+  String get cars_found;
+
+  /// No description provided for @view_car_list.
+  ///
+  /// In en, this message translates to:
+  /// **'View car list'**
+  String get view_car_list;
+
+  /// No description provided for @automatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get automatic;
+
+  /// No description provided for @seats.
+  ///
+  /// In en, this message translates to:
+  /// **'seats'**
+  String get seats;
+
+  /// No description provided for @octane.
+  ///
+  /// In en, this message translates to:
+  /// **'Octane'**
+  String get octane;
+
+  /// No description provided for @km_away.
+  ///
+  /// In en, this message translates to:
+  /// **'km away'**
+  String get km_away;
+
+  /// No description provided for @view_car_details.
+  ///
+  /// In en, this message translates to:
+  /// **'View car details'**
+  String get view_car_details;
+
+  /// No description provided for @specifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Specifications'**
+  String get specifications;
+
+  /// No description provided for @car_features.
+  ///
+  /// In en, this message translates to:
+  /// **'Car features'**
+  String get car_features;
+
+  /// No description provided for @max_power.
+  ///
+  /// In en, this message translates to:
+  /// **'Max power'**
+  String get max_power;
+
+  /// No description provided for @fuel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel'**
+  String get fuel;
+
+  /// No description provided for @max_speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Max speed'**
+  String get max_speed;
+
+  /// No description provided for @per_100_km.
+  ///
+  /// In en, this message translates to:
+  /// **'9L/100km'**
+  String get per_100_km;
+
+  /// No description provided for @model.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get model;
+
+  /// No description provided for @capacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity'**
+  String get capacity;
+
+  /// No description provided for @color.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get color;
+
+  /// No description provided for @red.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get red;
+
+  /// No description provided for @fuel_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Fuel type'**
+  String get fuel_type;
+
+  /// No description provided for @gear_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Gear type'**
+  String get gear_type;
+
+  /// No description provided for @book_later.
+  ///
+  /// In en, this message translates to:
+  /// **'Book later'**
+  String get book_later;
+
+  /// No description provided for @ride_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride Now'**
+  String get ride_now;
+
+  /// No description provided for @reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'reviews'**
+  String get reviews;
+
+  /// No description provided for @request_for_rent.
+  ///
+  /// In en, this message translates to:
+  /// **'Request for rent'**
+  String get request_for_rent;
+
+  /// No description provided for @current_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get current_location;
+
+  /// No description provided for @office.
+  ///
+  /// In en, this message translates to:
+  /// **'Office'**
+  String get office;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
+  /// No description provided for @select_payment_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Select payment method'**
+  String get select_payment_method;
+
+  /// No description provided for @confirm_booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Booking'**
+  String get confirm_booking;
+
+  /// No description provided for @cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cash;
+
+  /// No description provided for @thank_you.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you'**
+  String get thank_you;
+
+  /// No description provided for @booking_success_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking has been placed and is sent to driver'**
+  String get booking_success_message;
+
+  /// No description provided for @confirm_ride.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Ride'**
+  String get confirm_ride;
+
+  /// No description provided for @charge.
+  ///
+  /// In en, this message translates to:
+  /// **'Charge'**
+  String get charge;
+
+  /// No description provided for @mustang.
+  ///
+  /// In en, this message translates to:
+  /// **'Mustang'**
+  String get mustang;
+
+  /// No description provided for @vat.
+  ///
+  /// In en, this message translates to:
+  /// **'VAT tax'**
+  String get vat;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
