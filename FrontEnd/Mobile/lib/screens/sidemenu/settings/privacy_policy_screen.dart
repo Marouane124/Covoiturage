@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PrivacyPolicy extends StatelessWidget {
-  const PrivacyPolicy({super.key});
+class PrivacyPolicyScreen extends StatelessWidget {
+  const PrivacyPolicyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,20 +58,7 @@ class PrivacyPolicy extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 34,
-        alignment: Alignment.center,
-        child: Container(
-          width: 134,
-          height: 5,
-          decoration: ShapeDecoration(
-            color: const Color(0xFF141414),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
-            ),
-          ),
-        ),
-      ),
+      
     );
   }
-} 
+}

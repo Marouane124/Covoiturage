@@ -8,6 +8,8 @@ import 'package:map_flutter/screens/favorite.dart';
 import 'notification.dart';
 import 'sidemenu.dart';
 import 'dart:ui';
+import 'package:map_flutter/screens/profil_screen.dart';
+import 'package:map_flutter/screens/transport/screens/select_transport_screen.dart';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2ltb2FpdGVsZ2F6emFyIiwiYSI6ImNtMzVzeXYyazA2bWkybHMzb2Fxb3p6aGIifQ.ORYyvkZ2Z1H8WmouDkXtvQ';
@@ -172,7 +174,6 @@ class _MapScreenState extends State<MapScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Barre horizontale en haut
             Container(
               width: 40,
               height: 4,
@@ -276,23 +277,29 @@ class _MapScreenState extends State<MapScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context);
-                    // Ajoutez ici la logique pour la confirmation
+                    Navigator.pop(context); // Close the bottom sheet
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SelectTransportScreen(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF08B783),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: const Color(0xFF008955),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Confirm Location',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      'Confirm Location',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -836,7 +843,12 @@ class _MapScreenState extends State<MapScreen> {
                   }),
                   _buildWalletButton(),
                   _buildMenuItem(Icons.local_offer, 'Offer', Color(0xFF414141), () {}),
-                  _buildMenuItem(Icons.person, 'Profile', Color(0xFF414141), () {}),
+                  _buildMenuItem(Icons.person, 'Profile', Color(0xFF414141), () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                    );
+                  }),
                 ],
               ),
             ),

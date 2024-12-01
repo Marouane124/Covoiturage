@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/register_screen.dart';
 import 'package:map_flutter/screens/auth/welcome_screen.dart';
 import 'package:map_flutter/services/auth_service.dart'; // Import the AuthService
+import 'package:map_flutter/screens/map_screen.dart';
 import '../../generated/l10n.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -95,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
           // Navigate to LoginScreen
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+      MaterialPageRoute(builder: (context) => const MapScreen()),
     );
 
           // Optionally, navigate to another screen (e.g., Dashboard)

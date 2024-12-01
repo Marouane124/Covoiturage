@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:map_flutter/screens/map_screen.dart';
+import 'package:map_flutter/screens/favorite.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -241,6 +243,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
           selectedItemColor: const Color(0xFF08B783),
           unselectedItemColor: const Color(0xFF414141),
+          onTap: (index) {
+            switch (index) {
+              case 0: // Home
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MapScreen()),
+                  (route) => false,
+                );
+                break;
+              case 1: // Favourite
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FavoriteScreen()),
+                );
+                break;
+              case 4: // Profile - current screen, no action needed
+                break;
+            }
+          },
         ),
       ),
     );

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:map_flutter/screens/history.dart';
+import 'package:map_flutter/screens/sidemenu/history.dart';
 import 'package:map_flutter/screens/map_screen.dart';
-import 'package:map_flutter/screens/complain.dart';
-import 'package:map_flutter/screens/referral.dart';
-import 'package:map_flutter/screens/aboutus.dart';
+import 'package:map_flutter/screens/sidemenu/complain.dart';
+import 'package:map_flutter/screens/sidemenu/referral.dart';
+import 'package:map_flutter/screens/sidemenu/aboutus.dart';
+import 'package:map_flutter/screens/sidemenu/settings/settings_screen.dart';
+import 'package:map_flutter/screens/sidemenu/help_and_support_screen.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
@@ -44,6 +46,16 @@ class SideMenu extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AboutUsScreen()),
+          );
+        } else if (title == 'Settings') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsScreen()),
+          );
+        } else if (title == 'Help and Support') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const HelpAndSupportScreen()),
           );
         }
       },

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/map_screen.dart';
 import 'package:map_flutter/screens/sidemenu.dart';
+import 'package:map_flutter/screens/profil_screen.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({Key? key}) : super(key: key);
@@ -232,25 +233,33 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             Positioned(
               left: 335,
               top: 80.94,
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.person,
-                    color: Color(0xFF414141),
-                    size: 24,
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Profile',
-                    style: TextStyle(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
+                },
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.person,
                       color: Color(0xFF414141),
-                      fontSize: 12,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w500,
-                      height: 0.12,
+                      size: 24,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Profile',
+                      style: TextStyle(
+                        color: Color(0xFF414141),
+                        fontSize: 12,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        height: 0.12,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
