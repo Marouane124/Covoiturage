@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/splash_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:map_flutter/screens/map_screen.dart';
 import 'generated/l10n.dart';
 import 'package:map_flutter/screens/sidemenu/settings/settings_screen.dart';
 import 'package:map_flutter/screens/sidemenu/settings/change_password_screen.dart';
@@ -8,7 +9,7 @@ import 'package:map_flutter/screens/sidemenu/settings/change_language_screen.dar
 import 'package:map_flutter/screens/sidemenu/settings/privacy_policy_screen.dart';
 import 'package:map_flutter/screens/sidemenu/settings/contact_us_screen.dart';
 import 'package:map_flutter/screens/sidemenu/settings/delete_account_screen.dart';
-
+import 'package:map_flutter/screens/auth/conducteur_register_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -36,8 +37,9 @@ class MyApp extends StatelessWidget {
         '/privacy-policy': (context) => const PrivacyPolicyScreen(),
         '/contact-us': (context) => const ContactUsScreen(),
         '/delete-account': (context) => const DeleteAccountScreen(),
+        '/conducteur-register': (context) => const ConducteurRegisterScreen(),
+        '/map': (context) => const MapScreen(),
       },
     );
   }
 }
-

@@ -10,7 +10,7 @@ class LoginScreen extends StatefulWidget {
   final String? initialPassword;
 
   const LoginScreen({
-    Key? key, 
+    Key? key,
     this.initialUsername,
     this.initialPassword,
   }) : super(key: key);
@@ -72,42 +72,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignInButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () async {
-        String username = _usernameController.text;
-        String password = _passwordController.text;
-
-        if (username.isEmpty || password.isEmpty) {
-          // Show error if fields are empty
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(S.of(context).login_screen_empty_fields)),
-          );
-          return;
-        }
-
-        try {
-          // Call the login method
-          final response = await _authService.login(username: username, password: password);
-
-          // Handle successful login response (e.g., save JWT token, navigate to another screen)
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(S.of(context).login_screen_login_success)),
-          );
-
-          // Navigate to LoginScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MapScreen()),
-    );
-
-          // Optionally, navigate to another screen (e.g., Dashboard)
-          // Navigator.pushReplacementNamed(context, '/dashboard');
-          
-        } catch (e) {
-          // Handle failed login
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(S.of(context).login_screen_login_failed)),
-          );
-        }
+      onPressed: () {
+        // Directly navigate to MapScreen without verification
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MapScreen()),
+        );
       },
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 50),
