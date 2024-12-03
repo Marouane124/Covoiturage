@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/screens/navigationmenu/favorite.dart';
 import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
+import 'package:map_flutter/screens/navigationmenu/wallet/wallet_screen.dart';
+import 'package:map_flutter/screens/navigationmenu/offer_screen.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -37,33 +39,43 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 
-  Widget _buildWalletButton() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: const BoxDecoration(
-            color: Color(0xFF08B783),
-            shape: BoxShape.circle,
+  Widget _buildWalletButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (currentIndex != 2) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const WalletScreen()),
+          );
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: currentIndex == 2 ? const Color(0xFF08B783) : const Color(0xFF414141),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.account_balance_wallet,
+              color: Colors.white,
+            ),
           ),
-          child: const Icon(
-            Icons.account_balance_wallet,
-            color: Colors.white,
+          const SizedBox(height: 4),
+          Text(
+            'Wallet',
+            style: TextStyle(
+              color: currentIndex == 2 ? const Color(0xFF08B783) : const Color(0xFF414141),
+              fontSize: 12,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        const Text(
-          'Wallet',
-          style: TextStyle(
-            color: Color(0xFF414141),
-            fontSize: 12,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -94,10 +106,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
             currentIndex == 0 ? const Color(0xFF08B783) : const Color(0xFF414141),
             () {
               if (currentIndex != 0) {
-                Navigator.pushAndRemoveUntil(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const MapScreen()),
-                  (route) => false,
                 );
               }
             },
@@ -108,19 +119,26 @@ class CustomBottomNavigationBar extends StatelessWidget {
             currentIndex == 1 ? const Color(0xFF08B783) : const Color(0xFF414141),
             () {
               if (currentIndex != 1) {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const FavoriteScreen()),
                 );
               }
             },
           ),
-          _buildWalletButton(),
+          _buildWalletButton(context),
           _buildMenuItem(
             Icons.local_offer,
             'Offer',
-            const Color(0xFF414141),
-            () {},
+            currentIndex == 3 ? const Color(0xFF08B783) : const Color(0xFF414141),
+            () {
+              if (currentIndex != 3) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const OfferScreen()),
+                );
+              }
+            },
           ),
           _buildMenuItem(
             Icons.person,
@@ -128,7 +146,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             currentIndex == 4 ? const Color(0xFF08B783) : const Color(0xFF414141),
             () {
               if (currentIndex != 4) {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const ProfileScreen()),
                 );

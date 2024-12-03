@@ -10,6 +10,8 @@ import 'package:map_flutter/screens/sidemenu/settings/privacy_policy_screen.dart
 import 'package:map_flutter/screens/sidemenu/settings/contact_us_screen.dart';
 import 'package:map_flutter/screens/sidemenu/settings/delete_account_screen.dart';
 import 'package:map_flutter/screens/auth/conducteur_register_screen.dart';
+import 'screens/payment/payment_screen.dart';
+import 'screens/navigationmenu/wallet/wallet_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
       title: 'Material App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
-      home: const SplashScreen(),
+      home: const SplashScreen(), //WalletScreen(), //PaymentScreen(), 
       routes: {
         '/settings': (context) => const SettingsScreen(),
         '/change-password': (context) => const ChangePasswordScreen(),
