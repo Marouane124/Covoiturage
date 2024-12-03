@@ -4,12 +4,13 @@ import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
-import 'package:map_flutter/screens/favorite.dart';
-import 'notification.dart';
-import 'sidemenu.dart';
+import 'package:map_flutter/screens/navigationmenu/favorite.dart';
+import '../notification.dart';
+import '../../components/sidemenu.dart';
 import 'dart:ui';
-import 'package:map_flutter/screens/profil_screen.dart';
+import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
 import 'package:map_flutter/screens/transport/screens/select_transport_screen.dart';
+import 'package:map_flutter/components/bottom_navigation_bar.dart';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2ltb2FpdGVsZ2F6emFyIiwiYSI6ImNtMzVzeXYyazA2bWkybHMzb2Fxb3p6aGIifQ.ORYyvkZ2Z1H8WmouDkXtvQ';
@@ -674,105 +675,60 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String label, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 12,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWalletButton() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Color(0xFF08B783),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(Icons.account_balance_wallet, color: Colors.white),
-        ),
-        SizedBox(height: 4),
-        Text(
-          'Wallet',
-          style: TextStyle(
-            color: Color(0xFF414141),
-            fontSize: 12,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              minZoom: 5,
-              maxZoom: 25,
-              onTap: (_, latLng) {
-                _onMapTapped(latLng);
-              },
-            ),
-            children: [
-              TileLayer(
-                urlTemplate:
-                    'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                additionalOptions: {
-                  'accessToken': mapboxAccessToken,
-                  'id': 'mapbox/streets-v11',
+          Positioned.fill(
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                minZoom: 5,
+                maxZoom: 25,
+                onTap: (_, latLng) {
+                  _onMapTapped(latLng);
                 },
               ),
-              if (_route.isNotEmpty)
-                PolylineLayer(
-                  polylines: [
-                    Polyline(
-                      points: _route,
-                      strokeWidth: 4.0,
-                      color: Colors.blue,
-                    ),
-                  ],
+              children: [
+                TileLayer(
+                  urlTemplate:
+                      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                  additionalOptions: {
+                    'accessToken': mapboxAccessToken,
+                    'id': 'mapbox/streets-v11',
+                  },
                 ),
-              if (_currentPosition != null)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: _currentPosition!,
-                      width: 30.0,
-                      height: 30.0,
-                      child: Icon(
-                        Icons.location_on,
-                        size: 30,
-                        color: Colors.red,
+                if (_route.isNotEmpty)
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                        points: _route,
+                        strokeWidth: 4.0,
+                        color: Colors.blue,
                       ),
-                    ),
-                  ],
-                ),
-            ],
+                    ],
+                  ),
+                if (_currentPosition != null)
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: _currentPosition!,
+                        width: 30.0,
+                        height: 30.0,
+                        child: Icon(
+                          Icons.location_on,
+                          size: 30,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
           ),
           Positioned(
             bottom: 160,
@@ -810,47 +766,6 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
               ],
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildMenuItem(Icons.home, 'Home', Color(0xFF08B783), () {}),
-                  _buildMenuItem(
-                      Icons.favorite_border, 'Favourite', Color(0xFF414141), () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const FavoriteScreen()),
-                    );
-                  }),
-                  _buildWalletButton(),
-                  _buildMenuItem(Icons.local_offer, 'Offer', Color(0xFF414141), () {}),
-                  _buildMenuItem(Icons.person, 'Profile', Color(0xFF414141), () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                    );
-                  }),
-                ],
-              ),
             ),
           ),
           Positioned(
@@ -948,6 +863,8 @@ class _MapScreenState extends State<MapScreen> {
             ),
         ],
       ),
+      extendBody: true,
+      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
     );
   }
 }

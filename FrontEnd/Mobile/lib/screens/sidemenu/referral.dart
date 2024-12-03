@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:map_flutter/screens/map_screen.dart';
+import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 
 class ReferralScreen extends StatelessWidget {
   const ReferralScreen({Key? key}) : super(key: key);

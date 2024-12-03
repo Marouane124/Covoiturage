@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/register_screen.dart';
 import 'package:map_flutter/screens/auth/welcome_screen.dart';
 import 'package:map_flutter/services/auth_service.dart'; // Import the AuthService
-import 'package:map_flutter/screens/map_screen.dart';
+import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import '../../generated/l10n.dart';
 
 class LoginScreen extends StatefulWidget {

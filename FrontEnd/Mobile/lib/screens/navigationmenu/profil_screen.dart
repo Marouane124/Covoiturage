@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:map_flutter/screens/map_screen.dart';
-import 'package:map_flutter/screens/favorite.dart';
+import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
+import 'package:map_flutter/screens/navigationmenu/favorite.dart';
+import 'package:map_flutter/components/bottom_navigation_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -222,48 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Color(0xFFEEEEEE)),
-          ),
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          currentIndex: 4,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favourite'),
-            BottomNavigationBarItem(icon: Icon(Icons.wallet), label: 'Wallet'),
-            BottomNavigationBarItem(icon: Icon(Icons.local_offer), label: 'Offer'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          ],
-          selectedItemColor: const Color(0xFF08B783),
-          unselectedItemColor: const Color(0xFF414141),
-          onTap: (index) {
-            switch (index) {
-              case 0: // Home
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MapScreen()),
-                  (route) => false,
-                );
-                break;
-              case 1: // Favourite
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FavoriteScreen()),
-                );
-                break;
-              case 4: // Profile - current screen, no action needed
-                break;
-            }
-          },
-        ),
-      ),
+      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 4),
     );
   }
 }

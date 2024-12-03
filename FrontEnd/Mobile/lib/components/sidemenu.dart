@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/sidemenu/history.dart';
-import 'package:map_flutter/screens/map_screen.dart';
+import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/screens/sidemenu/complain.dart';
 import 'package:map_flutter/screens/sidemenu/referral.dart';
 import 'package:map_flutter/screens/sidemenu/aboutus.dart';
