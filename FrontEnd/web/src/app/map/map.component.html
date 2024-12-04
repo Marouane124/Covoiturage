@@ -1,0 +1,39 @@
+<div id="map" style="width: 100%; height: 100vh; position: relative; background-color: #f0f0f0;"></div>
+    <!-- Les boutons superposés sur la carte -->
+    <div style="position: absolute; top: 20px; left: 20px; z-index: 999;">
+        <button class="location-button" (click)="getCurrentLocation()">
+            <i class="fas fa-location-arrow"></i>
+        </button>
+       <!-- 
+         <button (click)="getLocation('Paris')">Go to Paris</button>
+        <button (click)="getLocation('New York')">Go to New York</button>
+        <button (click)="getLocation('London')">Go to London</button>
+       -->
+       
+        <button (click)="resetMap()">Reset Map</button>
+    </div>
+    
+    <!-- Section "Where would you go?" centrée -->
+    <div class="input-container">
+        <div class="input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input 
+                type="text" 
+                placeholder="Where would you go?" 
+                class="input-field"
+                [(ngModel)]="searchInput"
+                (keyup.enter)="onSearch(searchInput)" 
+            />
+        </div>
+        <div class="button-group">
+            <button class="option-button">Transport</button>
+            <button class="option-button">Delivery</button>
+        </div>
+    </div>
+
+    
+
+  
+
+    
+    
