@@ -1,69 +1,196 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
   final Dio _dio = Dio();
   final String baseUrl = 'http://192.168.1.161:8080/api';
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  Future<void> signup({
+  Future<bool> signup({
     required String username,
     required String email,
     required String password,
     required String phone,
     required String gender,
-    required List<String> roles,
+    required String city,
   }) async {
-    final url = '$baseUrl/signup';
     try {
-      _dio.options.headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
+      print('\n=== Registration Data ===');
+      print('Username: $username');
+      print('Email: $email');
+      print('Phone: $phone');
+      print('Gender: $gender');
+      print('City: $city');
+      print('========================\n');
 
-      final data = {
+      // Create Firebase user
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Update Firebase profile
+      await userCredential.user?.updateDisplayName(username);
+
+      // Create user data for MongoDB
+      final Map<String, dynamic> userData = {
+        'uid': userCredential.user!.uid,
         'username': username,
         'email': email,
-        'password': password,
         'phone': phone,
         'gender': gender,
-        'roles': roles,
+        'city': city,
+        'password': password,
+        'roles': ['PASSAGER'] // Set default role
       };
 
-      final response = await _dio.post(url, data: data);
+      try {
+        final response = await _dio.post(
+          '$baseUrl/signup',
+          data: userData,
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
 
-      print('Sign-up successful: ${response.data}');
+        print('\n=== API Response ===');
+        print('Status code: ${response.statusCode}');
+        print('Response data: ${response.data}');
+        print('==================\n');
+
+        if (response.statusCode == 201 || response.statusCode == 200) {
+          return true;
+        }
+
+        // If MongoDB storage fails, clean up Firebase user
+        await userCredential.user?.delete();
+        return false;
+      } catch (e) {
+        print('MongoDB Error: $e');
+        // Clean up Firebase user if MongoDB storage fails
+        await userCredential.user?.delete();
+        throw Exception('Failed to store user data in database');
+      }
+    } on FirebaseAuthException catch (e) {
+      print('=== Firebase Auth Error ===');
+      print('Code: ${e.code}');
+      print('Message: ${e.message}');
+      print('========================');
+      throw Exception(_handleFirebaseError(e));
     } catch (e) {
-      print('Error: $e');
-      throw Exception('Sign-up failed: $e');
+      print('=== Signup Error ===');
+      print('Type: ${e.runtimeType}');
+      print('Message: $e');
+      print('==================');
+      throw Exception('Registration failed: $e');
     }
   }
 
-  // Login method
+  String _handleFirebaseError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        return 'Email is already registered';
+      case 'weak-password':
+        return 'Password is too weak';
+      case 'invalid-email':
+        return 'Invalid email address';
+      default:
+        return 'Registration failed: ${e.message}';
+    }
+  }
+
+  Future<void> _cleanupFirebaseUser(User user) async {
+    try {
+      await user.delete();
+      print('Firebase user cleanup successful');
+    } catch (e) {
+      print('Firebase cleanup error: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> login({
-    required String username,
+    required String email,
     required String password,
   }) async {
-    final url = '$baseUrl/signin';
     try {
-      _dio.options.headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
+      print('\n=== Login Attempt ===');
+      print('Email: $email');
+      print('==================\n');
 
-      final data = {
-        'username': username,
-        'password': password,
-      };
+      // First authenticate with Firebase
+      final UserCredential firebaseUser = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-      final response = await _dio.post(url, data: data);
+      // If Firebase auth successful, authenticate with backend
+      final response = await _dio.post(
+        '$baseUrl/signin',
+        data: {
+          'email': email,  
+          'password': password,
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      print('\n=== Login Response ===');
+      print('Status code: ${response.statusCode}');
+      print('Response data: ${response.data}');
+      print('==================\n');
 
       if (response.statusCode == 200) {
-        return response.data; // Contains JWT and user details
+        return {
+          'firebaseUser': firebaseUser.user,
+          'apiResponse': response.data,
+        };
       } else {
-        throw Exception('Login failed: ${response.data}');
+        throw Exception('Backend authentication failed');
       }
+    } on FirebaseAuthException catch (e) {
+      print('Firebase Auth Error: ${e.message}');
+      throw Exception(_handleFirebaseAuthError(e));
     } catch (e) {
-      print('Error: $e');
+      print('Login Error: $e');
       throw Exception('Login failed: $e');
     }
+  }
+
+  String _handleFirebaseAuthError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'user-not-found':
+        return 'No user found with this email';
+      case 'wrong-password':
+        return 'Wrong password';
+      case 'invalid-email':
+        return 'Invalid email address';
+      case 'user-disabled':
+        return 'This account has been disabled';
+      default:
+        return 'Login failed: ${e.message}';
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      print('Error signing out: $e');
+      throw Exception('Sign-out failed: $e');
+    }
+  }
+
+  User? getCurrentUser() {
+    return _firebaseAuth.currentUser;
+  }
+
+  bool isLoggedIn() {
+    return _firebaseAuth.currentUser != null;
   }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "390254582968",
+    "project_id": "covoiturage-f8b59",
+    "storage_bucket": "covoiturage-f8b59.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:390254582968:android:fdbc710c7578bf005d284d",
+        "android_client_info": {
+          "package_name": "com.example.map_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwHwhayZP4CYVc0hXEPwx6mJv2qhD5lBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

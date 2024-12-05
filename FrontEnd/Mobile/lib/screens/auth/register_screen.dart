@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/verification_screen.dart';
 import '../../generated/l10n.dart';
-import '../../services/auth_service.dart';
+import 'package:map_flutter/services/auth_service.dart';
 import 'package:map_flutter/screens/auth/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -18,9 +18,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
   final _cityController = TextEditingController();
+  final AuthService _authService = AuthService();
 
-  String? _selectedRole;
-  final List<String> roles = ['PASSAGER', 'CONDUCTEUR'];
   String? _selectedGender;
   bool _obscureText = true;
 
@@ -46,14 +45,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _register() {
+  void _register() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const VerificationScreen(),
-        ),
-      );
+      setState(() {
+        _isLoading = true;
+      });
+      
+      try {
+        final success = await _authService.signup(
+          username: _usernameController.text,
+          email: _emailController.text,
+          password: _passwordController.text,
+          phone: _phoneController.text,
+          gender: _selectedGender ?? 'M',
+          city: _cityController.text,
+        );
+        
+        if (mounted && success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const VerificationScreen(),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registration failed: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 

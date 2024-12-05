@@ -20,13 +20,15 @@ import java.util.Set;
 public class User {
     @Id
     private String id;
+    private String uid;
     private String username;
     private String email;
     private String password;
     private String phone;
     private String gender;
-    private String adresse;
-    private String photo;
+   // private String adresse;
+    //private String photo;
+    private String city;
 
     // Relations
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
@@ -38,13 +40,15 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
-    public User(String username, String email, String encodedPassword,String phone,String gender) {
-        this.username=username;
-        this.email=email;
-        this.password=encodedPassword;
-        this.phone=phone;
-        this.gender=gender;
+    public User(String uid, String username, String email, String phone, String gender, String city) {
+        this.uid = uid;
+        this.username = username;
+        this.email = email;
+        this.phone = phone;
+        this.gender = gender;
+        this.city = city;
     }
+
     public void proposerTrajet(Trajet trajet) {
         if (roles.contains("CONDUCTEUR")) {
             this.getTrajets().add(trajet);

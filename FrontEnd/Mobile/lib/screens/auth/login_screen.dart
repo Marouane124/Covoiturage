@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/register_screen.dart';
 import 'package:map_flutter/screens/auth/welcome_screen.dart';
-import 'package:map_flutter/services/auth_service.dart'; // Import the AuthService
+import 'package:map_flutter/services/auth_service.dart'; 
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import '../../generated/l10n.dart';
 
@@ -21,15 +21,16 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true; // Toggles password visibility
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     if (widget.initialUsername != null) {
-      _usernameController.text = widget.initialUsername!;
+      _emailController.text = widget.initialUsername!;
     }
     if (widget.initialPassword != null) {
       _passwordController.text = widget.initialPassword!;
@@ -37,13 +38,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // Helper methods for building fields and buttons
-  Widget _buildUsernameField(BuildContext context) {
+  Widget _buildEmailField(BuildContext context) {
     return TextField(
-      controller: _usernameController,
+      controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
-        labelText: S.of(context).login_screen_username,
+        labelText: S.of(context).login_screen_email,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         prefixIcon: const Icon(Icons.email),
       ),
@@ -72,26 +73,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignInButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        // Directly navigate to MapScreen without verification
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MapScreen()),
-        );
-      },
+      onPressed: _handleLogin,
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 50),
         backgroundColor: const Color(0xFF008955),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      child: Text(
-        S.of(context).login_screen_signIn,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+      child: _isLoading
+          ? CircularProgressIndicator(
+              color: Colors.white,
+            )
+          : Text(
+              S.of(context).login_screen_signIn,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
     );
   }
 
@@ -178,6 +177,45 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+    
+    try {
+      final result = await _authService.login(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      
+      if (mounted && result['firebaseUser'] != null) {
+        // Store the JWT token from backend if needed
+        final jwtToken = result['apiResponse']['accessToken'];
+        // You might want to store this token securely
+        
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MapScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildUsernameField(context),
+              _buildEmailField(context),
               const SizedBox(height: 20),
               _buildPasswordField(context),
               const SizedBox(height: 20),

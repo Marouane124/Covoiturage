@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:map_flutter/screens/auth/splash_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
@@ -13,7 +14,11 @@ import 'package:map_flutter/screens/auth/conducteur_register_screen.dart';
 import 'screens/payment/payment_screen.dart';
 import 'screens/navigationmenu/wallet/wallet_screen.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -31,7 +36,7 @@ class MyApp extends StatelessWidget {
       title: 'Material App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
-      home: const SplashScreen(), //WalletScreen(), //PaymentScreen(), 
+      home: const SplashScreen(),
       routes: {
         '/settings': (context) => const SettingsScreen(),
         '/change-password': (context) => const ChangePasswordScreen(),

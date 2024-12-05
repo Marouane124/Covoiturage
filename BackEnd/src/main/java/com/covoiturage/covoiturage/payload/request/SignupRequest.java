@@ -34,4 +34,7 @@ public class SignupRequest {
 
     @NotBlank
     private String gender;
+
+    @NotBlank
+    private String city;
 }
