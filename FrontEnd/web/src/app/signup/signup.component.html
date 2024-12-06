@@ -1,0 +1,55 @@
+<div class="signup-container">
+  <div class="signup-card">
+    <h1>Créer un compte</h1>
+    
+    <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
+      <div class="form-group">
+        <label for="name">Nom complet</label>
+        <input 
+          type="text" 
+          id="name" 
+          [(ngModel)]="user.name" 
+          name="name" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          [(ngModel)]="user.email" 
+          name="email" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input 
+          type="password" 
+          id="password" 
+          [(ngModel)]="user.password" 
+          name="password" 
+          required>
+      </div>
+
+      <button type="submit" class="signup-button" [disabled]="!signupForm.valid || loading">
+        <span *ngIf="loading" class="spinner"></span>
+        <span>S'inscrire</span>
+      </button>
+
+      <div class="divider">
+        <span>OU</span>
+      </div>
+
+      <button type="button" class="google-button" (click)="signInWithGoogle()">
+        <span class="google-icon" [innerHTML]=""></span>
+        Continuer avec Google
+      </button>
+    </form>
+
+    <p class="login-link">
+      Déjà un compte ? <a routerLink="/login">Se connecter</a>
+    </p>
+  </div>
+</div>
