@@ -1,5 +1,5 @@
 .navbar {
-  background: linear-gradient(to right, #1e3c72, #2a5298);
+  background: linear-gradient(to right, #45a049, #4CAF50);
   padding: 0.8rem 1rem;
   box-shadow: 0 3px 10px rgba(0,0,0,0.15);
   position: fixed;
@@ -10,7 +10,7 @@
 
 .navbar.scrolled {
   padding: 0.5rem 1rem;
-  background: rgba(44, 62, 80, 0.95);
+  background: rgba(76, 175, 80, 0.95);
 }
 
 .navbar-brand {
@@ -92,15 +92,20 @@
 }
 
 .btn-primary {
-  background-color: #e74c3c;
-  border: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  box-shadow: none;
+  border-radius: 20px;
+  padding: 6px 20px;
 }
 
 .btn-primary:hover {
-  background-color: #d44333;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  border-color: white;
+  box-shadow: none;
 }
 
 /* Responsive Design */

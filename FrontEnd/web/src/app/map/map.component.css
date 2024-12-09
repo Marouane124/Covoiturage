@@ -102,3 +102,67 @@ button {
     font-size: 18px;
   }
   
+  /* Animation d'étoiles en arrière-plan */
+  .starry-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(220% 105% at top center, #1b2947 10%, #75517d 40%, #1b2947 65%);
+    z-index: -1;
+    overflow: hidden;
+  }
+  
+  @keyframes stars {
+    0% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-2000px);
+    }
+  }
+  
+  .stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-45deg);
+  }
+  
+  .star {
+    --star-color: var(--primary-color, white);
+    --star-tail-length: 6em;
+    --star-tail-height: 2px;
+    --star-size: 0.4em;
+    
+    position: absolute;
+    top: var(--top-offset);
+    left: var(--left-offset);
+    width: var(--star-tail-length);
+    height: var(--star-tail-height);
+    background: linear-gradient(45deg, var(--star-color), transparent);
+    border-radius: 50%;
+    filter: drop-shadow(0 0 6px var(--star-color));
+    animation: stars 7s infinite linear;
+    transform-origin: var(--star-tail-length) 0;
+  }
+  
+  .star::before {
+    content: '';
+    position: absolute;
+    width: var(--star-size);
+    height: var(--star-size);
+    border-radius: 50%;
+    background: var(--star-color);
+    top: calc(var(--star-size) / -2);
+    left: calc(var(--star-tail-length) - var(--star-size) / 2);
+  }
+  
