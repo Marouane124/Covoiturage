@@ -1,0 +1,85 @@
+<div class="dashboard-container">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Dashboard</h3>
+    </div>
+    <nav>
+      <ul>
+        <li><a (click)="showStats()" [class.active]="showingStats">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a></li>
+        <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
+        <li><a href="#"><i class="fas fa-car"></i> Mes trajets</a></li>
+        <li><a href="#"><i class="fas fa-history"></i> Historique</a></li>
+        <li><a href="#"><i class="fas fa-user"></i> Profil</a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> Paramètres</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="main-content">
+    <header>
+      <h1>Bienvenue sur votre tableau de bord</h1>
+    </header>
+    <div *ngIf="showingStats">
+      <div class="stats-cards">
+        <div class="stat-card">
+          <i class="fas fa-route"></i>
+          <div class="stat-info">
+            <h3>Total Trajets</h3>
+            <p>125</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <div class="stat-info">
+            <h3>Passagers</h3>
+            <p>348</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-money-bill-wave"></i>
+          <div class="stat-info">
+            <h3>Économies</h3>
+            <p>520 €</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-leaf"></i>
+          <div class="stat-info">
+            <h3>CO2 Économisé</h3>
+            <p>234 kg</p>
+          </div>
+        </div>
+      </div>
+      <div class="charts-container">
+        <div class="chart-card">
+          <h3>Trajets par mois</h3>
+          <canvas id="tripsChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Répartition des trajets</h3>
+          <canvas id="distributionChart"></canvas>
+        </div>
+      </div>
+      <div class="recent-activity">
+        <h3>Activité récente</h3>
+        <div class="activity-list">
+          <div class="activity-item">
+            <i class="fas fa-car-side"></i>
+            <div class="activity-info">
+              <p>Trajet Paris - Lyon</p>
+              <span>Il y a 2 heures</span>
+            </div>
+          </div>
+          <div class="activity-item">
+            <i class="fas fa-user-plus"></i>
+            <div class="activity-info">
+              <p>Nouveau passager : Marie</p>
+              <span>Il y a 5 heures</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

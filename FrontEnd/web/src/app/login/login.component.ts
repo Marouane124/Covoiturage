@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,13 +10,23 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, AfterViewInit {
-onSubmit() {
-throw new Error('Method not implemented.');
-}
   email: string = '';
   password: string = '';
+  loading: boolean = false;
+
+  constructor(private router: Router) {}
 
   ngOnInit() {}
+
+  onSubmit() {
+    this.loading = true;
+    // Simuler une connexion (à remplacer par votre vraie logique d'auth)
+    setTimeout(() => {
+      this.loading = false;
+      // Redirection vers le dashboard
+      this.router.navigate(['/dashboard']);
+    }, 1500);
+  }
 
   ngAfterViewInit() {
     this.initStarfield();
