@@ -27,11 +27,16 @@
             <i class="fas fa-user"></i> Profil
           </a>
         </li>
-        <li><a href="#"><i class="fas fa-cog"></i> Paramètres</a></li>
+        <li>
+          <a (click)="showSettings()" [class.active]="showingSettings">
+            <i class="fas fa-cog"></i> Paramètres
+          </a>
+        </li>
       </ul>
     </nav>
   </div>
-  <div class="main-content">
+  <div class="main-content">Property 'showProfile' does not exist on type 'DashboardComponent'. Did you mean 'showingProfile'?ngtsc(2551)
+    dashboard.component.ts(12, 52): Error occurs in the template of component DashboardComponent
     <header>
       <h1>Bienvenue sur votre tableau de bord</h1>
     </header>
@@ -271,101 +276,258 @@
     </div>
     <div *ngIf="showingProfile" class="profile-container">
       <div class="profile-header">
-        <h2>Mon Profil</h2>
+        <div class="profile-cover">
+          <div class="profile-avatar">
+            <i class="fas fa-user-circle"></i>
+          </div>
+          <div class="profile-info-header">
+            <h2>{{userProfile.nom}}</h2>
+            <p>Membre depuis {{userProfile.dateInscription | date:'MMMM yyyy'}}</p>
+          </div>
+        </div>
         <button class="btn-edit" (click)="openEditProfileModal()">
-          <i class="fas fa-edit"></i> Modifier
+          <i class="fas fa-edit"></i> Modifier le profil
         </button>
       </div>
 
       <div class="profile-content">
-        <div class="profile-section">
-          <h3>Informations personnelles</h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Nom</label>
-              <p>{{userProfile.nom}}</p>
+        <!-- Carte des statistiques -->
+        <div class="profile-stats-cards">
+          <div class="stat-card">
+            <i class="fas fa-route"></i>
+            <div class="stat-info">
+              <span class="stat-value">{{userProfile.statistiques.totalTrajets}}</span>
+              <span class="stat-label">Trajets effectués</span>
             </div>
-            <div class="info-item">
-              <label>Email</label>
-              <p>{{userProfile.email}}</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-users"></i>
+            <div class="stat-info">
+              <span class="stat-value">{{userProfile.statistiques.totalPassagers}}</span>
+              <span class="stat-label">Passagers transportés</span>
             </div>
-            <div class="info-item">
-              <label>Téléphone</label>
-              <p>{{userProfile.telephone}}</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-star"></i>
+            <div class="stat-info">
+              <span class="stat-value">{{userProfile.statistiques.evaluationMoyenne}}/5</span>
+              <span class="stat-label">Note moyenne</span>
             </div>
-            <div class="info-item">
-              <label>Membre depuis</label>
-              <p>{{userProfile.dateInscription | date}}</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-leaf"></i>
+            <div class="stat-info">
+              <span class="stat-value">{{userProfile.statistiques.economiesCO2}} kg</span>
+              <span class="stat-label">CO2 économisé</span>
             </div>
           </div>
         </div>
 
-        <div class="profile-section">
-          <h3>Ma voiture</h3>
-          <div class="info-grid">
+        <!-- Informations personnelles -->
+        <div class="profile-section card">
+          <div class="section-header">
+            <i class="fas fa-user"></i>
+            <h3>Informations personnelles</h3>
+          </div>
+          <div class="section-content">
             <div class="info-item">
-              <label>Marque</label>
-              <p>{{userProfile.voiture.marque}}</p>
+              <i class="fas fa-envelope"></i>
+              <div class="info-details">
+                <label>Email</label>
+                <p>{{userProfile.email}}</p>
+              </div>
             </div>
             <div class="info-item">
-              <label>Modèle</label>
-              <p>{{userProfile.voiture.modele}}</p>
-            </div>
-            <div class="info-item">
-              <label>Année</label>
-              <p>{{userProfile.voiture.annee}}</p>
-            </div>
-            <div class="info-item">
-              <label>Couleur</label>
-              <p>{{userProfile.voiture.couleur}}</p>
+              <i class="fas fa-phone"></i>
+              <div class="info-details">
+                <label>Téléphone</label>
+                <p>{{userProfile.telephone}}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="profile-section">
-          <h3>Mes statistiques</h3>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <i class="fas fa-route"></i>
-              <span>{{userProfile.statistiques.totalTrajets}}</span>
-              <label>Trajets</label>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-users"></i>
-              <span>{{userProfile.statistiques.totalPassagers}}</span>
-              <label>Passagers</label>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-star"></i>
-              <span>{{userProfile.statistiques.evaluationMoyenne}}</span>
-              <label>Évaluation</label>
-            </div>
-            <div class="stat-item">
-              <i class="fas fa-leaf"></i>
-              <span>{{userProfile.statistiques.economiesCO2}} kg</span>
-              <label>CO2 économisé</label>
+        <!-- Informations véhicule -->
+        <div class="profile-section card">
+          <div class="section-header">
+            <i class="fas fa-car"></i>
+            <h3>Mon véhicule</h3>
+          </div>
+          <div class="section-content vehicle-info">
+            <div class="vehicle-details">
+              <div class="info-item">
+                <label>Marque & Modèle</label>
+                <p>{{userProfile.voiture.marque}} {{userProfile.voiture.modele}}</p>
+              </div>
+              <div class="info-item">
+                <label>Année</label>
+                <p>{{userProfile.voiture.annee}}</p>
+              </div>
+              <div class="info-item">
+                <label>Couleur</label>
+                <p>{{userProfile.voiture.couleur}}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="profile-section">
-          <h3>Mes préférences</h3>
+        <!-- Préférences -->
+        <div class="profile-section card">
+          <div class="section-header">
+            <i class="fas fa-sliders-h"></i>
+            <h3>Mes préférences de trajet</h3>
+          </div>
           <div class="preferences-grid">
             <div class="preference-item" [class.active]="userProfile.preferences.fumeur">
               <i class="fas fa-smoking"></i>
-              <label>Fumeur</label>
+              <span>Fumeur autorisé</span>
             </div>
             <div class="preference-item" [class.active]="userProfile.preferences.animaux">
               <i class="fas fa-paw"></i>
-              <label>Animaux acceptés</label>
+              <span>Animaux acceptés</span>
             </div>
             <div class="preference-item" [class.active]="userProfile.preferences.musique">
               <i class="fas fa-music"></i>
-              <label>Musique</label>
+              <span>Musique</span>
             </div>
             <div class="preference-item" [class.active]="userProfile.preferences.discussion">
               <i class="fas fa-comments"></i>
-              <label>Discussion</label>
+              <span>Discussion</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="showingSettings" class="settings-container">
+      <div class="settings-header">
+        <h2>Paramètres</h2>
+        <p>Gérez vos préférences et paramètres de compte</p>
+      </div>
+
+      <div class="settings-content">
+        <!-- Notifications -->
+        <div class="settings-section">
+          <div class="section-header">
+            <i class="fas fa-bell"></i>
+            <h3>Notifications</h3>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Notifications par email</span>
+                <p>Recevoir des mises à jour par email</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.notifications.email">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Notifications push</span>
+                <p>Notifications sur votre appareil</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.notifications.push">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Notifications SMS</span>
+                <p>Recevoir des alertes par SMS</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.notifications.sms">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confidentialité -->
+        <div class="settings-section">
+          <div class="section-header">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Confidentialité</h3>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Profil public</span>
+                <p>Votre profil est visible par tous</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.confidentialite.profilPublic">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Afficher l'email</span>
+                <p>Visible sur votre profil public</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.confidentialite.afficherEmail">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Préférences -->
+        <div class="settings-section">
+          <div class="section-header">
+            <i class="fas fa-sliders-h"></i>
+            <h3>Préférences</h3>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Langue</span>
+              </div>
+              <select [(ngModel)]="settings.preferences.langue" class="select-style">
+                <option value="Français">Français</option>
+                <option value="English">English</option>
+                <option value="Español">Español</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Thème</span>
+              </div>
+              <select [(ngModel)]="settings.preferences.theme" class="select-style">
+                <option value="Clair">Clair</option>
+                <option value="Sombre">Sombre</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paiement -->
+        <div class="settings-section">
+          <div class="section-header">
+            <i class="fas fa-credit-card"></i>
+            <h3>Méthodes de paiement</h3>
+          </div>
+          <div class="section-content">
+            <div class="payment-methods">
+              <div class="payment-card" *ngFor="let method of settings.paiement.methodesEnregistrees">
+                <div class="payment-info">
+                  <i [class]="method.type === 'card' ? 'fas fa-credit-card' : 'fab fa-paypal'"></i>
+                  <div class="payment-details">
+                    <span>{{method.type === 'card' ? method.nom : 'PayPal'}}</span>
+                    <p>{{method.type === 'card' ? method.numero : method.email}}</p>
+                  </div>
+                </div>
+                <button class="btn-remove">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+              <button class="btn-add-payment">
+                <i class="fas fa-plus"></i>
+                Ajouter une méthode de paiement
+              </button>
             </div>
           </div>
         </div>

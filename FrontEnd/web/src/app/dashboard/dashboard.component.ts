@@ -11,13 +11,20 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
+openEditProfileModal() {
+throw new Error('Method not implemented.');
+}
   @ViewChild('tripsChart') tripsChartRef!: ElementRef;
   @ViewChild('distributionChart') distributionChartRef!: ElementRef;
   
   showingStats: boolean = false;
   showingTrajets: boolean = false;
   showingHistorique: boolean = false;
+  showingSettings: boolean = false;
   showingProfile: boolean = false;
+ 
+
+  
 
   showAddTrajetModal = false;
   newTrajet = {
@@ -358,35 +365,72 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   showStats() {
+    this.resetDisplayStates();
     this.showingStats = true;
-    this.showingTrajets = false;
-    this.showingHistorique = false;
-    this.showingProfile = false;
     setTimeout(() => {
       this.initCharts();
     }, 100);
   }
 
   showTrajets() {
-    this.showingStats = false;
+    this.resetDisplayStates();
     this.showingTrajets = true;
-    this.showingHistorique = false;
-    this.showingProfile = false;
   }
 
   showHistorique() {
-    this.showingStats = false;
-    this.showingTrajets = false;
+    this.resetDisplayStates();
     this.showingHistorique = true;
-    this.showingProfile = false;
+  }
+
+  showSettings() {
+    this.resetDisplayStates();
+    this.showingSettings = true;
   }
 
   showProfile() {
+    this.resetDisplayStates();
+    this.showingProfile = true;
+  }
+
+  private resetDisplayStates() {
     this.showingStats = false;
     this.showingTrajets = false;
     this.showingHistorique = false;
-    this.showingProfile = true;
+    this.showingProfile = false;
+    this.showingSettings = false;
   }
+
+  // Données des paramètres
+  settings = {
+    notifications: {
+      email: true,
+      push: true,
+      sms: false,
+      nouveauxTrajets: true,
+      messages: true,
+      rappels: true
+    },
+    confidentialite: {
+      profilPublic: true,
+      afficherEmail: false,
+      afficherTelephone: true,
+      partagePosition: false
+    },
+    preferences: {
+      langue: 'Français',
+      devise: 'EUR',
+      theme: 'Clair',
+      fuseau: 'Europe/Paris'
+    },
+    paiement: {
+      methodePrincipale: 'Carte Visa ****4242',
+      methodesEnregistrees: [
+        { type: 'card', nom: 'Visa', numero: '****4242', expiration: '12/25' },
+        { type: 'paypal', email: 'user@email.com' }
+      ]
+    }
+  };
+  
 
   initCharts() {
     // Graphique des trajets par mois
@@ -482,23 +526,5 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       ...this.newTrajet
     });
     this.closeAddTrajetModal();
-  }
-
-  // État du modal d'édition du profil
-  showEditProfileModal = false;
-  editedProfile: any = {}; // Pour stocker les modifications temporaires
-
-  openEditProfileModal() {
-    this.editedProfile = { ...this.userProfile };
-    this.showEditProfileModal = true;
-  }
-
-  closeEditProfileModal() {
-    this.showEditProfileModal = false;
-  }
-
-  onSubmitProfile() {
-    this.userProfile = { ...this.editedProfile };
-    this.closeEditProfileModal();
   }
 }
