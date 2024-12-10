@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Chart } from 'chart.js';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Chart, registerables } from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,20 +9,31 @@ import { Chart } from 'chart.js';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
+  @ViewChild('tripsChart') tripsChartRef!: ElementRef;
+  @ViewChild('distributionChart') distributionChartRef!: ElementRef;
+  
   showingStats: boolean = false;
 
-  showStats() {
-    this.showingStats = !this.showingStats;
-    if (this.showingStats) {
-      setTimeout(() => {
-        this.initCharts();
-      }, 0);
-    }
+  constructor() {
+    Chart.register(...registerables);
   }
 
   ngOnInit() {
-    // Initialiser les graphiques si nécessaire
+    this.showStats();
+  }
+
+  ngAfterViewInit() {
+    // Attendre que le DOM soit complètement chargé
+    setTimeout(() => {
+      if (this.tripsChartRef && this.distributionChartRef) {
+        this.initCharts();
+      }
+    }, 100);
+  }
+
+  showStats() {
+    this.showingStats = true;
   }
 
   initCharts() {
@@ -59,14 +70,29 @@ export class DashboardComponent implements OnInit {
             '#4CAF50',
             '#2196F3',
             '#FFC107'
-          ]
+          ],
+          borderWidth: 0,
+          borderRadius: 3
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
+        cutout: '70%',
+        layout: {
+          padding: 20
+        },
         plugins: {
           legend: {
             position: 'top',
+            labels: {
+              padding: 15,
+              usePointStyle: true,
+              font: {
+                size: 12,
+                family: "'Arial', sans-serif"
+              }
+            }
           }
         }
       }
