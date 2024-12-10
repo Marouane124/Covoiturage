@@ -11,9 +11,6 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
-openEditProfileModal() {
-throw new Error('Method not implemented.');
-}
   @ViewChild('tripsChart') tripsChartRef!: ElementRef;
   @ViewChild('distributionChart') distributionChartRef!: ElementRef;
   
@@ -27,6 +24,8 @@ throw new Error('Method not implemented.');
   
 
   showAddTrajetModal = false;
+  showEditProfileModal: boolean = false;
+  
   newTrajet = {
     depart: '',
     arrivee: '',
@@ -364,7 +363,7 @@ throw new Error('Method not implemented.');
     }
   }
 
-  showStats() {
+  showStats(): void {
     this.resetDisplayStates();
     this.showingStats = true;
     setTimeout(() => {
@@ -372,27 +371,27 @@ throw new Error('Method not implemented.');
     }, 100);
   }
 
-  showTrajets() {
+  showTrajets(): void {
     this.resetDisplayStates();
     this.showingTrajets = true;
   }
 
-  showHistorique() {
+  showHistorique(): void {
     this.resetDisplayStates();
     this.showingHistorique = true;
   }
 
-  showSettings() {
-    this.resetDisplayStates();
-    this.showingSettings = true;
-  }
-
-  showProfile() {
+  showProfile(): void {
     this.resetDisplayStates();
     this.showingProfile = true;
   }
 
-  private resetDisplayStates() {
+  showSettings(): void {
+    this.resetDisplayStates();
+    this.showingSettings = true;
+  }
+
+  private resetDisplayStates(): void {
     this.showingStats = false;
     this.showingTrajets = false;
     this.showingHistorique = false;
@@ -526,5 +525,19 @@ throw new Error('Method not implemented.');
       ...this.newTrajet
     });
     this.closeAddTrajetModal();
+  }
+
+  openEditProfileModal(): void {
+    this.showEditProfileModal = true;
+  }
+
+  closeEditProfileModal(): void {
+    this.showEditProfileModal = false;
+  }
+
+  saveProfileChanges(): void {
+    // Logique pour sauvegarder les modifications du profil
+    console.log('Sauvegarde des modifications du profil');
+    this.closeEditProfileModal();
   }
 }
