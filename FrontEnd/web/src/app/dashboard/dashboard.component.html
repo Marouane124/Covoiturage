@@ -5,13 +5,28 @@
     </div>
     <nav>
       <ul>
-        <li><a (click)="showStats()" [class.active]="showingStats">
-          <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a></li>
         <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-        <li><a href="#"><i class="fas fa-car"></i> Mes trajets</a></li>
-        <li><a href="#"><i class="fas fa-history"></i> Historique</a></li>
-        <li><a href="#"><i class="fas fa-user"></i> Profil</a></li>
+
+        <li>
+          <a (click)="showStats()" [class.active]="showingStats">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+        </li>
+        <li>
+          <a (click)="showTrajets()" [class.active]="showingTrajets">
+            <i class="fas fa-car"></i> Mes trajets
+          </a>
+        </li>
+        <li>
+          <a (click)="showHistorique()" [class.active]="showingHistorique">
+            <i class="fas fa-history"></i> Historique
+          </a>
+        </li>
+        <li>
+          <a (click)="showProfile()" [class.active]="showingProfile">
+            <i class="fas fa-user"></i> Profil
+          </a>
+        </li>
         <li><a href="#"><i class="fas fa-cog"></i> Paramètres</a></li>
       </ul>
     </nav>
@@ -76,6 +91,281 @@
             <div class="activity-info">
               <p>Nouveau passager : Marie</p>
               <span>Il y a 5 heures</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="showingTrajets">
+      <div class="trajets-container">
+        <div class="trajets-header">
+          <div class="search-bar">
+            <input type="text" placeholder="Ville de départ" class="search-input">
+            <input type="text" placeholder="Ville d'arrivée" class="search-input">
+            <input type="date" class="search-input">
+            <button class="search-button">Rechercher</button>
+            <button class="btn-add-trajet" (click)="openAddTrajetModal()">
+              <i class="fas fa-plus"></i> Ajouter un trajet
+            </button>
+          </div>
+        </div>
+
+        <div class="trajets-grid">
+          @for (trajet of trajets; track trajet.id) {
+            <div class="trajet-card">
+              <div class="trajet-header">
+                <div class="trajet-route">
+                  <h3>{{trajet.depart}} → {{trajet.arrivee}}</h3>
+                </div>
+                <div class="trajet-price">{{trajet.prix}}€</div>
+              </div>
+              
+              <div class="trajet-details">
+                <div class="detail-item">
+                  <i class="fas fa-calendar"></i>
+                  <span>{{trajet.date}}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-clock"></i>
+                  <span>{{trajet.heure}}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-user"></i>
+                  <span>{{trajet.conducteur}}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-car"></i>
+                  <span>{{trajet.voiture}}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-chair"></i>
+                  <span>{{trajet.places}} places</span>
+                </div>
+              </div>
+
+              <div class="trajet-actions">
+                <button class="btn-reserver">Réserver</button>
+                <button class="btn-details">Détails</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    @if (showingHistorique) {
+      <div class="historique-container">
+        <div class="historique-header">
+          <h2>Historique des trajets</h2>
+          <div class="filter-bar">
+            <select class="filter-select">
+              <option value="all">Tous les trajets</option>
+              <option value="completed">Terminés</option>
+              <option value="cancelled">Annulés</option>
+            </select>
+            <input type="date" class="filter-date">
+          </div>
+        </div>
+
+        <div class="historique-list">
+          @for (trajet of historique; track trajet.id) {
+            <div class="historique-card">
+              <div class="historique-date">
+                <i class="fas fa-calendar"></i>
+                <span>{{trajet.date}}</span>
+              </div>
+              
+              <div class="historique-trajet">
+                <div class="trajet-path">
+                  <span class="ville">{{trajet.depart}}</span>
+                  <i class="fas fa-arrow-right"></i>
+                  <span class="ville">{{trajet.arrivee}}</span>
+                </div>
+              </div>
+
+              <div class="historique-details">
+                <div class="detail">
+                  <i class="fas fa-user"></i>
+                  <span>{{trajet.conducteur}}</span>
+                </div>
+                <div class="detail">
+                  <i class="fas fa-euro-sign"></i>
+                  <span>{{trajet.prix}}€</span>
+                </div>
+                <div class="detail">
+                  <i class="fas fa-star"></i>
+                  <span>{{trajet.evaluation}}</span>
+                </div>
+              </div>
+
+              <div class="historique-status" [class.completed]="trajet.statut === 'Terminé'">
+                {{trajet.statut}}
+              </div>
+
+              <button class="btn-details">
+                <i class="fas fa-info-circle"></i> Détails
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+    <div class="modal" [class.show]="showAddTrajetModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Ajouter un trajet</h2>
+          <button class="close-btn" (click)="closeAddTrajetModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="onSubmitTrajet()" #trajetForm="ngForm">
+            <div class="form-group">
+              <label for="conducteur">Nom du conducteur</label>
+              <input type="text" id="conducteur" name="conducteur" [(ngModel)]="newTrajet.conducteur" required>
+            </div>
+
+            <div class="form-group">
+              <label for="depart">Ville de départ</label>
+              <input type="text" id="depart" name="depart" [(ngModel)]="newTrajet.depart" required>
+            </div>
+
+            <div class="form-group">
+              <label for="arrivee">Ville d'arrivée</label>
+              <input type="text" id="arrivee" name="arrivee" [(ngModel)]="newTrajet.arrivee" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" [(ngModel)]="newTrajet.date" required>
+              </div>
+
+              <div class="form-group">
+                <label for="heure">Heure</label>
+                <input type="time" id="heure" name="heure" [(ngModel)]="newTrajet.heure" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="prix">Prix</label>
+                <input type="number" id="prix" name="prix" [(ngModel)]="newTrajet.prix" required>
+              </div>
+
+              <div class="form-group">
+                <label for="places">Places disponibles</label>
+                <input type="number" id="places" name="places" [(ngModel)]="newTrajet.places" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="voiture">Voiture</label>
+              <input type="text" id="voiture" name="voiture" [(ngModel)]="newTrajet.voiture" required>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-cancel" (click)="closeAddTrajetModal()">Annuler</button>
+              <button type="submit" class="btn-submit" [disabled]="!trajetForm.form.valid">Ajouter</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="showingProfile" class="profile-container">
+      <div class="profile-header">
+        <h2>Mon Profil</h2>
+        <button class="btn-edit" (click)="openEditProfileModal()">
+          <i class="fas fa-edit"></i> Modifier
+        </button>
+      </div>
+
+      <div class="profile-content">
+        <div class="profile-section">
+          <h3>Informations personnelles</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Nom</label>
+              <p>{{userProfile.nom}}</p>
+            </div>
+            <div class="info-item">
+              <label>Email</label>
+              <p>{{userProfile.email}}</p>
+            </div>
+            <div class="info-item">
+              <label>Téléphone</label>
+              <p>{{userProfile.telephone}}</p>
+            </div>
+            <div class="info-item">
+              <label>Membre depuis</label>
+              <p>{{userProfile.dateInscription | date}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h3>Ma voiture</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Marque</label>
+              <p>{{userProfile.voiture.marque}}</p>
+            </div>
+            <div class="info-item">
+              <label>Modèle</label>
+              <p>{{userProfile.voiture.modele}}</p>
+            </div>
+            <div class="info-item">
+              <label>Année</label>
+              <p>{{userProfile.voiture.annee}}</p>
+            </div>
+            <div class="info-item">
+              <label>Couleur</label>
+              <p>{{userProfile.voiture.couleur}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h3>Mes statistiques</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <i class="fas fa-route"></i>
+              <span>{{userProfile.statistiques.totalTrajets}}</span>
+              <label>Trajets</label>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-users"></i>
+              <span>{{userProfile.statistiques.totalPassagers}}</span>
+              <label>Passagers</label>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-star"></i>
+              <span>{{userProfile.statistiques.evaluationMoyenne}}</span>
+              <label>Évaluation</label>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-leaf"></i>
+              <span>{{userProfile.statistiques.economiesCO2}} kg</span>
+              <label>CO2 économisé</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h3>Mes préférences</h3>
+          <div class="preferences-grid">
+            <div class="preference-item" [class.active]="userProfile.preferences.fumeur">
+              <i class="fas fa-smoking"></i>
+              <label>Fumeur</label>
+            </div>
+            <div class="preference-item" [class.active]="userProfile.preferences.animaux">
+              <i class="fas fa-paw"></i>
+              <label>Animaux acceptés</label>
+            </div>
+            <div class="preference-item" [class.active]="userProfile.preferences.musique">
+              <i class="fas fa-music"></i>
+              <label>Musique</label>
+            </div>
+            <div class="preference-item" [class.active]="userProfile.preferences.discussion">
+              <i class="fas fa-comments"></i>
+              <label>Discussion</label>
             </div>
           </div>
         </div>
