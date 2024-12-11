@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Trajet } from '../models/trajet.model';
 
@@ -20,6 +20,38 @@ export class TrajetService {
     return this.http.get<Trajet[]>(API_URL, { headers });
   }
 
+  searchTrajets(villeDepart?: string, villeArrivee?: string, date?: string): Observable<Trajet[]> {
+    let params = new HttpParams();
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    if (villeDepart) {
+      params = params.set('villeDepart', villeDepart);
+    }
+    
+    if (villeArrivee) {
+      params = params.set('villeArrivee', villeArrivee);
+    }
+    
+    if (date) {
+      const formattedDate = this.formatDate(date);
+      params = params.set('date', formattedDate);
+    }
+
+    return this.http.get<Trajet[]>(`${API_URL}/recherche`, { headers, params });
+  }
+
+  private formatDate(date: string): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  
   getTrajetById(id: string): Observable<Trajet> {
     return this.http.get<Trajet>(`${API_URL}/${id}`);
   }
@@ -36,7 +68,5 @@ export class TrajetService {
     return this.http.delete(`${API_URL}/${id}`);
   }
 
-  searchTrajets(villeDepart: string, villeArrivee: string): Observable<Trajet[]> {
-    return this.http.get<Trajet[]>(`${API_URL}/recherche?villeDepart=${villeDepart}&villeArrivee=${villeArrivee}`);
-  }
+  
 }

@@ -103,12 +103,17 @@
       <div class="trajets-container">
         <div class="trajets-header">
           <div class="search-bar">
-            <input type="text" placeholder="Ville de départ" class="search-input">
-            <input type="text" placeholder="Ville d'arrivée" class="search-input">
-            <input type="date" class="search-input">
-            <button class="search-button">Rechercher</button>
+            <input type="text" [(ngModel)]="searchForm.villeDepart" placeholder="Ville de départ" class="search-input">
+            <input type="text" [(ngModel)]="searchForm.villeArrivee" placeholder="Ville d'arrivée" class="search-input">
+            <input type="date" [(ngModel)]="searchForm.date" class="search-input">
+            <button class="search-button" (click)="searchTrajets()" [disabled]="isSearching">
+              {{ isSearching ? 'Recherche...' : 'Rechercher' }}
+            </button>
             <button class="btn-add-trajet" (click)="openAddTrajetModal()">
               <i class="fas fa-plus"></i> Ajouter un trajet
+            </button>
+            <button class="reset-icon-button" (click)="resetSearch()">
+              <i class="fas fa-sync-alt"></i>
             </button>
           </div>
         </div>
@@ -212,64 +217,107 @@
         </div>
       </div>
     }
-    <div class="modal" [class.show]="showAddTrajetModal">
+    <div class="modal" *ngIf="showAddTrajetModal">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>Ajouter un trajet</h2>
-          <button class="close-btn" (click)="closeAddTrajetModal()">×</button>
+          <h2>Ajouter un nouveau trajet</h2>
+          <button class="close-button" (click)="closeAddTrajetModal()">&times;</button>
         </div>
-        <div class="modal-body">
-          <form (ngSubmit)="onSubmitTrajet()" #trajetForm="ngForm">
+
+        <form #trajetForm="ngForm" (ngSubmit)="onSubmitTrajet()">
+          <div class="form-group">
+            <label for="nomConducteur">Nom du conducteur</label>
+            <input 
+              type="text" 
+              id="nomConducteur" 
+              name="nomConducteur"
+              [(ngModel)]="newTrajet.nomConducteur" 
+              required>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
-              <label for="conducteur">Nom du conducteur</label>
-              <input type="text" id="conducteur" name="conducteur" [(ngModel)]="newTrajet.conducteur" required>
-            </div>
-
-            <div class="form-group">
-              <label for="depart">Ville de départ</label>
-              <input type="text" id="depart" name="depart" [(ngModel)]="newTrajet.depart" required>
-            </div>
-
-            <div class="form-group">
-              <label for="arrivee">Ville d'arrivée</label>
-              <input type="text" id="arrivee" name="arrivee" [(ngModel)]="newTrajet.arrivee" required>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="date">Date</label>
-                <input type="date" id="date" name="date" [(ngModel)]="newTrajet.date" required>
-              </div>
-
-              <div class="form-group">
-                <label for="heure">Heure</label>
-                <input type="time" id="heure" name="heure" [(ngModel)]="newTrajet.heure" required>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="prix">Prix</label>
-                <input type="number" id="prix" name="prix" [(ngModel)]="newTrajet.prix" required>
-              </div>
-
-              <div class="form-group">
-                <label for="places">Places disponibles</label>
-                <input type="number" id="places" name="places" [(ngModel)]="newTrajet.places" required>
-              </div>
+              <label for="villeDepart">Ville de départ</label>
+              <input 
+                type="text" 
+                id="villeDepart" 
+                name="villeDepart"
+                [(ngModel)]="newTrajet.villeDepart" 
+                required>
             </div>
 
             <div class="form-group">
-              <label for="voiture">Voiture</label>
-              <input type="text" id="voiture" name="voiture" [(ngModel)]="newTrajet.voiture" required>
+              <label for="villeArrivee">Ville d'arrivée</label>
+              <input 
+                type="text" 
+                id="villeArrivee" 
+                name="villeArrivee"
+                [(ngModel)]="newTrajet.villeArrivee" 
+                required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="date">Date</label>
+              <input 
+                type="date" 
+                id="date" 
+                name="date"
+                [(ngModel)]="newTrajet.date" 
+                required>
             </div>
 
-            <div class="modal-footer">
-              <button type="button" class="btn-cancel" (click)="closeAddTrajetModal()">Annuler</button>
-              <button type="submit" class="btn-submit" [disabled]="!trajetForm.form.valid">Ajouter</button>
+            <div class="form-group">
+              <label for="heure">Heure</label>
+              <input 
+                type="time" 
+                id="heure" 
+                name="heure"
+                [(ngModel)]="newTrajet.heure" 
+                required>
             </div>
-          </form>
-        </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="placesDisponibles">Places disponibles</label>
+              <input 
+                type="number" 
+                id="placesDisponibles" 
+                name="placesDisponibles"
+                [(ngModel)]="newTrajet.placesDisponibles" 
+                min="1" 
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="prix">Prix</label>
+              <input 
+                type="number" 
+                id="prix" 
+                name="prix"
+                [(ngModel)]="newTrajet.prix" 
+                min="0" 
+                required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="voiture">Voiture</label>
+            <input 
+              type="text" 
+              id="voiture" 
+              name="voiture"
+              [(ngModel)]="newTrajet.voiture" 
+              required>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeAddTrajetModal()">Annuler</button>
+            <button type="submit" class="btn-submit" [disabled]="!trajetForm.form.valid">Créer</button>
+          </div>
+        </form>
       </div>
     </div>
     <div *ngIf="showingProfile" class="profile-container">

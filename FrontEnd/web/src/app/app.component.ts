@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { CommonModule } from '@angular/common';
-import { TrajetComponent } from "./trajet/trajet.component";
 import { DashboardComponent } from './dashboard/dashboard.component';
 
 @Component({
@@ -14,8 +13,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     CommonModule,
     RouterModule,
     NavbarComponent,
-    DashboardComponent,
-    TrajetComponent
+    DashboardComponent
+    
 ]
 })
 export class AppComponent { }
