@@ -13,7 +13,7 @@
           </a>
         </li>
         <li>
-          <a (click)="showTrajets()" [class.active]="showingTrajets">
+          <a (click)="showTrajets()" [class.active]="showingTrajets" style="cursor: pointer;">
             <i class="fas fa-car"></i> Mes trajets
           </a>
         </li>
@@ -36,7 +36,7 @@
     </nav>
   </div> 
   <div class="main-content"> <header>
-    <!--  <h1>Bienvenue sur votre tableau de bord</h1> -->  
+    <!--   -->  
     </header>
     <div *ngIf="showingStats">
       <div class="stats-cards">
@@ -118,7 +118,7 @@
             <div class="trajet-card">
               <div class="trajet-header">
                 <div class="trajet-route">
-                  <h3>{{trajet.depart}} → {{trajet.arrivee}}</h3>
+                  <h3>{{trajet.villeDepart}} → {{trajet.villeArrivee}}</h3>
                 </div>
                 <div class="trajet-price">{{trajet.prix}}€</div>
               </div>
@@ -134,7 +134,7 @@
                 </div>
                 <div class="detail-item">
                   <i class="fas fa-user"></i>
-                  <span>{{trajet.conducteur}}</span>
+                  <span>{{trajet.nomConducteur}}</span>
                 </div>
                 <div class="detail-item">
                   <i class="fas fa-car"></i>
@@ -142,7 +142,7 @@
                 </div>
                 <div class="detail-item">
                   <i class="fas fa-chair"></i>
-                  <span>{{trajet.places}} places</span>
+                  <span>{{trajet.placesDisponibles}} places</span>
                 </div>
               </div>
 

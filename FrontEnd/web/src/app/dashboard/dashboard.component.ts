@@ -2,27 +2,30 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { FormsModule } from '@angular/forms';
+import { TrajetService } from '../../services/trajet.service';
+import { Trajet } from '../../models/trajet.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  providers: [TrajetService],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('tripsChart') tripsChartRef!: ElementRef;
   @ViewChild('distributionChart') distributionChartRef!: ElementRef;
+
+  trajets: Trajet[] = [];
+  error: string = '';
+
   
   showingStats: boolean = false;
   showingTrajets: boolean = false;
   showingHistorique: boolean = false;
   showingSettings: boolean = false;
   showingProfile: boolean = false;
- 
-
-  
-
   showAddTrajetModal = false;
   showEditProfileModal: boolean = false;
   
@@ -166,6 +169,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       evaluation: 4.8
     }
   ];
+  /*
   trajets = [
     {
       id: 1,
@@ -348,19 +352,35 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       statut: 'disponible'
     }
   ];
+  */
 
-  constructor() {
+  constructor(private trajetService: TrajetService) {
     Chart.register(...registerables);
   }
 
   ngOnInit() {
     this.showStats();
+    this.loadTrajets();
   }
 
   ngAfterViewInit() {
     if (this.showingStats) {
       this.initCharts();
     }
+  }
+
+  loadTrajets(): void {
+    console.log('Chargement des trajets...');
+    this.trajetService.getAllTrajets().subscribe({
+      next: (data) => {
+        console.log('Trajets reçus:', data);
+        this.trajets = data;
+      },
+      error: (e) => {
+        console.error('Erreur lors du chargement:', e);
+        this.error = 'Erreur lors du chargement des trajets';
+      }
+    });
   }
 
   showStats(): void {
@@ -518,13 +538,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   onSubmitTrajet() {
-    // Ajouter la logique pour sauvegarder le trajet
-    console.log('Nouveau trajet:', this.newTrajet);
-    this.trajets.push({
-      id: this.trajets.length + 1,
-      ...this.newTrajet
+    const trajetToSave = {
+      villeDepart: this.newTrajet.depart,
+      villeArrivee: this.newTrajet.arrivee,
+      date: this.newTrajet.date,
+      heure: this.newTrajet.heure,
+      prix: this.newTrajet.prix,
+      placesDisponibles: this.newTrajet.places,
+      nomConducteur: this.newTrajet.conducteur,
+      voiture: this.newTrajet.voiture
+    };
+
+    this.trajetService.createTrajet(trajetToSave).subscribe({
+      next: (response) => {
+        this.loadTrajets();
+        this.closeAddTrajetModal();
+      },
+      error: (e) => {
+        console.error('Erreur lors de la création du trajet:', e);
+      }
     });
-    this.closeAddTrajetModal();
   }
 
   openEditProfileModal(): void {
