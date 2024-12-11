@@ -3,6 +3,7 @@ package com.covoiturage.covoiturage.controllers;
 import com.covoiturage.covoiturage.models.Trajet;
 import com.covoiturage.covoiturage.repositories.TrajetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,7 @@ public class TrajetController {
 
     // Créer un nouveau trajet
     @PostMapping
-    public ResponseEntity<Trajet> createTrajet(@RequestBody Trajet trajet) {
+    public ResponseEntity<Trajet> createTrajet(@RequestBody @DateTimeFormat(pattern = "dd/MM/yyyy") Trajet trajet) {
         try {
             Trajet newTrajet = trajetRepository.save(trajet);
             return new ResponseEntity<>(newTrajet, HttpStatus.CREATED);
@@ -56,7 +57,7 @@ public class TrajetController {
 
     // Mettre à jour un trajet
     @PutMapping("/{id}")
-    public ResponseEntity<Trajet> updateTrajet(@PathVariable("id") String id, @RequestBody Trajet trajet) {
+    public ResponseEntity<Trajet> updateTrajet(@PathVariable("id") String id, @RequestBody @DateTimeFormat(pattern = "dd/MM/yyyy") Trajet trajet) {
         Optional<Trajet> trajetData = trajetRepository.findById(id);
 
         if (trajetData.isPresent()) {

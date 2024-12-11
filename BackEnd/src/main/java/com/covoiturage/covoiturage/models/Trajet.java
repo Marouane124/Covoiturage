@@ -1,5 +1,6 @@
 package com.covoiturage.covoiturage.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,12 +18,13 @@ public class Trajet {
     @Id
     private String id;
     private String nomConducteur;
-    private String villeDepart;     // au lieu de pointDeDepart
-    private String villeArrivee;    // au lieu de destination
-    private Date date;              // pour la date
-    private String heure;           // pour l'heure
-    private int placesDisponibles;  // au lieu de placesDispo
-    private double prix;            // float vers double pour plus de précision
-    private String voiture;         // String au lieu de l'objet Voiture
+    private String villeDepart;
+    private String villeArrivee;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private Date date;
+    private String heure;
+    private int placesDisponibles;
+    private double prix;
+    private String voiture;
 }
 
