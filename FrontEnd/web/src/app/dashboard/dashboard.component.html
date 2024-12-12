@@ -152,8 +152,12 @@
               </div>
 
               <div class="trajet-actions">
-                <button class="btn-reserver">Réserver</button>
-                <button class="btn-details">Détails</button>
+                <button class="btn-edit" (click)="openEditTrajetModal(trajet)">
+                  <i class="fas fa-edit"></i> Modifier
+                </button>
+                <button class="btn-delete" (click)="deleteTrajet(trajet.id)">
+                  <i class="fas fa-trash"></i> Supprimer
+                </button>
               </div>
             </div>
           }
@@ -352,7 +356,7 @@
           </div>
         </div>
         <button class="btn-edit" (click)="openEditProfileModal()">
-          <i class="fas fa-edit"></i> Modifier le profil
+         <!-- --> <i class="fas fa-edit"></i> Modifier le profil
         </button>
       </div>
 
@@ -597,6 +601,109 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="modal" *ngIf="showEditTrajetModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Modifier le trajet</h2>
+          <button class="close-button" (click)="closeEditTrajetModal()">&times;</button>
+        </div>
+
+        <form #editTrajetForm="ngForm" (ngSubmit)="onSubmitEditTrajet()">
+          <div class="form-group">
+            <label for="nomConducteur">Nom du conducteur</label>
+            <input 
+              type="text" 
+              id="nomConducteur" 
+              name="nomConducteur"
+              [(ngModel)]="trajetToEdit.nomConducteur" 
+              required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="villeDepart">Ville de départ</label>
+              <input 
+                type="text" 
+                id="villeDepart" 
+                name="villeDepart"
+                [(ngModel)]="trajetToEdit.villeDepart" 
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="villeArrivee">Ville d'arrivée</label>
+              <input 
+                type="text" 
+                id="villeArrivee" 
+                name="villeArrivee"
+                [(ngModel)]="trajetToEdit.villeArrivee" 
+                required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="date">Date</label>
+              <input 
+                type="date" 
+                id="date" 
+                name="date"
+                [(ngModel)]="trajetToEdit.date" 
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="heure">Heure</label>
+              <input 
+                type="time" 
+                id="heure" 
+                name="heure"
+                [(ngModel)]="trajetToEdit.heure" 
+                required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="placesDisponibles">Places disponibles</label>
+              <input 
+                type="number" 
+                id="placesDisponibles" 
+                name="placesDisponibles"
+                [(ngModel)]="trajetToEdit.placesDisponibles" 
+                min="1" 
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="prix">Prix</label>
+              <input 
+                type="number" 
+                id="prix" 
+                name="prix"
+                [(ngModel)]="trajetToEdit.prix" 
+                min="0" 
+                required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="voiture">Voiture</label>
+            <input 
+              type="text" 
+              id="voiture" 
+              name="voiture"
+              [(ngModel)]="trajetToEdit.voiture" 
+              required>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeEditTrajetModal()">Annuler</button>
+            <button type="submit" class="btn-submit" [disabled]="!editTrajetForm.form.valid">Sauvegarder</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

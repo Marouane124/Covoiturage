@@ -308,54 +308,57 @@ canvas#distributionChart {
 
 .trajet-actions {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 15px;
+  width: 100%;
 }
 
-.btn-reserver, .btn-details {
-  padding: 8px 16px;
+.btn-reserver, .btn-edit, .btn-delete {
+  flex: 1;
+  padding: 8px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
 .btn-reserver {
   background-color: #4CAF50;
   color: white;
-  flex: 2;
-}
-
-.btn-details {
-  padding: 8px 16px;
-  border: 1px solid #4CAF50;
-  border-radius: 20px;
-  background-color: white;
-  color: #4CAF50;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9em;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.btn-details:hover {
-  background-color: #4CAF50;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.2);
-}
-
-.btn-details i {
-  font-size: 1em;
 }
 
 .btn-reserver:hover {
   background-color: #45a049;
 }
 
-.btn-details:hover {
-  background-color: #e0e0e0;
+.btn-edit {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-edit:hover {
+  background-color: #1976D2;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}
+
+/* Style pour les icônes */
+.btn-reserver i, .btn-edit i, .btn-delete i {
+  font-size: 14px;
+  color: white !important;
 }
 
 /* Styles pour l'historique */
@@ -687,23 +690,25 @@ input.ng-invalid.ng-touched {
 }
 
 .btn-edit {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background: rgba(255,255,255,0.2);
-  border: none;
-  border-radius: 8px;
+  background-color: #2196F3;
   color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   transition: all 0.3s ease;
 }
 
 .btn-edit:hover {
-  background: rgba(255,255,255,0.3);
+  background-color: #1976D2;
+  transform: translateY(-2px);
+}
+
+.btn-edit i {
+  color: white !important;
 }
 
 /* Stats Cards */
@@ -1189,4 +1194,26 @@ input:checked + .slider:before {
 .page-info {
   font-size: 14px;
   color: #666;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+}
+
+.btn-delete i {
+  color: white !important;
 }

@@ -61,11 +61,21 @@ export class TrajetService {
   }
 
   updateTrajet(id: string, trajet: Trajet): Observable<Trajet> {
-    return this.http.put<Trajet>(`${API_URL}/${id}`, trajet);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    return this.http.put<Trajet>(`${API_URL}/${id}`, trajet, { headers });
   }
 
   deleteTrajet(id: string): Observable<any> {
-    return this.http.delete(`${API_URL}/${id}`);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    return this.http.delete(`${API_URL}/${id}`, { headers });
   }
 
   

@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   trajets: Trajet[] = [];
   trajetsPageCourante: Trajet[] = [];
   pageCourante: number = 1;
-  trajetsParPage: number = 6;
+  trajetsParPage: number = 8;
   nombreTotalPages: number = 0;
   
   error: string = '';
@@ -40,8 +40,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   showingProfile: boolean = false;
   showAddTrajetModal = false;
   showEditProfileModal: boolean = false;
+  showEditTrajetModal = false;
   
   newTrajet = {
+    nomConducteur: '',
+    villeDepart: '',
+    villeArrivee: '',
+    date: '',
+    heure: '',
+    placesDisponibles: 1,
+    prix: 0,
+    voiture: ''
+  };
+
+  trajetToEdit: Trajet = {
     nomConducteur: '',
     villeDepart: '',
     villeArrivee: '',
@@ -479,4 +491,69 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.loadTrajets();
   }
 
+  // Méthode pour ouvrir le modal d'édition
+  openEditTrajetModal(trajet: Trajet) {
+    this.trajetToEdit = { ...trajet }; // Copie du trajet à éditer
+    this.showEditTrajetModal = true;
+  }
+
+  // Méthode pour fermer le modal d'édition
+  closeEditTrajetModal() {
+    this.showEditTrajetModal = false;
+    this.trajetToEdit = {
+      nomConducteur: '',
+      villeDepart: '',
+      villeArrivee: '',
+      date: '',
+      heure: '',
+      placesDisponibles: 1,
+      prix: 0,
+      voiture: ''
+    };
+  }
+
+  // Méthode pour sauvegarder les modifications
+  onSubmitEditTrajet() {
+    if (this.trajetToEdit.id) {
+      this.trajetService.updateTrajet(this.trajetToEdit.id, this.trajetToEdit).subscribe({
+        next: (response) => {
+          console.log('Trajet mis à jour:', response);
+          this.loadTrajets(); // Recharger la liste des trajets
+          this.closeEditTrajetModal();
+          alert('Trajet mis à jour avec succès!');
+        },
+        error: (error) => {
+          console.error('Erreur lors de la mise à jour:', error);
+          if (error.error && error.error.message) {
+            alert(error.error.message);
+          } else {
+            alert('Erreur lors de la mise à jour du trajet');
+          }
+        }
+      });
+    }
+  }
+
+  // Méthode pour supprimer un trajet
+  deleteTrajet(id: string | undefined) {
+    if (!id) {
+      console.error('ID du trajet non défini');
+      alert('Impossible de supprimer ce trajet : ID non défini');
+      return;
+    }
+
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?')) {
+      this.trajetService.deleteTrajet(id).subscribe({
+        next: () => {
+          console.log('Trajet supprimé avec succès');
+          this.loadTrajets();
+          alert('Trajet supprimé avec succès!');
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression:', error);
+          alert('Erreur lors de la suppression du trajet');
+        }
+      });
+    }
+  }
 }
