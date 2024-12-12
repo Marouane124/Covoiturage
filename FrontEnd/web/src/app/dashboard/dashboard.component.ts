@@ -19,6 +19,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('distributionChart') distributionChartRef!: ElementRef;
 
   trajets: Trajet[] = [];
+  trajetsPageCourante: Trajet[] = [];
+  pageCourante: number = 1;
+  trajetsParPage: number = 6;
+  nombreTotalPages: number = 0;
+  
   error: string = '';
   searchForm = {
     villeDepart: '',
@@ -197,6 +202,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.trajetService.getAllTrajets().subscribe({
       next: (data) => {
         this.trajets = data;
+        this.calculerTrajetsPageCourante();
       },
       error: (error) => {
         console.error('Erreur lors du chargement des trajets:', error);
@@ -205,6 +211,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
+  calculerTrajetsPageCourante() {
+    const indexDebut = (this.pageCourante - 1) * this.trajetsParPage;
+    const indexFin = indexDebut + this.trajetsParPage;
+    this.trajetsPageCourante = this.trajets.slice(indexDebut, indexFin);
+    this.nombreTotalPages = Math.ceil(this.trajets.length / this.trajetsParPage);
+  }
+
+  changerPage(page: number) {
+    this.pageCourante = page;
+    this.calculerTrajetsPageCourante();
+  }
   
   showStats(): void {
     this.resetDisplayStates();
@@ -432,6 +449,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ).subscribe({
       next: (results) => {
         this.trajets = results || [];
+        this.pageCourante = 1;
+        this.calculerTrajetsPageCourante();
         if (!results || results.length === 0) {
           this.searchMessage = 'Aucun trajet trouvé';
         }

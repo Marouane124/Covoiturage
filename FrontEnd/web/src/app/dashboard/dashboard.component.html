@@ -119,13 +119,13 @@
         </div>
 
         <div class="trajets-grid">
-          @for (trajet of trajets; track trajet.id) {
+          @for (trajet of trajetsPageCourante; track trajet.id) {
             <div class="trajet-card">
               <div class="trajet-header">
                 <div class="trajet-route">
                   <h3>{{trajet.villeDepart}} → {{trajet.villeArrivee}}</h3>
                 </div>
-                <div class="trajet-price">{{trajet.prix}}€</div>
+                <div class="trajet-price">{{trajet.prix}}Dh</div>
               </div>
               
               <div class="trajet-details">
@@ -157,6 +157,26 @@
               </div>
             </div>
           }
+        </div>
+
+        <div class="pagination-controls">
+          <button 
+            class="pagination-button" 
+            [disabled]="pageCourante === 1"
+            (click)="changerPage(pageCourante - 1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <span class="page-info">
+            Page {{pageCourante}} sur {{nombreTotalPages}}
+          </span>
+          
+          <button 
+            class="pagination-button" 
+            [disabled]="pageCourante === nombreTotalPages"
+            (click)="changerPage(pageCourante + 1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
       </div>
     </div>
