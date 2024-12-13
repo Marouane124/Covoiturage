@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'welcome_screen.dart'; // Your WelcomeScreen or login screen
+import 'package:map_flutter/services/auth_service.dart';
+import 'welcome_screen.dart';
+import '../navigationmenu/map_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,36 +14,45 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _slideController;
   late Animation<Offset> _slideAnimation;
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
     super.initState();
+    _initializeAnimation();
+    _handleNavigation();
+  }
 
-    // Initialize the slide animation controller
+  void _initializeAnimation() {
     _slideController = AnimationController(
       vsync: this,
-      duration: const Duration(
-          seconds: 3), // Increase duration to let the logo slide completely
+      duration: const Duration(seconds: 3),
     );
 
-    // Define a slide animation (slide from left to right across the screen)
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(-1.0, 0.0), // Start off-screen on the left
-      end: const Offset(2.0, 0.0), // End off-screen on the right
+      begin: const Offset(-1.0, 0.0),
+      end: const Offset(2.0, 0.0),
     ).animate(
       CurvedAnimation(parent: _slideController, curve: Curves.easeInOut),
     );
 
-    // Start the animation
     _slideController.forward();
+  }
 
-    // Navigate to the next screen after the animation is complete
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-      );
-    });
+  Future<void> _handleNavigation() async {
+    await Future.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
+
+    final isLoggedIn = await _authService.isLoggedIn();
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            isLoggedIn ? const MapScreen() : const WelcomeScreen(),
+      ),
+    );
   }
 
   @override

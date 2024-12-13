@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:map_flutter/generated/l10n.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -14,9 +15,9 @@ class SettingsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(
+        title: Text(
+          S.of(context).settings_title,
+          style: const TextStyle(
             color: Color(0xFF2A2A2A),
             fontSize: 18,
             fontFamily: 'Poppins',
@@ -31,31 +32,31 @@ class SettingsScreen extends StatelessWidget {
           children: [
             _buildSettingItem(
               context,
-              'Change Password',
+              S.of(context).change_password,
               onTap: () => Navigator.pushNamed(context, '/change-password'),
             ),
             const SizedBox(height: 16),
             _buildSettingItem(
               context,
-              'Change Language',
+              S.of(context).change_language,
               onTap: () => Navigator.pushNamed(context, '/change-language'),
             ),
             const SizedBox(height: 16),
             _buildSettingItem(
               context,
-              'Privacy Policy',
+              S.of(context).privacy_policy,
               onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
             ),
             const SizedBox(height: 16),
             _buildSettingItem(
               context,
-              'Contact Us',
+              S.of(context).contact_us,
               onTap: () => Navigator.pushNamed(context, '/contact-us'),
             ),
             const SizedBox(height: 16),
             _buildSettingItem(
               context,
-              'Delete Account',
+              S.of(context).delete_account,
               onTap: () => Navigator.pushNamed(context, '/delete-account'),
             ),
           ],
@@ -64,7 +65,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingItem(BuildContext context, String title, {required VoidCallback onTap}) {
+  Widget _buildSettingItem(BuildContext context, String title,
+      {required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       child: Container(

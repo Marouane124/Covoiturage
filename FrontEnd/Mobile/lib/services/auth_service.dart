@@ -1,11 +1,36 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final Dio _dio = Dio();
-  final String baseUrl = 'http://192.168.1.161:8080/api';
+  final String baseUrl = 'http://192.168.1.5:8080/api';
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  Future<void> saveTokens(String accessToken, String refreshToken) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', accessToken);
+    await prefs.setString('refresh_token', refreshToken);
+  }
+
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
+  Future<String?> getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('refresh_token');
+  }
+
+  Future<bool> isLoggedIn() async {
+    final currentUser = _firebaseAuth.currentUser;
+    if (currentUser == null) return false;
+
+    final token = await getAccessToken();
+    return token != null;
+  }
 
   Future<bool> signup({
     required String username,
@@ -62,6 +87,14 @@ class AuthService {
         print('==================\n');
 
         if (response.statusCode == 201 || response.statusCode == 200) {
+          // Save tokens if they're included in signup response
+          if (response.data['accessToken'] != null &&
+              response.data['refreshToken'] != null) {
+            await saveTokens(
+              response.data['accessToken'],
+              response.data['refreshToken'],
+            );
+          }
           return true;
         }
 
@@ -121,7 +154,8 @@ class AuthService {
       print('==================\n');
 
       // First authenticate with Firebase
-      final UserCredential firebaseUser = await _firebaseAuth.signInWithEmailAndPassword(
+      final UserCredential firebaseUser =
+          await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -130,7 +164,7 @@ class AuthService {
       final response = await _dio.post(
         '$baseUrl/signin',
         data: {
-          'email': email,  
+          'email': email,
           'password': password,
         },
         options: Options(
@@ -146,6 +180,12 @@ class AuthService {
       print('==================\n');
 
       if (response.statusCode == 200) {
+        // Save token as access token (for now)
+        await saveTokens(
+          response.data['token'],
+          response.data['token'],
+        );
+
         return {
           'firebaseUser': firebaseUser.user,
           'apiResponse': response.data,
@@ -179,6 +219,9 @@ class AuthService {
 
   Future<void> signOut() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('access_token');
+      await prefs.remove('refresh_token');
       await _firebaseAuth.signOut();
     } catch (e) {
       print('Error signing out: $e');
@@ -190,7 +233,61 @@ class AuthService {
     return _firebaseAuth.currentUser;
   }
 
-  bool isLoggedIn() {
-    return _firebaseAuth.currentUser != null;
+  Dio getDioWithAuth() {
+    final dio = Dio();
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await getAccessToken();
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          return handler.next(options);
+        },
+        onError: (error, handler) async {
+          if (error.response?.statusCode == 401) {
+            try {
+              final newTokens = await refreshTokens();
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer ${newTokens['accessToken']}';
+              return handler.resolve(await dio.fetch(error.requestOptions));
+            } catch (e) {
+              await signOut();
+              // Navigate to login screen
+            }
+          }
+          return handler.next(error);
+        },
+      ),
+    );
+    return dio;
+  }
+
+  Future<Map<String, dynamic>> refreshTokens() async {
+    try {
+      final refreshToken = await getRefreshToken();
+      if (refreshToken == null) throw Exception('No refresh token found');
+
+      final response = await _dio.post(
+        '$baseUrl/auth/refresh',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $refreshToken',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        await saveTokens(
+          response.data['accessToken'],
+          response.data['refreshToken'],
+        );
+        return response.data;
+      }
+      throw Exception('Failed to refresh tokens');
+    } catch (e) {
+      await signOut();
+      throw Exception('Session expired. Please login again.');
+    }
   }
 }

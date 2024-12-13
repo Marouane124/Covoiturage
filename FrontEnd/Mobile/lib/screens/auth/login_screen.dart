@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/register_screen.dart';
 import 'package:map_flutter/screens/auth/welcome_screen.dart';
-import 'package:map_flutter/services/auth_service.dart'; 
+import 'package:map_flutter/services/auth_service.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
+import 'package:map_flutter/widgets/auth_wrapper.dart';
 import '../../generated/l10n.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -178,24 +179,22 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
-    
+    setState(() => _isLoading = true);
     try {
       final result = await _authService.login(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      
+
       if (mounted && result['firebaseUser'] != null) {
-        // Store the JWT token from backend if needed
-        final jwtToken = result['apiResponse']['accessToken'];
-        // You might want to store this token securely
-        
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MapScreen()),
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const AuthWrapper(
+              child: MapScreen(),
+              requireAuth: true,
+            ),
+          ),
+          (route) => false,
         );
       }
     } catch (e) {

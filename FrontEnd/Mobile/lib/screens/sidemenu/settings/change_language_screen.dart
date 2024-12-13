@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:map_flutter/providers/locale_provider.dart';
+import 'package:map_flutter/generated/l10n.dart';
 
 class ChangeLanguageScreen extends StatefulWidget {
   const ChangeLanguageScreen({super.key});
@@ -8,50 +11,65 @@ class ChangeLanguageScreen extends StatefulWidget {
 }
 
 class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
-  String _selectedLanguage = 'English';
+  late String _selectedLanguage;
 
-  final List<Map<String, dynamic>> languages = [
+  final List<Map<String, String>> languages = [
     {
       'name': 'English',
       'native': 'English',
       'flag': 'assets/flags/gb.png',
+      'code': 'en',
     },
     {
       'name': 'Arabic',
       'native': 'العربية',
       'flag': 'assets/flags/sa.png',
+      'code': 'ar',
     },
     {
       'name': 'Hindi',
       'native': 'हिन्दी',
       'flag': 'assets/flags/in.png',
+      'code': 'hi',
     },
     {
       'name': 'French',
       'native': 'Français',
       'flag': 'assets/flags/fr.png',
+      'code': 'fr',
     },
     {
       'name': 'German',
       'native': 'Deutsch',
       'flag': 'assets/flags/de.png',
+      'code': 'de',
     },
     {
       'name': 'Portuguese',
       'native': 'Português',
       'flag': 'assets/flags/pt.png',
+      'code': 'pt',
     },
     {
       'name': 'Turkish',
       'native': 'Türkçe',
       'flag': 'assets/flags/tr.png',
+      'code': 'tr',
     },
     {
       'name': 'Dutch',
       'native': 'Nederlands',
       'flag': 'assets/flags/nl.png',
+      'code': 'nl',
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedLanguage = Provider.of<LocaleProvider>(context, listen: false)
+        .getCurrentLanguageCode();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +82,9 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Change Language',
-          style: TextStyle(
+        title: Text(
+          S.of(context).change_language,
+          style: const TextStyle(
             color: Color(0xFF2A2A2A),
             fontSize: 18,
             fontFamily: 'Poppins',
@@ -81,56 +99,39 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(15.0),
               child: Column(
-                children: languages.map((language) => 
-                  Column(
-                    children: [
-                      _buildLanguageItem(language),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ).toList(),
+                children: languages
+                    .map(
+                      (language) => Column(
+                        children: [
+                          _buildLanguageItem(language),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: _handleSave,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF008955),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget _buildLanguageItem(Map<String, dynamic> language) {
-    bool isSelected = language['name'] == _selectedLanguage;
-    
+  Widget _buildLanguageItem(Map<String, String> language) {
+    bool isSelected = _selectedLanguage == language['code'];
+
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         setState(() {
-          _selectedLanguage = language['name']!;
+          _selectedLanguage = language['code']!;
         });
+        final provider = Provider.of<LocaleProvider>(context, listen: false);
+        await provider.setLocale(language['code']!);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(S.of(context).language_changed_success)),
+          );
+        }
       },
       child: Container(
         height: 64,
@@ -139,7 +140,9 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
           shape: RoundedRectangleBorder(
             side: BorderSide(
               width: 0.50,
-              color: isSelected ? const Color(0xFF08B783) : const Color(0xFFD0D0D0),
+              color: isSelected
+                  ? const Color(0xFF08B783)
+                  : const Color(0xFFD0D0D0),
             ),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -210,15 +213,5 @@ class _ChangeLanguageScreenState extends State<ChangeLanguageScreen> {
         ),
       ),
     );
-  }
-
-  void _handleSave() {
-    // Add your language change logic here
-    // You can access the selected language using _selectedLanguage
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Language changed to $_selectedLanguage')),
-    );
-    Navigator.pop(context);
   }
 }

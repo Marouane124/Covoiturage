@@ -355,10 +355,12 @@ class _MapScreenState extends State<MapScreen> {
             ),
             // Champ From
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: TextField(
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.my_location_outlined, color: Colors.grey[400]),
+                  prefixIcon:
+                      Icon(Icons.my_location_outlined, color: Colors.grey[400]),
                   hintText: 'From',
                   hintStyle: TextStyle(
                     color: Colors.grey[400],
@@ -377,7 +379,8 @@ class _MapScreenState extends State<MapScreen> {
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: Colors.grey[400]!),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
                 onSubmitted: (value) {
                   if (value.isNotEmpty) {
@@ -389,10 +392,12 @@ class _MapScreenState extends State<MapScreen> {
             ),
             // Champ To
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: TextField(
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.location_on_outlined, color: Colors.grey[400]),
+                  prefixIcon:
+                      Icon(Icons.location_on_outlined, color: Colors.grey[400]),
                   hintText: 'To',
                   hintStyle: TextStyle(
                     color: Colors.grey[400],
@@ -411,7 +416,8 @@ class _MapScreenState extends State<MapScreen> {
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: Colors.grey[400]!),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
                 onSubmitted: (value) {
                   if (value.isNotEmpty) {
@@ -675,8 +681,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
- 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -794,7 +798,7 @@ class _MapScreenState extends State<MapScreen> {
                     color: Colors.black,
                     onPressed: () {
                       setState(() {
-                        _isMenuOpen = !_isMenuOpen;  // Toggle the menu state
+                        _isMenuOpen = !_isMenuOpen; // Toggle the menu state
                       });
                     },
                   ),
@@ -868,4 +872,3 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-
