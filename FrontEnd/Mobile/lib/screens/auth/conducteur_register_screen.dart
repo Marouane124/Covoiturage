@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../generated/l10n.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/driver_service.dart';
 
 class ConducteurRegisterScreen extends StatefulWidget {
   const ConducteurRegisterScreen({super.key});
@@ -20,6 +24,8 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
   String? _licenseFrontImage;
   String? _licenseBackImage;
 
+  bool _isLoading = false;
+
   @override
   void dispose() {
     _licenseNumberController.dispose();
@@ -30,8 +36,21 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
   }
 
   void _pickImage(bool isFront) async {
-    // TODO: Implement image picking logic
-    // This is where you'd add image picker functionality
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80, // Compress image
+    );
+
+    if (image != null) {
+      setState(() {
+        if (isFront) {
+          _licenseFrontImage = image.path;
+        } else {
+          _licenseBackImage = image.path;
+        }
+      });
+    }
   }
 
   void _showLeaveDialog() {
@@ -153,6 +172,49 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
     );
   }
 
+  void _register() async {
+    if (_formKey.currentState!.validate()) {
+      if (_licenseFrontImage == null || _licenseBackImage == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(S.of(context).please_upload_license_images)),
+        );
+        return;
+      }
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final driverService = DriverService();
+        await driverService.registerDriver(
+          licenseNumber: _licenseNumberController.text,
+          vehicleModel: _vehicleModelController.text,
+          vehicleYear: _vehicleYearController.text,
+          plateNumber: _plateNumberController.text,
+          licenseFrontImage: File(_licenseFrontImage!),
+          licenseBackImage: File(_licenseBackImage!),
+        );
+
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/map');
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Registration failed: $e')),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,14 +274,23 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.add_photo_alternate, size: 40),
-                                const SizedBox(height: 8),
-                                Text(S.of(context).license_front),
-                              ],
-                            ),
+                            child: _licenseFrontImage != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.file(
+                                      File(_licenseFrontImage!),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.add_photo_alternate,
+                                          size: 40),
+                                      const SizedBox(height: 8),
+                                      Text(S.of(context).license_front),
+                                    ],
+                                  ),
                           ),
                         ),
                       ),
@@ -233,14 +304,23 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.add_photo_alternate, size: 40),
-                                const SizedBox(height: 8),
-                                Text(S.of(context).license_back),
-                              ],
-                            ),
+                            child: _licenseBackImage != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.file(
+                                      File(_licenseBackImage!),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.add_photo_alternate,
+                                          size: 40),
+                                      const SizedBox(height: 8),
+                                      Text(S.of(context).license_back),
+                                    ],
+                                  ),
                           ),
                         ),
                       ),
@@ -291,12 +371,7 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
 
                   // Submit Button
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // TODO: Implement registration logic
-                        Navigator.pushReplacementNamed(context, '/map');
-                      }
-                    },
+                    onPressed: _isLoading ? null : _register,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                       backgroundColor: const Color(0xFF008955),
@@ -304,14 +379,23 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text(
-                      S.of(context).register.toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            S.of(context).register.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ],
               ),

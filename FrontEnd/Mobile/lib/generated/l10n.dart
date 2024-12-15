@@ -1129,6 +1129,256 @@ class S {
       args: [],
     );
   }
+
+  /// `Please upload both front and back license images`
+  String get please_upload_license_images {
+    return Intl.message(
+      'Please upload both front and back license images',
+      name: 'please_upload_license_images',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get settings_title {
+    return Intl.message(
+      'Settings',
+      name: 'settings_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account Settings`
+  String get account_settings {
+    return Intl.message(
+      'Account Settings',
+      name: 'account_settings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Password`
+  String get change_password {
+    return Intl.message(
+      'Change Password',
+      name: 'change_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Language`
+  String get change_language {
+    return Intl.message(
+      'Change Language',
+      name: 'change_language',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `App Settings`
+  String get app_settings {
+    return Intl.message(
+      'App Settings',
+      name: 'app_settings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notifications`
+  String get notifications_settings {
+    return Intl.message(
+      'Notifications',
+      name: 'notifications_settings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dark Mode`
+  String get dark_mode {
+    return Intl.message(
+      'Dark Mode',
+      name: 'dark_mode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Help & Support`
+  String get help_support {
+    return Intl.message(
+      'Help & Support',
+      name: 'help_support',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy Policy`
+  String get privacy_policy {
+    return Intl.message(
+      'Privacy Policy',
+      name: 'privacy_policy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Terms & Conditions`
+  String get terms_conditions {
+    return Intl.message(
+      'Terms & Conditions',
+      name: 'terms_conditions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact Us`
+  String get contact_us {
+    return Intl.message(
+      'Contact Us',
+      name: 'contact_us',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About Us`
+  String get about_us {
+    return Intl.message(
+      'About Us',
+      name: 'about_us',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Account`
+  String get delete_account {
+    return Intl.message(
+      'Delete Account',
+      name: 'delete_account',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete your account?`
+  String get delete_account_confirmation {
+    return Intl.message(
+      'Are you sure you want to delete your account?',
+      name: 'delete_account_confirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This action cannot be undone`
+  String get delete_account_warning {
+    return Intl.message(
+      'This action cannot be undone',
+      name: 'delete_account_warning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes, Delete`
+  String get yes_delete {
+    return Intl.message(
+      'Yes, Delete',
+      name: 'yes_delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current Password`
+  String get current_password {
+    return Intl.message(
+      'Current Password',
+      name: 'current_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New Password`
+  String get new_password {
+    return Intl.message(
+      'New Password',
+      name: 'new_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm New Password`
+  String get confirm_new_password {
+    return Intl.message(
+      'Confirm New Password',
+      name: 'confirm_new_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must be at least 8 characters`
+  String get password_requirements {
+    return Intl.message(
+      'Password must be at least 8 characters',
+      name: 'password_requirements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passwords do not match`
+  String get passwords_not_match {
+    return Intl.message(
+      'Passwords do not match',
+      name: 'passwords_not_match',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password changed successfully`
+  String get password_changed_success {
+    return Intl.message(
+      'Password changed successfully',
+      name: 'password_changed_success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Language`
+  String get select_language {
+    return Intl.message(
+      'Select Language',
+      name: 'select_language',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Language changed successfully`
+  String get language_changed_success {
+    return Intl.message(
+      'Language changed successfully',
+      name: 'language_changed_success',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

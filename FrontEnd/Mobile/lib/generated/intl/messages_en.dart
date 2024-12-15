@@ -22,6 +22,10 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "about_us": MessageLookupByLibrary.simpleMessage("About Us"),
+        "account_settings":
+            MessageLookupByLibrary.simpleMessage("Account Settings"),
+        "app_settings": MessageLookupByLibrary.simpleMessage("App Settings"),
         "automatic": MessageLookupByLibrary.simpleMessage("Automatic"),
         "available_cars_for_ride":
             MessageLookupByLibrary.simpleMessage("Available cars for ride"),
@@ -40,17 +44,33 @@ class MessageLookup extends MessageLookupByLibrary {
         "car_features": MessageLookupByLibrary.simpleMessage("Car features"),
         "cars_found": MessageLookupByLibrary.simpleMessage("cars found"),
         "cash": MessageLookupByLibrary.simpleMessage("Cash"),
+        "change_language":
+            MessageLookupByLibrary.simpleMessage("Change Language"),
+        "change_password":
+            MessageLookupByLibrary.simpleMessage("Change Password"),
         "charge": MessageLookupByLibrary.simpleMessage("Charge"),
         "color": MessageLookupByLibrary.simpleMessage("Color"),
         "confirm_booking":
             MessageLookupByLibrary.simpleMessage("Confirm Booking"),
+        "confirm_new_password":
+            MessageLookupByLibrary.simpleMessage("Confirm New Password"),
         "confirm_ride": MessageLookupByLibrary.simpleMessage("Confirm Ride"),
+        "contact_us": MessageLookupByLibrary.simpleMessage("Contact Us"),
         "continue_registration":
             MessageLookupByLibrary.simpleMessage("Continue Registration"),
         "current_location":
             MessageLookupByLibrary.simpleMessage("Current location"),
+        "current_password":
+            MessageLookupByLibrary.simpleMessage("Current Password"),
         "cycle": MessageLookupByLibrary.simpleMessage("Cycle"),
+        "dark_mode": MessageLookupByLibrary.simpleMessage("Dark Mode"),
         "date": MessageLookupByLibrary.simpleMessage("Date"),
+        "delete_account":
+            MessageLookupByLibrary.simpleMessage("Delete Account"),
+        "delete_account_confirmation": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to delete your account?"),
+        "delete_account_warning": MessageLookupByLibrary.simpleMessage(
+            "This action cannot be undone"),
         "didnt_receive_code":
             MessageLookupByLibrary.simpleMessage("Didn\'t receive code?"),
         "driver_registration":
@@ -74,9 +94,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "gear_type": MessageLookupByLibrary.simpleMessage("Gear type"),
         "gender_female": MessageLookupByLibrary.simpleMessage("Female"),
         "gender_male": MessageLookupByLibrary.simpleMessage("Male"),
+        "help_support": MessageLookupByLibrary.simpleMessage("Help & Support"),
         "invalid_year":
             MessageLookupByLibrary.simpleMessage("Please enter a valid year"),
         "km_away": MessageLookupByLibrary.simpleMessage("km away"),
+        "language_changed_success": MessageLookupByLibrary.simpleMessage(
+            "Language changed successfully"),
         "leave_page": MessageLookupByLibrary.simpleMessage("Leave Page"),
         "leave_registration_message": MessageLookupByLibrary.simpleMessage(
             "If you leave now, all entered information will be lost. Are you sure you want to leave?"),
@@ -119,12 +142,25 @@ class MessageLookup extends MessageLookupByLibrary {
         "max_speed": MessageLookupByLibrary.simpleMessage("Max speed"),
         "model": MessageLookupByLibrary.simpleMessage("Model"),
         "mustang": MessageLookupByLibrary.simpleMessage("Mustang"),
+        "new_password": MessageLookupByLibrary.simpleMessage("New Password"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
+        "notifications_settings":
+            MessageLookupByLibrary.simpleMessage("Notifications"),
         "octane": MessageLookupByLibrary.simpleMessage("Octane"),
         "office": MessageLookupByLibrary.simpleMessage("Office"),
+        "password_changed_success": MessageLookupByLibrary.simpleMessage(
+            "Password changed successfully"),
+        "password_requirements": MessageLookupByLibrary.simpleMessage(
+            "Password must be at least 8 characters"),
+        "passwords_not_match":
+            MessageLookupByLibrary.simpleMessage("Passwords do not match"),
         "per_100_km": MessageLookupByLibrary.simpleMessage("9L/100km"),
         "phone_verification":
             MessageLookupByLibrary.simpleMessage("Phone verification"),
+        "please_upload_license_images": MessageLookupByLibrary.simpleMessage(
+            "Please upload both front and back license images"),
+        "privacy_policy":
+            MessageLookupByLibrary.simpleMessage("Privacy Policy"),
         "red": MessageLookupByLibrary.simpleMessage("Red"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),
         "register_screen_city": MessageLookupByLibrary.simpleMessage("City"),
@@ -161,15 +197,20 @@ class MessageLookup extends MessageLookupByLibrary {
         "reviews": MessageLookupByLibrary.simpleMessage("reviews"),
         "ride_now": MessageLookupByLibrary.simpleMessage("Ride Now"),
         "seats": MessageLookupByLibrary.simpleMessage("seats"),
+        "select_language":
+            MessageLookupByLibrary.simpleMessage("Select Language"),
         "select_payment_method":
             MessageLookupByLibrary.simpleMessage("Select payment method"),
         "select_transport":
             MessageLookupByLibrary.simpleMessage("Select transport"),
         "select_your_transport":
             MessageLookupByLibrary.simpleMessage("Select your transport"),
+        "settings_title": MessageLookupByLibrary.simpleMessage("Settings"),
         "specifications":
             MessageLookupByLibrary.simpleMessage("Specifications"),
         "taxi": MessageLookupByLibrary.simpleMessage("Taxi"),
+        "terms_conditions":
+            MessageLookupByLibrary.simpleMessage("Terms & Conditions"),
         "thank_you": MessageLookupByLibrary.simpleMessage("Thank you"),
         "time": MessageLookupByLibrary.simpleMessage("Time"),
         "vat": MessageLookupByLibrary.simpleMessage("VAT tax"),
@@ -184,6 +225,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "welcome_screen_signIn": MessageLookupByLibrary.simpleMessage("Log In"),
         "welcome_screen_signUp":
             MessageLookupByLibrary.simpleMessage("Create an account"),
-        "welcome_screen_title": MessageLookupByLibrary.simpleMessage("Welcome")
+        "welcome_screen_title": MessageLookupByLibrary.simpleMessage("Welcome"),
+        "yes_delete": MessageLookupByLibrary.simpleMessage("Yes, Delete")
       };
 }

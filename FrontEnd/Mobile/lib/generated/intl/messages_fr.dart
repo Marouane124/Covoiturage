@@ -22,6 +22,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "about_us": MessageLookupByLibrary.simpleMessage("À propos de nous"),
+        "account_settings":
+            MessageLookupByLibrary.simpleMessage("Paramètres du compte"),
+        "app_settings": MessageLookupByLibrary.simpleMessage(
+            "Paramètres de l\'application"),
         "automatic": MessageLookupByLibrary.simpleMessage("Automatique"),
         "available_cars_for_ride":
             MessageLookupByLibrary.simpleMessage("Voitures disponibles"),
@@ -42,18 +47,34 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Caractéristiques"),
         "cars_found": MessageLookupByLibrary.simpleMessage("voitures trouvées"),
         "cash": MessageLookupByLibrary.simpleMessage("Espèces"),
+        "change_language":
+            MessageLookupByLibrary.simpleMessage("Changer la langue"),
+        "change_password":
+            MessageLookupByLibrary.simpleMessage("Changer le mot de passe"),
         "charge": MessageLookupByLibrary.simpleMessage("Tarif"),
         "color": MessageLookupByLibrary.simpleMessage("Couleur"),
         "confirm_booking":
             MessageLookupByLibrary.simpleMessage("Confirmer la réservation"),
+        "confirm_new_password": MessageLookupByLibrary.simpleMessage(
+            "Confirmer le nouveau mot de passe"),
         "confirm_ride":
             MessageLookupByLibrary.simpleMessage("Confirmer le trajet"),
+        "contact_us": MessageLookupByLibrary.simpleMessage("Nous contacter"),
         "continue_registration":
             MessageLookupByLibrary.simpleMessage("Continuer l\'inscription"),
         "current_location":
             MessageLookupByLibrary.simpleMessage("Position actuelle"),
+        "current_password":
+            MessageLookupByLibrary.simpleMessage("Mot de passe actuel"),
         "cycle": MessageLookupByLibrary.simpleMessage("Vélo"),
+        "dark_mode": MessageLookupByLibrary.simpleMessage("Mode sombre"),
         "date": MessageLookupByLibrary.simpleMessage("Date"),
+        "delete_account":
+            MessageLookupByLibrary.simpleMessage("Supprimer le compte"),
+        "delete_account_confirmation": MessageLookupByLibrary.simpleMessage(
+            "Êtes-vous sûr de vouloir supprimer votre compte ?"),
+        "delete_account_warning": MessageLookupByLibrary.simpleMessage(
+            "Cette action ne peut pas être annulée"),
         "didnt_receive_code": MessageLookupByLibrary.simpleMessage(
             "Vous n\'avez pas reçu le code ?"),
         "driver_registration":
@@ -77,9 +98,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "gear_type": MessageLookupByLibrary.simpleMessage("Type de boîte"),
         "gender_female": MessageLookupByLibrary.simpleMessage("Femme"),
         "gender_male": MessageLookupByLibrary.simpleMessage("Homme"),
+        "help_support": MessageLookupByLibrary.simpleMessage("Aide & Support"),
         "invalid_year": MessageLookupByLibrary.simpleMessage(
             "Veuillez entrer une année valide"),
         "km_away": MessageLookupByLibrary.simpleMessage("km de distance"),
+        "language_changed_success":
+            MessageLookupByLibrary.simpleMessage("Langue changée avec succès"),
         "leave_page": MessageLookupByLibrary.simpleMessage("Quitter la page"),
         "leave_registration_message": MessageLookupByLibrary.simpleMessage(
             "Si vous quittez maintenant, toutes les informations saisies seront perdues. Êtes-vous sûr de vouloir quitter ?"),
@@ -124,12 +148,26 @@ class MessageLookup extends MessageLookupByLibrary {
         "max_speed": MessageLookupByLibrary.simpleMessage("Vitesse max"),
         "model": MessageLookupByLibrary.simpleMessage("Modèle"),
         "mustang": MessageLookupByLibrary.simpleMessage("Mustang"),
+        "new_password":
+            MessageLookupByLibrary.simpleMessage("Nouveau mot de passe"),
         "no": MessageLookupByLibrary.simpleMessage("Non"),
+        "notifications_settings":
+            MessageLookupByLibrary.simpleMessage("Notifications"),
         "octane": MessageLookupByLibrary.simpleMessage("Octane"),
         "office": MessageLookupByLibrary.simpleMessage("Bureau"),
+        "password_changed_success": MessageLookupByLibrary.simpleMessage(
+            "Mot de passe changé avec succès"),
+        "password_requirements": MessageLookupByLibrary.simpleMessage(
+            "Le mot de passe doit contenir au moins 8 caractères"),
+        "passwords_not_match": MessageLookupByLibrary.simpleMessage(
+            "Les mots de passe ne correspondent pas"),
         "per_100_km": MessageLookupByLibrary.simpleMessage("9L/100km"),
         "phone_verification":
             MessageLookupByLibrary.simpleMessage("Vérification du téléphone"),
+        "please_upload_license_images": MessageLookupByLibrary.simpleMessage(
+            "Veuillez télécharger les images recto et verso du permis"),
+        "privacy_policy": MessageLookupByLibrary.simpleMessage(
+            "Politique de confidentialité"),
         "red": MessageLookupByLibrary.simpleMessage("Rouge"),
         "register": MessageLookupByLibrary.simpleMessage("S\'inscrire"),
         "register_screen_city": MessageLookupByLibrary.simpleMessage("Ville"),
@@ -166,15 +204,20 @@ class MessageLookup extends MessageLookupByLibrary {
         "reviews": MessageLookupByLibrary.simpleMessage("avis"),
         "ride_now": MessageLookupByLibrary.simpleMessage("Réserver maintenant"),
         "seats": MessageLookupByLibrary.simpleMessage("sièges"),
+        "select_language":
+            MessageLookupByLibrary.simpleMessage("Sélectionner la langue"),
         "select_payment_method": MessageLookupByLibrary.simpleMessage(
             "Sélectionner le mode de paiement"),
         "select_transport":
             MessageLookupByLibrary.simpleMessage("Sélectionner le transport"),
         "select_your_transport": MessageLookupByLibrary.simpleMessage(
             "Sélectionnez votre transport"),
+        "settings_title": MessageLookupByLibrary.simpleMessage("Paramètres"),
         "specifications":
             MessageLookupByLibrary.simpleMessage("Spécifications"),
         "taxi": MessageLookupByLibrary.simpleMessage("Taxi"),
+        "terms_conditions":
+            MessageLookupByLibrary.simpleMessage("Conditions générales"),
         "thank_you": MessageLookupByLibrary.simpleMessage("Merci"),
         "time": MessageLookupByLibrary.simpleMessage("Heure"),
         "vat": MessageLookupByLibrary.simpleMessage("TVA"),
@@ -193,6 +236,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "welcome_screen_signUp":
             MessageLookupByLibrary.simpleMessage("Créer un compte"),
         "welcome_screen_title":
-            MessageLookupByLibrary.simpleMessage("Bienvenue")
+            MessageLookupByLibrary.simpleMessage("Bienvenue"),
+        "yes_delete": MessageLookupByLibrary.simpleMessage("Oui, supprimer")
       };
 }

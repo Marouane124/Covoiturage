@@ -50,7 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {
         _isLoading = true;
       });
-      
+
       try {
         final success = await _authService.signup(
           username: _usernameController.text,
@@ -60,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           gender: _selectedGender ?? 'M',
           city: _cityController.text,
         );
-        
+
         if (mounted && success) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -68,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -131,6 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // Name Field with controller
                   TextField(
                     controller: _usernameController,
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_name,
                       border: OutlineInputBorder(
@@ -144,6 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // Email Field with controller
                   TextField(
                     controller: _emailController,
+                    style: const TextStyle(color: Colors.black),
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_email,
@@ -158,6 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // Password Field with controller and visibility toggle
                   TextField(
                     controller: _passwordController,
+                    style: const TextStyle(color: Colors.black),
                     obscureText: _obscureText,
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_password,
@@ -184,6 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // Phone Number Field with controller
                   TextField(
                     controller: _phoneController,
+                    style: const TextStyle(color: Colors.black),
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_phone,
@@ -232,6 +236,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // City Field with controller
                   TextField(
                     controller: _cityController,
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       labelText: S.of(context).register_screen_city,
                       border: OutlineInputBorder(

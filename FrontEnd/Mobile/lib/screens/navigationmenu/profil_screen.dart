@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
-import 'package:map_flutter/screens/navigationmenu/favorite.dart';
+import 'package:map_flutter/services/user_service.dart';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
+import 'map_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:map_flutter/screens/auth/welcome_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -11,219 +13,347 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _selectedGender = 'Male';
+  final UserService _userService = UserService();
+  Map<String, dynamic>? _userProfile;
+  bool _isLoading = true;
+  final TextEditingController _phoneController = TextEditingController();
+  String _selectedGender = 'Homme';
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF8AD4B5),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: const Icon(Icons.arrow_back, color: Colors.black),
-          ),
-          onPressed: () => Navigator.pop(context),
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Widget _buildFieldTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Color(0xFF5A5A5A),
+          fontSize: 16,
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.w500,
         ),
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            color: Color(0xFF2A2A2A),
-            fontSize: 18,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String title,
+    required String value,
+    bool enabled = false,
+    TextEditingController? controller,
+    TextInputType? keyboardType,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildFieldTitle(title),
+        TextField(
+          controller: controller,
+          enabled: enabled,
+          keyboardType: keyboardType,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 16,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w500,
           ),
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFFB8B8B8)),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFFB8B8B8)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF08B783)),
+            ),
+            contentPadding: const EdgeInsets.all(20),
+            hintText: value,
+            hintStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              // Profile Image
-              Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Container(
-                    width: 138,
-                    height: 138,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF08B783), width: 1),
-                      image: const DecorationImage(
-                        image: NetworkImage("https://via.placeholder.com/138x138"),
-                        fit: BoxFit.cover,
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await _userService.getCurrentUserProfile();
+      setState(() {
+        _userProfile = profile;
+        _phoneController.text = profile['phone'] ?? '';
+        _selectedGender = profile['gender'] ?? 'Homme';
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load profile: $e')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isConductor = _userProfile?['role'] == 'conducteur';
+
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const MapScreen()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF8AD4B5),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Icon(Icons.arrow_back, color: Colors.black),
+            ),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const MapScreen()),
+              );
+            },
+          ),
+          title: const Text(
+            'Profile',
+            style: TextStyle(
+              color: Color(0xFF2A2A2A),
+              fontSize: 18,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                // Profile Image
+                Center(
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Container(
+                        width: 138,
+                        height: 138,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: const Color(0xFF08B783), width: 1),
+                          color: const Color(0xFFE2F5ED),
+                        ),
+                        child: _userProfile?['photoUrl'] != null
+                            ? ClipOval(
+                                child: Image.network(
+                                  _userProfile!['photoUrl'],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.person,
+                                      size: 80,
+                                      color: Color(0xFF08B783),
+                                    );
+                                  },
+                                ),
+                              )
+                            : const Icon(
+                                Icons.person,
+                                size: 80,
+                                color: Color(0xFF08B783),
+                              ),
                       ),
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE2F5ED),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: const Color(0xFF08B783), width: 1),
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          size: 12,
+                          color: Color(0xFF08B783),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Username
+                Center(
+                  child: Text(
+                    _userProfile?['username'] ?? 'Loading...',
+                    style: const TextStyle(
+                      color: Color(0xFF5A5A5A),
+                      fontSize: 28,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE2F5ED),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF08B783), width: 1),
+                ),
+                const SizedBox(height: 24),
+                // Basic Info Fields
+                _buildTextField(
+                  title: 'Email',
+                  value: _userProfile?['email'] ?? 'Loading...',
+                ),
+                _buildTextField(
+                  title: 'Phone',
+                  value: _userProfile?['phone'] ?? 'Enter your phone number',
+                  enabled: true,
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                ),
+                // Gender Selection
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildFieldTitle('Gender'),
+                    DropdownButtonFormField<String>(
+                      value: _selectedGender,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFB8B8B8)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFF08B783)),
+                        ),
+                        contentPadding: const EdgeInsets.all(20),
+                      ),
+                      items: ['Homme', 'Femme'].map((String gender) {
+                        return DropdownMenuItem<String>(
+                          value: gender,
+                          child: Text(gender),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedGender = newValue!;
+                        });
+                      },
                     ),
-                    child: const Icon(
-                      Icons.edit,
-                      size: 12,
-                      color: Color(0xFF08B783),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  title: 'City',
+                  value: _userProfile?['city'] ?? 'Enter your city',
+                  enabled: true,
+                ),
+                // Conductor-specific fields
+                if (isConductor) ...[
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Vehicle Information',
+                    style: TextStyle(
+                      color: Color(0xFF2A2A2A),
+                      fontSize: 20,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTextField(
+                    title: 'Vehicle Model',
+                    value: _userProfile?['vehicleModel'] ?? '',
+                    enabled: true,
+                  ),
+                  _buildTextField(
+                    title: 'License Number',
+                    value: _userProfile?['licenseNumber'] ?? '',
+                    enabled: true,
+                  ),
+                  _buildTextField(
+                    title: 'Vehicle Type',
+                    value: _userProfile?['vehicleType'] ?? '',
+                    enabled: true,
                   ),
                 ],
-              ),
-              const SizedBox(height: 24),
-              // Name
-              const Text(
-                'Nate Samson',
-                style: TextStyle(
-                  color: Color(0xFF5A5A5A),
-                  fontSize: 28,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Email Field
-              TextField(
-                enabled: false,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFB8B8B8)),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFB8B8B8)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF08B783)),
-                  ),
-                  contentPadding: const EdgeInsets.all(20),
-                  hintText: 'nate@email.com',
-                  hintStyle: const TextStyle(
-                    color: Color(0xFF414141),
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Phone Field
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFB8B8B8)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF08B783)),
-                  ),
-                  contentPadding: const EdgeInsets.all(20),
-                  hintText: 'Your mobile number',
-                  prefixText: '+880 ',
-                  prefixStyle: const TextStyle(
-                    color: Color(0xFF262626),
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Gender Field
-              DropdownButtonFormField<String>(
-                value: _selectedGender,
-                dropdownColor: Colors.white,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFB8B8B8)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF08B783)),
-                  ),
-                  contentPadding: const EdgeInsets.all(20),
-                ),
-                items: ['Male', 'Female'].map((String gender) {
-                  return DropdownMenuItem<String>(
-                    value: gender,
-                    child: Text(
-                      gender,
-                      style: const TextStyle(
-                        color: Color(0xFF5A5A5A),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      if (mounted) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const WelcomeScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF08B783),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.white,
                         fontSize: 16,
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedGender = newValue!;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              // Address Field
-              TextField(
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFB8B8B8)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF08B783)),
-                  ),
-                  contentPadding: const EdgeInsets.all(20),
-                  hintText: 'Address',
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Logout Button
-              OutlinedButton(
-                onPressed: () {
-                  // Add logout logic here
-                },
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 54),
-                  side: const BorderSide(color: Color(0xFF008955)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Logout',
-                  style: TextStyle(
-                    color: Color(0xFF008955),
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
+        bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 4),
       ),
-      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 4),
     );
   }
 }
