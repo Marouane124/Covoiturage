@@ -10,11 +10,12 @@
             <label for="password">Mot de passe</label>
             <input type="password" id="password" name="password" [(ngModel)]="password" required>
             
-            <button type="submit">Se connecter</button>
+            <button type="submit" [disabled]="loading">Se connecter</button>
+            <span *ngIf="loading">Chargement...</span>
         </form>
         <div class="links">
             <p><a routerLink="/forgot-password">Mot de passe oublié ?</a></p>
-            <p>Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
+            <p>Pas encore de compte ? <a routerLink="/signup">S'inscrire</a></p>
         </div>
     </div>
 </div>

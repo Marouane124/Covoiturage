@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 //import { Icons } from '../shared/icons';
 
 @Component({
@@ -13,16 +14,19 @@ import { RouterModule } from '@angular/router';
 })
 export class SignupComponent implements OnInit, AfterViewInit {
   loading = false;
+  errorMessage: string = ''; 
   //googleIcon: string;
   user = {
     name: '',
     email: '',
     password: ''
   };
+  constructor(private authService: AuthService) {}
 
-  constructor() {
-   // this.googleIcon = Icons.google({ width: 24, height: 24 });
-  }
+
+  // constructor() {
+  //  // this.googleIcon = Icons.google({ width: 24, height: 24 });
+  // }
 
   ngOnInit(): void {}
 
@@ -30,17 +34,22 @@ export class SignupComponent implements OnInit, AfterViewInit {
     this.initStarfield();
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.loading) return;
-    
-    this.loading = true;
-    // Ajoutez ici votre logique d'inscription
-    console.log('Form submitted:', this.user);
-    setTimeout(() => this.loading = false, 1500); // Simulation
+     this.loading = true;
+    this.errorMessage = ''; // Réinitialiser le message d'erreur
+    try {
+      await this.authService.signUp(this.user.email, this.user.password);
+      console.log('Inscription réussie:', this.user);
+      // Redirigez l'utilisateur ou affichez un message de succès ici
+    } catch (error: any) {
+      console.error('Erreur lors de l\'inscription:', error);
+      this.errorMessage = (error as Error).message || 'Erreur lors de l\'inscription'; // Gérer l'erreur
+    } finally {
+      this.loading = false;
+    }
   }
-
-  signInWithGoogle() {
-    // Ajoutez ici votre logique de connexion Google
+   signInWithGoogle() {
     console.log('Google sign-in clicked');
   }
 

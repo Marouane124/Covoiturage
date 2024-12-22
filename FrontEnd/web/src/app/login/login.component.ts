@@ -1,11 +1,17 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    FormsModule, 
+    RouterModule
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -14,24 +20,45 @@ export class LoginComponent implements OnInit, AfterViewInit {
   password: string = '';
   loading: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
+  ngAfterViewInit(): void {
+    this.initStarfield();
+
+    throw new Error('Method not implemented.');
+  }
 
   ngOnInit() {}
 
-  onSubmit() {
+//  onSubmit() {
+//     this.loading = true;
+//     try {
+//        this.authService.signIn(this.email, this.password);
+//       this.router.navigate(['/dashboard']);
+//     } catch (error: any) {
+//       console.error('Code d\'erreur:', error.code);
+//       console.error('Message d\'erreur:', error.message);
+//       // Gestion des erreurs
+//     } finally {
+//       this.loading = false;
+//     }
+//   }
+  async onSubmit() {
     this.loading = true;
-    // Simuler une connexion (à remplacer par votre vraie logique d'auth)
-    setTimeout(() => {
-      this.loading = false;
-      // Redirection vers le dashboard
+    try {
+      await this.authService.signIn(this.email, this.password);
       this.router.navigate(['/dashboard']);
-    }, 1500);
+    } catch (error: any) {
+      console.error('Code d\'erreur:', error.code);
+      console.error('Message d\'erreur:', error.message);
+      // Gestion des erreurs
+    } finally {
+      this.loading = false;
+    }
   }
-
-  ngAfterViewInit() {
-    this.initStarfield();
-  }
-
+  
   initStarfield() {
     const canvas = document.getElementById('starfield') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d')!;
@@ -109,4 +136,5 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     animate();
   }
+
 }
