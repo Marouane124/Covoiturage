@@ -1,0 +1,217 @@
+.navbar {
+  background: linear-gradient(to right, #45a049, #4CAF50);
+  padding: 0.8rem 1rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  height: 70px;
+}
+
+.navbar.scrolled {
+  padding: 0.5rem 1rem;
+  background: rgba(76, 175, 80, 0.95);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.navbar-brand img {
+  height: 40px;
+  width: auto;
+  transition: transform 0.3s ease;
+  margin-right: 8px;
+}
+
+.navbar-brand:hover img {
+  transform: scale(1.05);
+}
+
+.nav-link {
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  margin: 0 3px;
+}
+
+.nav-link i {
+  margin-right: 5px;
+}
+
+.nav-link:hover {
+  background-color: rgba(255,255,255,0.15);
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  background-color: rgba(255,255,255,0.2);
+  font-weight: 500;
+}
+
+.search-box input {
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 6px 15px;
+  width: 180px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.4);
+  background-color: rgba(255,255,255,0.15);
+}
+
+.search-box input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light {
+  border-width: 2px;
+}
+
+.btn-outline-light:hover {
+  background-color: rgba(255,255,255,0.15);
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  box-shadow: none;
+  border-radius: 20px;
+  padding: 6px 20px;
+}
+
+.btn-primary:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: translateY(-1px);
+  border-color: white;
+  box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+  .navbar {
+    padding: 0.6rem 1rem;
+  }
+
+  .navbar-collapse {
+    background: rgba(30, 60, 114, 0.97);
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .navbar-collapse.show {
+    display: block;
+  }
+
+  .navbar-nav {
+    padding: 10px 0;
+  }
+
+  .nav-item {
+    margin: 5px 0;
+  }
+
+  .nav-link {
+    padding: 0.8rem 1rem;
+    margin: 2px 0;
+  }
+
+  .d-flex {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .search-box {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .search-box input {
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 8px 20px;
+  }
+}
+
+.navbar-logo {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover .navbar-logo {
+  transform: scale(1.05);
+}
+
+/* Ajustement pour les écrans mobiles */
+@media (max-width: 768px) {
+  .navbar-logo {
+    height: 35px;
+  }
+}
+
+/* Style pour les liens actifs */
+.nav-link.active {
+  color: #4CAF50 !important;
+  font-weight: 600;
+  position: relative;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #4CAF50;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+/* Style pour les boutons actifs */
+.active-btn {
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5) !important;
+  transform: translateY(-1px);
+}
+
+/* Animation pour la barre sous le lien actif */
+@keyframes slideIn {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

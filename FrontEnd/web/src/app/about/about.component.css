@@ -1,0 +1,158 @@
+.about-container {
+  padding: 80px 20px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.about-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.content-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.info-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.icon {
+  font-size: 2.5rem;
+  color: #4CAF50;
+  margin-bottom: 20px;
+}
+
+.info-card h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.info-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 60px 0;
+  background: #4CAF50;
+  padding: 40px;
+  border-radius: 10px;
+  color: white;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20px;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+}
+
+.team-section {
+  margin: 60px 0;
+  text-align: center;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.team-member {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.member-avatar {
+  width: 100px;
+  height: 100px;
+  background: #4CAF50;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.member-avatar i {
+  font-size: 40px;
+  color: white;
+}
+
+.team-member h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.team-member p {
+  color: #666;
+}
+
+.contact-section {
+  text-align: center;
+  margin: 60px 0;
+}
+
+.contact-info {
+  margin-top: 30px;
+}
+
+.contact-info p {
+  margin: 15px 0;
+  color: #666;
+}
+
+.contact-info i {
+  color: #4CAF50;
+  margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+  .about-header h1 {
+    font-size: 2rem;
+  }
+
+  .stats-section {
+    padding: 20px;
+  }
+
+  .stat-item {
+    width: 100%;
+    margin: 10px 0;
+  }
+}

@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" *ngIf="showNavbar">
+  <div class="container-fluid px-4">
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" routerLink="/">
+           <img src="data:image/png;base64,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" alt="Logo" height="40" class="me-2"> 
+
+     <!-- <img src="/src/assets/image/logo.png" alt="Logo" height="40" class="me-2"> -->
+      <span>Covoiturage</span>
+    </a>
+
+    <!-- Bouton hamburger pour mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Menu principal -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Liens de navigation -->
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <i class="fas fa-home me-1"></i> Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/map" routerLinkActive="active">
+            <i class="fas fa-map-marked-alt me-1"></i> Map
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">
+            <i class="fas fa-info-circle me-1"></i> About
+          </a>
+        </li>
+      </ul>
+
+      <!-- Boutons de droite -->
+      <div class="d-flex align-items-center">
+        <div class="search-box me-3 d-none d-lg-block">
+          <input type="text" class="form-control form-control-sm" placeholder="Search...">
+        </div>
+        <button class="btn btn-outline-light btn-sm me-2" routerLink="/login" routerLinkActive="active-btn">
+          <i class="fas fa-sign-in-alt me-1"></i> Login
+        </button>
+        <button class="btn btn-primary btn-sm" routerLink="/signup" routerLinkActive="active-btn">
+          <i class="fas fa-user-plus me-1"></i> Sign Up
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+

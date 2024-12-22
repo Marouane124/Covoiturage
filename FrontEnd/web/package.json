@@ -22,6 +22,8 @@
     "@angular/router": "^18.2.0",
     "@angular/ssr": "^18.2.11",
     "@mapbox/mapbox-sdk": "^0.16.1",
+    "@types/chart.js": "^2.9.41",
+    "chart.js": "^4.4.7",
     "express": "^4.18.2",
     "mapbox-gl": "^3.7.0",
     "rxjs": "~7.8.0",

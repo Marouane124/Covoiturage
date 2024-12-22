@@ -1,0 +1,535 @@
+<div class="dashboard-container">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Dashboard</h3>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
+
+        <li>
+          <a (click)="showStats()" [class.active]="showingStats">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+        </li>
+        <li>
+          <a (click)="showTrajets()" [class.active]="showingTrajets">
+            <i class="fas fa-car"></i> Mes trajets
+          </a>
+        </li>
+        <li>
+          <a (click)="showHistorique()" [class.active]="showingHistorique">
+            <i class="fas fa-history"></i> Historique
+          </a>
+        </li>
+        <li>
+          <a (click)="showProfile()" [class.active]="showingProfile">
+            <i class="fas fa-user"></i> Profil
+          </a>
+        </li>
+        <li>
+          <a (click)="showSettings()" [class.active]="showingSettings">
+            <i class="fas fa-cog"></i> Paramètres
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div> 
+  <div class="main-content"> <header>
+    <!--  <h1>Bienvenue sur votre tableau de bord</h1> -->  
+    </header>
+    <div *ngIf="showingStats">
+      <div class="stats-cards">
+        <div class="stat-card">
+          <i class="fas fa-route"></i>
+          <div class="stat-info">
+            <h3>Total Trajets</h3>
+            <p>125</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <div class="stat-info">
+            <h3>Passagers</h3>
+            <p>348</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-money-bill-wave"></i>
+          <div class="stat-info">
+            <h3>Économies</h3>
+            <p>520 €</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-leaf"></i>
+          <div class="stat-info">
+            <h3>CO2 Économisé</h3>
+            <p>234 kg</p>
+          </div>
+        </div>
+      </div>
+      <div class="charts-container">
+        <div class="chart-card">
+          <h3>Trajets par mois</h3>
+          <canvas #tripsChart id="tripsChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Répartition des trajets</h3>
+          <canvas #distributionChart id="distributionChart"></canvas>
+        </div>
+      </div>
+      <div class="recent-activity">
+        <h3>Activité récente</h3>
+        <div class="activity-list">
+          <div class="activity-item">
+            <i class="fas fa-car-side"></i>
+            <div class="activity-info">
+              <p>Trajet Paris - Lyon</p>
+              <span>Il y a 2 heures</span>
+            </div>
+          </div>
+          <div class="activity-item">
+            <i class="fas fa-user-plus"></i>
+            <div class="activity-info">
+              <p>Nouveau passager : Marie</p>
+              <span>Il y a 5 heures</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="showingTrajets">
+      <div class="trajets-container">
+        <div class="trajets-header">
+          <div class="search-bar">
+            <input type="text" placeholder="Ville de départ" class="search-input">
+            <input type="text" placeholder="Ville d'arrivée" class="search-input">
+            <input type="date" class="search-input">
+            <button class="search-button">Rechercher</button>
+            <button class="btn-add-trajet" (click)="openAddTrajetModal()">
+              <i class="fas fa-plus"></i> Ajouter un trajet
+            </button>
+          </div>
+        </div>
+
+        <div class="trajets-grid">
+          @for (trajet of trajets; track trajet.id) {
+            <div class="trajet-card">
+              <div class="trajet-header">
+                <div class="trajet-route">
+                  <h3>{{trajet.depart}} → {{trajet.arrivee}}</h3>
+                </div>
+                <div class="trajet-price">{{trajet.prix}}€</div>
+              </div>
+              
+              <div class="trajet-details">
+                <div class="detail-item">
+                  <i class="fas fa-calendar"></i>
+                  <span>{{trajet.date}}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-clock"></i>
+                  <span>{{trajet.heure}}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-user"></i>
+                  <span>{{trajet.conducteur}}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-car"></i>
+                  <span>{{trajet.voiture}}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-chair"></i>
+                  <span>{{trajet.places}} places</span>
+                </div>
+              </div>
+
+              <div class="trajet-actions">
+                <button class="btn-reserver">Réserver</button>
+                <button class="btn-details">Détails</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    @if (showingHistorique) {
+      <div class="historique-container">
+        <div class="historique-header">
+          <h2>Historique des trajets</h2>
+          <div class="filter-bar">
+            <select class="filter-select">
+              <option value="all">Tous les trajets</option>
+              <option value="completed">Terminés</option>
+              <option value="cancelled">Annulés</option>
+            </select>
+            <input type="date" class="filter-date">
+          </div>
+        </div>
+
+        <div class="historique-list">
+          @for (trajet of historique; track trajet.id) {
+            <div class="historique-card">
+              <div class="historique-date">
+                <i class="fas fa-calendar"></i>
+                <span>{{trajet.date}}</span>
+              </div>
+              
+              <div class="historique-trajet">
+                <div class="trajet-path">
+                  <span class="ville">{{trajet.depart}}</span>
+                  <i class="fas fa-arrow-right"></i>
+                  <span class="ville">{{trajet.arrivee}}</span>
+                </div>
+              </div>
+
+              <div class="historique-details">
+                <div class="detail">
+                  <i class="fas fa-user"></i>
+                  <span>{{trajet.conducteur}}</span>
+                </div>
+                <div class="detail">
+                  <i class="fas fa-euro-sign"></i>
+                  <span>{{trajet.prix}}€</span>
+                </div>
+                <div class="detail">
+                  <i class="fas fa-star"></i>
+                  <span>{{trajet.evaluation}}</span>
+                </div>
+              </div>
+
+              <div class="historique-status" [class.completed]="trajet.statut === 'Terminé'">
+                {{trajet.statut}}
+              </div>
+
+              <button class="btn-details">
+                <i class="fas fa-info-circle"></i> Détails
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+    <div class="modal" [class.show]="showAddTrajetModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Ajouter un trajet</h2>
+          <button class="close-btn" (click)="closeAddTrajetModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="onSubmitTrajet()" #trajetForm="ngForm">
+            <div class="form-group">
+              <label for="conducteur">Nom du conducteur</label>
+              <input type="text" id="conducteur" name="conducteur" [(ngModel)]="newTrajet.conducteur" required>
+            </div>
+
+            <div class="form-group">
+              <label for="depart">Ville de départ</label>
+              <input type="text" id="depart" name="depart" [(ngModel)]="newTrajet.depart" required>
+            </div>
+
+            <div class="form-group">
+              <label for="arrivee">Ville d'arrivée</label>
+              <input type="text" id="arrivee" name="arrivee" [(ngModel)]="newTrajet.arrivee" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" [(ngModel)]="newTrajet.date" required>
+              </div>
+
+              <div class="form-group">
+                <label for="heure">Heure</label>
+                <input type="time" id="heure" name="heure" [(ngModel)]="newTrajet.heure" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="prix">Prix</label>
+                <input type="number" id="prix" name="prix" [(ngModel)]="newTrajet.prix" required>
+              </div>
+
+              <div class="form-group">
+                <label for="places">Places disponibles</label>
+                <input type="number" id="places" name="places" [(ngModel)]="newTrajet.places" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="voiture">Voiture</label>
+              <input type="text" id="voiture" name="voiture" [(ngModel)]="newTrajet.voiture" required>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-cancel" (click)="closeAddTrajetModal()">Annuler</button>
+              <button type="submit" class="btn-submit" [disabled]="!trajetForm.form.valid">Ajouter</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="showingProfile" class="profile-container">
+      <div class="profile-header">
+        <div class="profile-cover">
+          <div class="profile-avatar">
+            <i class="fas fa-user-circle"></i>
+          </div>
+          <div class="profile-info-header">
+            <h2>{{userProfile.nom}}</h2>
+            <p>Membre depuis {{userProfile.dateInscription | date:'MMMM yyyy'}}</p>
+          </div>
+        </div>
+        <button class="btn-edit" (click)="openEditProfileModal()">
+          <i class="fas fa-edit"></i> Modifier le profil
+        </button>
+      </div>
+
+      <div class="profile-content">
+        <!-- Carte des statistiques -->
+        <div class="profile-stats-cards">
+          <div class="stat-card">
+            <i class="fas fa-route"></i>
+            <div class="stat-info">
+              <span class="stat-value">{{userProfile.statistiques.totalTrajets}}</span>
+              <span class="stat-label">Trajets effectués</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-users"></i>
+            <div class="stat-info">
+              <span class="stat-value">{{userProfile.statistiques.totalPassagers}}</span>
+              <span class="stat-label">Passagers transportés</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-star"></i>
+            <div class="stat-info">
+              <span class="stat-value">{{userProfile.statistiques.evaluationMoyenne}}/5</span>
+              <span class="stat-label">Note moyenne</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-leaf"></i>
+            <div class="stat-info">
+              <span class="stat-value">{{userProfile.statistiques.economiesCO2}} kg</span>
+              <span class="stat-label">CO2 économisé</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informations personnelles -->
+        <div class="profile-section card">
+          <div class="section-header">
+            <i class="fas fa-user"></i>
+            <h3>Informations personnelles</h3>
+          </div>
+          <div class="section-content">
+            <div class="info-item">
+              <i class="fas fa-envelope"></i>
+              <div class="info-details">
+                <label>Email</label>
+                <p>{{userProfile.email}}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-phone"></i>
+              <div class="info-details">
+                <label>Téléphone</label>
+                <p>{{userProfile.telephone}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informations véhicule -->
+        <div class="profile-section card">
+          <div class="section-header">
+            <i class="fas fa-car"></i>
+            <h3>Mon véhicule</h3>
+          </div>
+          <div class="section-content vehicle-info">
+            <div class="vehicle-details">
+              <div class="info-item">
+                <label>Marque & Modèle</label>
+                <p>{{userProfile.voiture.marque}} {{userProfile.voiture.modele}}</p>
+              </div>
+              <div class="info-item">
+                <label>Année</label>
+                <p>{{userProfile.voiture.annee}}</p>
+              </div>
+              <div class="info-item">
+                <label>Couleur</label>
+                <p>{{userProfile.voiture.couleur}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Préférences -->
+        <div class="profile-section card">
+          <div class="section-header">
+            <i class="fas fa-sliders-h"></i>
+            <h3>Mes préférences de trajet</h3>
+          </div>
+          <div class="preferences-grid">
+            <div class="preference-item" [class.active]="userProfile.preferences.fumeur">
+              <i class="fas fa-smoking"></i>
+              <span>Fumeur autorisé</span>
+            </div>
+            <div class="preference-item" [class.active]="userProfile.preferences.animaux">
+              <i class="fas fa-paw"></i>
+              <span>Animaux acceptés</span>
+            </div>
+            <div class="preference-item" [class.active]="userProfile.preferences.musique">
+              <i class="fas fa-music"></i>
+              <span>Musique</span>
+            </div>
+            <div class="preference-item" [class.active]="userProfile.preferences.discussion">
+              <i class="fas fa-comments"></i>
+              <span>Discussion</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="showingSettings" class="settings-container">
+      <div class="settings-header">
+        <h2>Paramètres</h2>
+        <p>Gérez vos préférences et paramètres de compte</p>
+      </div>
+
+      <div class="settings-content">
+        <!-- Notifications -->
+        <div class="settings-section">
+          <div class="section-header">
+            <i class="fas fa-bell"></i>
+            <h3>Notifications</h3>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Notifications par email</span>
+                <p>Recevoir des mises à jour par email</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.notifications.email">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Notifications push</span>
+                <p>Notifications sur votre appareil</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.notifications.push">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Notifications SMS</span>
+                <p>Recevoir des alertes par SMS</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.notifications.sms">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confidentialité -->
+        <div class="settings-section">
+          <div class="section-header">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Confidentialité</h3>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Profil public</span>
+                <p>Votre profil est visible par tous</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.confidentialite.profilPublic">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Afficher l'email</span>
+                <p>Visible sur votre profil public</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="settings.confidentialite.afficherEmail">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Préférences -->
+        <div class="settings-section">
+          <div class="section-header">
+            <i class="fas fa-sliders-h"></i>
+            <h3>Préférences</h3>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Langue</span>
+              </div>
+              <select [(ngModel)]="settings.preferences.langue" class="select-style">
+                <option value="Français">Français</option>
+                <option value="English">English</option>
+                <option value="Español">Español</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <span>Thème</span>
+              </div>
+              <select [(ngModel)]="settings.preferences.theme" class="select-style">
+                <option value="Clair">Clair</option>
+                <option value="Sombre">Sombre</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paiement -->
+        <div class="settings-section">
+          <div class="section-header">
+            <i class="fas fa-credit-card"></i>
+            <h3>Méthodes de paiement</h3>
+          </div>
+          <div class="section-content">
+            <div class="payment-methods">
+              <div class="payment-card" *ngFor="let method of settings.paiement.methodesEnregistrees">
+                <div class="payment-info">
+                  <i [class]="method.type === 'card' ? 'fas fa-credit-card' : 'fab fa-paypal'"></i>
+                  <div class="payment-details">
+                    <span>{{method.type === 'card' ? method.nom : 'PayPal'}}</span>
+                    <p>{{method.type === 'card' ? method.numero : method.email}}</p>
+                  </div>
+                </div>
+                <button class="btn-remove">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+              <button class="btn-add-payment">
+                <i class="fas fa-plus"></i>
+                Ajouter une méthode de paiement
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
