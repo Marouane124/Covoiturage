@@ -2,40 +2,66 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { FormsModule } from '@angular/forms';
+import { TrajetService } from '../../services/trajet.service';
+import { Trajet } from '../../models/trajet.model';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
+  providers: [TrajetService],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('tripsChart') tripsChartRef!: ElementRef;
   @ViewChild('distributionChart') distributionChartRef!: ElementRef;
+
+  trajets: Trajet[] = [];
+  trajetsPageCourante: Trajet[] = [];
+  pageCourante: number = 1;
+  trajetsParPage: number = 8;
+  nombreTotalPages: number = 0;
   
+  error: string = '';
+  searchForm = {
+    villeDepart: '',
+    villeArrivee: '',
+    date: ''
+  };
+  isSearching: boolean = false;
+  searchMessage: string = ''; 
+
   showingStats: boolean = false;
   showingTrajets: boolean = false;
   showingHistorique: boolean = false;
   showingSettings: boolean = false;
   showingProfile: boolean = false;
- 
-
-  
-
   showAddTrajetModal = false;
   showEditProfileModal: boolean = false;
+  showEditTrajetModal = false;
   
   newTrajet = {
-    depart: '',
-    arrivee: '',
+    nomConducteur: '',
+    villeDepart: '',
+    villeArrivee: '',
     date: '',
     heure: '',
+    placesDisponibles: 1,
     prix: 0,
-    places: 1,
-    voiture: '',
-    conducteur: '',
-    statut: 'disponible'
+    voiture: ''
+  };
+
+  trajetToEdit: Trajet = {
+    nomConducteur: '',
+    villeDepart: '',
+    villeArrivee: '',
+    date: '',
+    heure: '',
+    placesDisponibles: 1,
+    prix: 0,
+    voiture: ''
   };
 
   userProfile = {
@@ -166,195 +192,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       evaluation: 4.8
     }
   ];
-  trajets = [
-    {
-      id: 1,
-      depart: 'Paris',
-      arrivee: 'Lyon',
-      date: '2024-03-25',
-      heure: '08:00',
-      prix: 35,
-      places: 3,
-      conducteur: 'Jean Dupont',
-      voiture: 'Peugeot 308',
-      statut: 'disponible'
-    },
-    {
-      id: 2,
-      depart: 'Marseille',
-      arrivee: 'Nice',
-      date: '2024-03-26',
-      heure: '10:00',
-      prix: 25,
-      places: 4,
-      conducteur: 'Marie Martin',
-      voiture: 'Renault Clio',
-      statut: 'disponible'
-    },
-    {
-      id: 3,
-      depart: 'Toulouse',
-      arrivee: 'Bordeaux',
-      date: '2024-03-27',
-      heure: '09:30',
-      prix: 30,
-      places: 3,
-      conducteur: 'Pierre Dubois',
-      voiture: 'Citroën C3',
-      statut: 'disponible'
-    },
-    {
-      id: 4,
-      depart: 'Lyon',
-      arrivee: 'Paris',
-      date: '2024-03-28',
-      heure: '07:00',
-      prix: 38,
-      places: 4,
-      conducteur: 'Sophie Laurent',
-      voiture: 'Volkswagen Golf',
-      statut: 'disponible'
-    },
-    {
-      id: 5,
-      depart: 'Nantes',
-      arrivee: 'Rennes',
-      date: '2024-03-29',
-      heure: '11:00',
-      prix: 20,
-      places: 3,
-      conducteur: 'Lucas Martin',
-      voiture: 'Ford Fiesta',
-      statut: 'disponible'
-    },
-    {
-      id: 6,
-      depart: 'Strasbourg',
-      arrivee: 'Lyon',
-      date: '2024-03-30',
-      heure: '08:30',
-      prix: 45,
-      places: 4,
-      conducteur: 'Emma Bernard',
-      voiture: 'Toyota Yaris',
-      statut: 'disponible'
-    },
-    {
-      id: 7,
-      depart: 'Lille',
-      arrivee: 'Paris',
-      date: '2024-03-31',
-      heure: '09:00',
-      prix: 32,
-      places: 3,
-      conducteur: 'Thomas Petit',
-      voiture: 'Opel Corsa',
-      statut: 'disponible'
-    },
-    {
-      id: 8,
-      depart: 'Bordeaux',
-      arrivee: 'Toulouse',
-      date: '2024-04-01',
-      heure: '10:30',
-      prix: 28,
-      places: 4,
-      conducteur: 'Julie Moreau',
-      voiture: 'Seat Ibiza',
-      statut: 'disponible'
-    },
-    {
-      id: 9,
-      depart: 'Nice',
-      arrivee: 'Marseille',
-      date: '2024-04-02',
-      heure: '14:00',
-      prix: 27,
-      places: 3,
-      conducteur: 'Antoine Durand',
-      voiture: 'Fiat 500',
-      statut: 'disponible'
-    },
-    {
-      id: 10,
-      depart: 'Rennes',
-      arrivee: 'Nantes',
-      date: '2024-04-03',
-      heure: '15:30',
-      prix: 22,
-      places: 4,
-      conducteur: 'Claire Leroy',
-      voiture: 'Peugeot 208',
-      statut: 'disponible'
-    },
-    {
-      id: 11,
-      depart: 'Montpellier',
-      arrivee: 'Lyon',
-      date: '2024-04-04',
-      heure: '08:45',
-      prix: 42,
-      places: 3,
-      conducteur: 'Hugo Martin',
-      voiture: 'Renault Captur',
-      statut: 'disponible'
-    },
-    {
-      id: 12,
-      depart: 'Paris',
-      arrivee: 'Strasbourg',
-      date: '2024-04-05',
-      heure: '07:30',
-      prix: 48,
-      places: 4,
-      conducteur: 'Laura Blanc',
-      voiture: 'Volkswagen Polo',
-      statut: 'disponible'
-    },
-    {
-      id: 13,
-      depart: 'Lyon',
-      arrivee: 'Marseille',
-      date: '2024-04-06',
-      heure: '11:15',
-      prix: 36,
-      places: 3,
-      conducteur: 'Nicolas Roux',
-      voiture: 'Citroën C4',
-      statut: 'disponible'
-    },
-    {
-      id: 14,
-      depart: 'Toulouse',
-      arrivee: 'Montpellier',
-      date: '2024-04-07',
-      heure: '13:00',
-      prix: 26,
-      places: 4,
-      conducteur: 'Sarah Dubois',
-      voiture: 'Dacia Sandero',
-      statut: 'disponible'
-    },
-    {
-      id: 15,
-      depart: 'Bordeaux',
-      arrivee: 'Paris',
-      date: '2024-04-08',
-      heure: '06:45',
-      prix: 52,
-      places: 3,
-      conducteur: 'Paul Lambert',
-      voiture: 'Skoda Fabia',
-      statut: 'disponible'
-    }
-  ];
+ 
 
-  constructor() {
+  constructor(private trajetService: TrajetService) {
     Chart.register(...registerables);
   }
 
   ngOnInit() {
     this.showStats();
+    this.loadTrajets();
   }
 
   ngAfterViewInit() {
@@ -363,6 +209,32 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
+  loadTrajets(): void {
+    console.log('Chargement des trajets...');
+    this.trajetService.getAllTrajets().subscribe({
+      next: (data) => {
+        this.trajets = data;
+        this.calculerTrajetsPageCourante();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des trajets:', error);
+        this.error = 'Erreur lors du chargement des trajets';
+      }
+    });
+  }
+
+  calculerTrajetsPageCourante() {
+    const indexDebut = (this.pageCourante - 1) * this.trajetsParPage;
+    const indexFin = indexDebut + this.trajetsParPage;
+    this.trajetsPageCourante = this.trajets.slice(indexDebut, indexFin);
+    this.nombreTotalPages = Math.ceil(this.trajets.length / this.trajetsParPage);
+  }
+
+  changerPage(page: number) {
+    this.pageCourante = page;
+    this.calculerTrajetsPageCourante();
+  }
+  
   showStats(): void {
     this.resetDisplayStates();
     this.showingStats = true;
@@ -505,27 +377,58 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   resetNewTrajet() {
     this.newTrajet = {
-      depart: '',
-      arrivee: '',
+      nomConducteur: '',
+      villeDepart: '',
+      villeArrivee: '',
       date: '',
       heure: '',
+      placesDisponibles: 1,
       prix: 0,
-      places: 1,
-      voiture: '',
-      conducteur: '',
-      statut: 'disponible'
+      voiture: ''
     };
   }
-
-  onSubmitTrajet() {
-    // Ajouter la logique pour sauvegarder le trajet
-    console.log('Nouveau trajet:', this.newTrajet);
-    this.trajets.push({
-      id: this.trajets.length + 1,
-      ...this.newTrajet
-    });
-    this.closeAddTrajetModal();
+  
+  private formatDate(date: string): string {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`; // Format dd/MM/yyyy
   }
+  
+  onSubmitTrajet() {
+    // Formatage des données avant envoi
+    const trajetToSend = {
+      nomConducteur: this.newTrajet.nomConducteur,
+      villeDepart: this.newTrajet.villeDepart,
+      villeArrivee: this.newTrajet.villeArrivee,
+      date: this.formatDate(this.newTrajet.date), // Utilisation du format correct
+      heure: this.newTrajet.heure,
+      placesDisponibles: parseInt(this.newTrajet.placesDisponibles.toString()),
+      prix: parseFloat(this.newTrajet.prix.toString()),
+      voiture: this.newTrajet.voiture
+    };
+
+    console.log('Données à envoyer:', trajetToSend); // Pour vérifier le format
+
+    this.trajetService.createTrajet(trajetToSend).subscribe({
+      next: (response) => {
+        console.log('Réponse du serveur:', response);
+        this.loadTrajets();
+        this.closeAddTrajetModal();
+        alert('Trajet créé avec succès!');
+      },
+      error: (error) => {
+        console.error('Erreur détaillée:', error);
+        if (error.error && error.error.message) {
+          alert(error.error.message);
+        } else {
+          alert('Erreur lors de la création du trajet');
+        }
+      }
+    });
+  }
+  
 
   openEditProfileModal(): void {
     this.showEditProfileModal = true;
@@ -539,5 +442,118 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // Logique pour sauvegarder les modifications du profil
     console.log('Sauvegarde des modifications du profil');
     this.closeEditProfileModal();
+  }
+
+  searchTrajets(): void {
+    this.isSearching = true;
+    this.searchMessage = '';
+    
+    if (!this.searchForm.villeDepart && !this.searchForm.villeArrivee && !this.searchForm.date) {
+      this.loadTrajets();
+      this.isSearching = false;
+      return;
+    }
+
+    this.trajetService.searchTrajets(
+      this.searchForm.villeDepart,
+      this.searchForm.villeArrivee,
+      this.searchForm.date
+    ).subscribe({
+      next: (results) => {
+        this.trajets = results || [];
+        this.pageCourante = 1;
+        this.calculerTrajetsPageCourante();
+        if (!results || results.length === 0) {
+          this.searchMessage = 'Aucun trajet trouvé';
+        }
+        this.isSearching = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors de la recherche:', error);
+        this.searchMessage = 'Erreur lors de la recherche des trajets';
+        this.trajets = [];
+        this.isSearching = false;
+      }
+    });
+  }
+
+  resetSearch(): void {
+    // Réinitialiser le formulaire de recherche
+    this.searchForm = {
+      villeDepart: '',
+      villeArrivee: '',
+      date: ''
+    };
+    this.searchMessage = '';
+    this.isSearching = false;
+    
+    // Recharger tous les trajets
+    this.loadTrajets();
+  }
+
+  // Méthode pour ouvrir le modal d'édition
+  openEditTrajetModal(trajet: Trajet) {
+    this.trajetToEdit = { ...trajet }; // Copie du trajet à éditer
+    this.showEditTrajetModal = true;
+  }
+
+  // Méthode pour fermer le modal d'édition
+  closeEditTrajetModal() {
+    this.showEditTrajetModal = false;
+    this.trajetToEdit = {
+      nomConducteur: '',
+      villeDepart: '',
+      villeArrivee: '',
+      date: '',
+      heure: '',
+      placesDisponibles: 1,
+      prix: 0,
+      voiture: ''
+    };
+  }
+
+  // Méthode pour sauvegarder les modifications
+  onSubmitEditTrajet() {
+    if (this.trajetToEdit.id) {
+      this.trajetService.updateTrajet(this.trajetToEdit.id, this.trajetToEdit).subscribe({
+        next: (response) => {
+          console.log('Trajet mis à jour:', response);
+          this.loadTrajets(); // Recharger la liste des trajets
+          this.closeEditTrajetModal();
+          alert('Trajet mis à jour avec succès!');
+        },
+        error: (error) => {
+          console.error('Erreur lors de la mise à jour:', error);
+          if (error.error && error.error.message) {
+            alert(error.error.message);
+          } else {
+            alert('Erreur lors de la mise à jour du trajet');
+          }
+        }
+      });
+    }
+  }
+
+  // Méthode pour supprimer un trajet
+  deleteTrajet(id: string | undefined) {
+    if (!id) {
+      console.error('ID du trajet non défini');
+      alert('Impossible de supprimer ce trajet : ID non défini');
+      return;
+    }
+
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?')) {
+      this.trajetService.deleteTrajet(id).subscribe({
+        next: () => {
+          console.log('Trajet supprimé avec succès');
+          this.loadTrajets();
+          alert('Trajet supprimé avec succès!');
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression:', error);
+          alert('Erreur lors de la suppression du trajet');
+        }
+      });
+    }
   }
 }

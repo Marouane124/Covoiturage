@@ -53,6 +53,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                .authorizeRequests(auth -> auth
+                        .anyRequest().permitAll()) // Autoriser toutes les requêtes
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
+
+        return http.build();
+    }
+}
+
+    /*
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests(auth -> auth
@@ -60,7 +73,8 @@ public class SecurityConfig {
                                 "/api/signin",
                                 "/api/signup",
                                 "/api/roles",
-                                "/api/utilisateur"
+                                "/api/utilisateur",
+                                "/api/trajets/**"
                         ).permitAll()
                         .anyRequest().authenticated());
 
@@ -69,3 +83,5 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
+     */
