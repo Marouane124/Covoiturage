@@ -2,16 +2,12 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { CommonModule } from '@angular/common';
+import { from } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule, 
-    RouterModule
-  ],
+  imports: [FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -19,46 +15,34 @@ export class LoginComponent implements OnInit, AfterViewInit {
   email: string = '';
   password: string = '';
   loading: boolean = false;
+  errorMessage: string = '';
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {}
-  ngAfterViewInit(): void {
-    this.initStarfield();
-
-    throw new Error('Method not implemented.');
-  }
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {}
 
-//  onSubmit() {
-//     this.loading = true;
-//     try {
-//        this.authService.signIn(this.email, this.password);
-//       this.router.navigate(['/dashboard']);
-//     } catch (error: any) {
-//       console.error('Code d\'erreur:', error.code);
-//       console.error('Message d\'erreur:', error.message);
-//       // Gestion des erreurs
-//     } finally {
-//       this.loading = false;
-//     }
-//   }
-  async onSubmit() {
+  onSubmit() {
     this.loading = true;
-    try {
-      await this.authService.signIn(this.email, this.password);
-      this.router.navigate(['/dashboard']);
-    } catch (error: any) {
-      console.error('Code d\'erreur:', error.code);
-      console.error('Message d\'erreur:', error.message);
-      // Gestion des erreurs
-    } finally {
-      this.loading = false;
-    }
+    this.errorMessage = '';
+
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard']);
+      },
+      error: (error) => {
+        console.error('Erreur lors de la connexion:', error);
+        this.errorMessage = (error as Error).message || 'Erreur lors de la connexion';
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
-  
+
+  ngAfterViewInit() {
+    this.initStarfield();
+  }
+
   initStarfield() {
     const canvas = document.getElementById('starfield') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d')!;
@@ -136,5 +120,4 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     animate();
   }
-
 }

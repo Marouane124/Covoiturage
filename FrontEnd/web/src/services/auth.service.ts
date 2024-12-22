@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,19 +8,29 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } f
 export class AuthService {
   constructor(private auth: Auth) {}
 
-  async signIn(email: string, password: string) {
-    return signInWithEmailAndPassword(this.auth, email, password);
+  register(email: string, password: string): Observable<void> {
+    return from(
+      createUserWithEmailAndPassword(this.auth, email, password)
+        .then(() => {
+          console.log('Registration successful!');
+        })
+        .catch((error) => {
+          console.error('Registration failed:', error.message);
+          throw error; // Propager l'erreur
+        })
+    );
   }
 
-  async signUp(email: string, password: string) {
-    return createUserWithEmailAndPassword(this.auth, email, password);
-  }
-
-  async signOut() {
-    return signOut(this.auth);
-  }
-
-  getUser() {
-    return this.auth.currentUser;
+  login(email: string, password: string): Observable<void> {
+    return from(
+      signInWithEmailAndPassword(this.auth, email, password)
+        .then(() => {
+          console.log('Login successful!');
+        })
+        .catch((error) => {
+          console.error('Login failed:', error.message);
+          throw error; // Propager l'erreur
+        })
+    );
   }
 }

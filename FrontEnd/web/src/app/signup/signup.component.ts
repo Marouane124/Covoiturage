@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-//import { Icons } from '../shared/icons';
+import { from } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -15,18 +15,13 @@ import { AuthService } from '../../services/auth.service';
 export class SignupComponent implements OnInit, AfterViewInit {
   loading = false;
   errorMessage: string = ''; 
-  //googleIcon: string;
   user = {
     name: '',
     email: '',
     password: ''
   };
-  constructor(private authService: AuthService) {}
 
-
-  // constructor() {
-  //  // this.googleIcon = Icons.google({ width: 24, height: 24 });
-  // }
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {}
 
@@ -34,22 +29,25 @@ export class SignupComponent implements OnInit, AfterViewInit {
     this.initStarfield();
   }
 
-  async onSubmit() {
-    if (this.loading) return;
-     this.loading = true;
+  onSubmit(): void {
+    this.loading = true;
     this.errorMessage = ''; // Réinitialiser le message d'erreur
-    try {
-      await this.authService.signUp(this.user.email, this.user.password);
-      console.log('Inscription réussie:', this.user);
-      // Redirigez l'utilisateur ou affichez un message de succès ici
-    } catch (error: any) {
-      console.error('Erreur lors de l\'inscription:', error);
-      this.errorMessage = (error as Error).message || 'Erreur lors de l\'inscription'; // Gérer l'erreur
-    } finally {
-      this.loading = false;
-    }
+
+    this.authService.register(this.user.email, this.user.password).subscribe({
+      next: () => {
+        this.router.navigateByUrl('/'); // Redirigez l'utilisateur après l'inscription
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'inscription:', error);
+        this.errorMessage = (error as Error).message || 'Erreur lors de l\'inscription'; // Gérer l'erreur
+      },
+      complete: () => {
+        this.loading = false; // Réinitialiser le chargement
+      }
+    });
   }
-   signInWithGoogle() {
+
+  signInWithGoogle() {
     console.log('Google sign-in clicked');
   }
 
