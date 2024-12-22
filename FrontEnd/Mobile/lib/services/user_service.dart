@@ -49,8 +49,9 @@ class UserService {
 
       if (response.statusCode == 200) {
         return response.data;
+      } else if (response.statusCode == 404) {
+        throw Exception('User profile not found. Please check the UID.');
       } else if (response.statusCode == 401) {
-        // Token expired or invalid
         await _authService.signOut();
         throw Exception('Session expired. Please login again.');
       }

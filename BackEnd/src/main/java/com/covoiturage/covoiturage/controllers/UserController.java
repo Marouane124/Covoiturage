@@ -12,6 +12,10 @@ import com.covoiturage.covoiturage.repositories.UserRepository;
 import com.covoiturage.covoiturage.repositories.RoleRepository;
 import com.covoiturage.covoiturage.security.jwt.JwtUtils;
 import com.covoiturage.covoiturage.security.services.UserDetailsImpl;
+import com.covoiturage.covoiturage.security.services.RefreshTokenService;
+import com.covoiturage.covoiturage.models.RefreshToken;
+import com.covoiturage.covoiturage.payload.response.TokenRefreshResponse;
+import com.covoiturage.covoiturage.exceptions.TokenRefreshException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +52,9 @@ public class UserController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     @GetMapping("/utilisateurs")
     public List<User> findAll(){
         return userRepository.findAll();
@@ -81,8 +88,11 @@ public class UserController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
             return ResponseEntity.ok(new JwtResponse(
                 jwt,
+                refreshToken.getToken(),
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
@@ -165,5 +175,64 @@ public class UserController {
         }
     }
 
+    @PutMapping("/utilisateur/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody Map<String, Object> userData) {
+        try {
+            Optional<User> userOptional = userRepository.findById(id);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                if (userData.get("username") != null) {
+                    user.setUsername((String) userData.get("username"));
+                }
+                if (userData.get("phone") != null) {
+                    user.setPhone((String) userData.get("phone"));
+                }
+                if (userData.get("gender") != null) {
+                    user.setGender((String) userData.get("gender"));
+                }
+                if (userData.get("city") != null) {
+                    user.setCity((String) userData.get("city"));
+                }
+                userRepository.save(user);
+                return ResponseEntity.ok(new MessageResponse("User updated successfully!"));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse("Error: User not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new MessageResponse("Error: " + e.getMessage()));
+        }
+    }
 
+    @GetMapping("/utilisateur/{uid}")
+    public ResponseEntity<User> getUserByUid(@PathVariable String uid) {
+        Optional<User> userOptional = userRepository.findByUid(uid);
+        return userOptional.map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
+        String requestRefreshToken = request.get("refreshToken");
+
+        try {
+            RefreshToken refreshToken = refreshTokenService.findByToken(requestRefreshToken)
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token not found"));
+
+            refreshTokenService.verifyExpiration(refreshToken);
+
+            // Generate new access token
+            String newAccessToken = jwtUtils.generateTokenFromUsername(
+                userRepository.findById(refreshToken.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"))
+                    .getUsername()
+            );
+
+            return ResponseEntity.ok(new TokenRefreshResponse(newAccessToken, requestRefreshToken));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new MessageResponse(e.getMessage()));
+        }
+    }
 }

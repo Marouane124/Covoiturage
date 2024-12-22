@@ -95,7 +95,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         _userProfile = profile;
         _phoneController.text = profile['phone'] ?? '';
-        _selectedGender = profile['gender'] ?? 'Homme';
+        _selectedGender = profile['gender'] == 'Male'
+            ? 'Homme'
+            : profile['gender'] ?? 'Homme';
         _isLoading = false;
       });
     } catch (e) {
@@ -108,6 +110,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
     }
+  }
+
+  Widget _buildGenderDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedGender,
+      decoration: InputDecoration(
+        labelText: 'Gender',
+        border: OutlineInputBorder(),
+      ),
+      items: <String>['Homme', 'Femme', 'Autre']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        setState(() {
+          _selectedGender = newValue!;
+        });
+      },
+      validator: (value) => value == null ? 'Please select a gender' : null,
+    );
   }
 
   @override
@@ -244,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   keyboardType: TextInputType.phone,
                 ),
                 // Gender Selection
-                Column(
+                /*Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildFieldTitle('Gender'),
@@ -279,6 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
                 ),
+                */
                 const SizedBox(height: 16),
                 _buildTextField(
                   title: 'City',
