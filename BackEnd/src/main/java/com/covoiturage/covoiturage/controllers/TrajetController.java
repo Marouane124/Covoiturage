@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +35,55 @@ public class TrajetController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/recherche")
+    public ResponseEntity<List<Trajet>> rechercherTrajets(
+            @RequestParam(required = false) String villeDepart,
+            @RequestParam(required = false) String villeArrivee,
+            @RequestParam(required = false) String date
+    ) {
+        try {
+            List<Trajet> trajets;
 
+            if (villeDepart != null && villeArrivee != null && date != null) {
+                // Convertir la date du format dd/MM/yyyy en format ISO
+                SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+                Date parsedDate = inputFormat.parse(date);
+                String isoDate = outputFormat.format(parsedDate);
+
+                // Créer les dates de début et fin pour la recherche
+                Date startDate = outputFormat.parse(isoDate);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(startDate);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                Date endDate = calendar.getTime();
+
+                trajets = trajetRepository.findByVilleDepartAndVilleArriveeAndDateBetween(
+                        villeDepart,
+                        villeArrivee,
+                        startDate,
+                        endDate
+                );
+            } else if (villeDepart != null && villeArrivee != null) {
+                trajets = trajetRepository.findByVilleDepartAndVilleArrivee(villeDepart, villeArrivee);
+            } else if (villeDepart != null) {
+                trajets = trajetRepository.findByVilleDepart(villeDepart);
+            } else if (villeArrivee != null) {
+                trajets = trajetRepository.findByVilleArrivee(villeArrivee);
+            } else {
+                trajets = trajetRepository.findAll();
+            }
+
+            return trajets.isEmpty()
+                    ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                    : new ResponseEntity<>(trajets, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Pour le débogage
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     // Récupérer un trajet par son ID
     @GetMapping("/{id}")
     public ResponseEntity<Trajet> getTrajetById(@PathVariable("id") String id) {

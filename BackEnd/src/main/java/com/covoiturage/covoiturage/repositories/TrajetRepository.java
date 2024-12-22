@@ -18,6 +18,13 @@ public interface TrajetRepository extends MongoRepository<Trajet, String> {
 
     // Recherche par prix inférieur ou égal
     List<Trajet> findByPrixLessThanEqual(double prix);
+    @Query("{'villeDepart': ?0, 'villeArrivee': ?1, 'date': {$gte: ?2, $lt: ?3}}")
+    List<Trajet> findByVilleDepartAndVilleArriveeAndDateBetween(
+            String villeDepart,
+            String villeArrivee,
+            Date startDate,
+            Date endDate
+    );
 
     // Recherche par nom du conducteur
     List<Trajet> findByNomConducteur(String nomConducteur);
