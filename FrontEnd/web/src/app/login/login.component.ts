@@ -3,11 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { from } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -30,8 +31,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
-        console.error('Erreur lors de la connexion:', error);
-        this.errorMessage = (error as Error).message || 'Erreur lors de la connexion';
+        this.errorMessage = 'Mot de passe incorrect ou email invalide.';
       },
       complete: () => {
         this.loading = false;

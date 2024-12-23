@@ -188,3 +188,8 @@ button.loading::after {
         transform: rotate(360deg);
     }
 }
+
+.error-message {
+    color: red; /* Couleur du texte d'erreur */
+    margin-top: 10px; /* Espacement au-dessus du message d'erreur */
+}
