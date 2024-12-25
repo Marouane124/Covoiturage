@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { from } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -25,7 +24,11 @@ export class SignupComponent implements OnInit {
     city: ''
   };
 
-  constructor(private authService: AuthService, private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    private authService: AuthService, 
+    private router: Router, 
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
     this.initStarfield();
@@ -36,23 +39,25 @@ export class SignupComponent implements OnInit {
     this.errorMessage = ''; // Réinitialiser le message d'erreur
 
     this.authService.register(
-      this.user.email,
-      this.user.password,
-      this.user.name,
-      this.user.phone,
-      this.user.gender,
-      this.user.city
+      this.user.name,    // username
+      this.user.email,   // email
+      this.user.password,// password
+      this.user.phone,   // phone
+      this.user.gender,  // gender
+      this.user.city     // city
     ).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Inscription réussie:', response);
         alert('Inscription réussie !');
         this.router.navigateByUrl('/login');
       },
       error: (error) => {
         console.error('Erreur lors de l\'inscription:', error);
-        this.errorMessage = (error as Error).message || 'Erreur lors de l\'inscription';
+        this.errorMessage = error.message || 'Erreur lors de l\'inscription';
+        this.loading = false;
       },
       complete: () => {
-        this.loading = false; // Réinitialiser le chargement
+        this.loading = false;
       }
     });
   }

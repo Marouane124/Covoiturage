@@ -7,7 +7,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://192.168.100.94:8080/api';
+ // private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = 'http://192.168.137.27:8080/api';
+  
+
 
   constructor(
     private auth: Auth, 
@@ -15,57 +18,80 @@ export class AuthService {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  register(email: string, password: string, username: string, phone: string, gender: string, city: string): Observable<void> {
-    return new Observable<void>((observer) => {
+  register(username: string, email: string, password: string, phone: string, gender: string, city: string): Observable<any> {
+    return new Observable((observer) => {
+      // D'abord créer l'utilisateur dans Firebase
       createUserWithEmailAndPassword(this.auth, email, password)
         .then((userCredential) => {
-          const user = {
-            uid: userCredential.user.uid,
-            email: email,
+          // Récupérer l'uid généré par Firebase
+          const userData = {
+            uid: userCredential.user.uid,  // uid généré par Firebase
             username: username,
+            email: email,
             phone: phone,
             gender: gender,
             city: city,
+            password: password
           };
 
-          // Configuration HTTP modifiée
-          const httpOptions = {
-            headers: new HttpHeaders({
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              // Ajout du header CORS
-              'Access-Control-Allow-Origin': 'http://192.168.100.94:8080'
-            }),
-            withCredentials: true,
-            observe: 'response' as 'response'  // Pour avoir accès à la réponse complète
-          };
-
-          console.log('Données envoyées au backend:', user);
-          
-          // Gestion améliorée des erreurs
-          this.http.post(`${this.apiUrl}/signup`, user, httpOptions).subscribe({
+          // Ensuite envoyer les données au backend Spring
+          this.http.post(`${this.apiUrl}/signup`, userData).subscribe({
             next: (response) => {
-              console.log('Réponse du serveur:', response);
-              observer.next();
+              observer.next(response);
               observer.complete();
             },
             error: (error) => {
-              console.error('Erreur détaillée lors de l\'enregistrement:', {
-                status: error.status,
-                statusText: error.statusText,
-                error: error.error,
-                headers: error.headers
-              });
               observer.error(error);
             }
           });
         })
         .catch((error) => {
-          console.error('Échec de l\'inscription Firebase:', error.message);
           observer.error(error);
         });
     });
   }
+
+
+  // register(email: string, password: string, username: string, phone: string, gender: string, city: string): Observable<void> {
+  //   return new Observable<void>((observer) => {
+  //     createUserWithEmailAndPassword(this.auth, email, password)
+  //       .then((userCredential) => {
+  //         const user = {
+  //           uid: userCredential.user.uid,
+  //           email: email,
+  //           username: username,
+  //           phone: phone,
+  //           gender: gender,
+  //           city: city,
+  //         };
+
+  //         // Configuration HTTP simplifiée sans CORS
+  //         const httpOptions = {
+  //           headers: new HttpHeaders({
+  //             'Content-Type': 'application/json'
+  //           })
+  //         };
+
+  //         console.log('Données envoyées au backend:', user);
+          
+  //         this.http.post(`${this.apiUrl}/signup`, user, httpOptions).subscribe({
+  //           next: (response) => {
+  //             console.log('Réponse du serveur:', response);
+  //             observer.next();
+  //             observer.complete();
+  //           },
+  //           error: (error) => {
+  //             console.error('Erreur lors de l\'enregistrement:', error);
+  //             observer.error(error);
+  //           }
+  //         });
+  //       })
+  //       .catch((error) => {
+  //         console.error('Échec de l\'inscription Firebase:', error.message);
+  //         observer.error(error);
+  //       });
+  //   });
+  // }
 
   // Méthode de login améliorée avec gestion d'erreur
   login(email: string, password: string): Observable<any> {
@@ -92,5 +118,18 @@ export class AuthService {
           return of(false);
         })
       );
+  }
+
+  logout(): Observable<any> {
+    return from(this.auth.signOut()).pipe(
+      map(() => {
+        // Nettoyer les données locales si nécessaire
+        return true;
+      }),
+      catchError(error => {
+        console.error('Logout failed:', error);
+        throw error;
+      })
+    );
   }
 }
