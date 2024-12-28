@@ -236,7 +236,7 @@
               </div>
 
               <div class="details-col">
-                <button class="btn-details">
+                <button class="btn-details" (click)="showDetails(trajet)">
                   <i class="fas fa-info-circle"></i>
                   Détails
                 </button>
@@ -709,6 +709,53 @@
             <button type="submit" class="btn-submit" [disabled]="!editTrajetForm.form.valid">Sauvegarder</button>
           </div>
         </form>
+      </div>
+    </div>
+    <!-- Modal des détails -->
+    <div class="modal" *ngIf="showDetailsModal">
+      <div class="details-modal">
+        <div class="modal-header">
+          <h2>Détails du trajet</h2>
+          <button class="close-button" (click)="closeDetailsModal()">&times;</button>
+        </div>
+
+        <div class="modal-content">
+          <div class="section">
+            <h3>Informations générales</h3>
+            <div class="info-row">
+              <i class="fas fa-calendar"></i>
+              <span>Date: {{selectedTrajet.date}}</span>
+            </div>
+            <div class="info-row">
+              <i class="fas fa-clock"></i>
+              <span>Heure: {{selectedTrajet.heure}}</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>Trajet</h3>
+            <div class="info-row">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Départ: {{selectedTrajet.villeDepart}}</span>
+            </div>
+            <div class="info-row">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Arrivée: {{selectedTrajet.villeArrivee}}</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>Conducteur</h3>
+            <div class="info-row">
+              <i class="fas fa-user"></i>
+              <span>Nom: {{selectedTrajet.nomConducteur}}</span>
+            </div>
+            <div class="info-row">
+              <i class="fas fa-car"></i>
+              <span>Véhicule: {{selectedTrajet.voiture}}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

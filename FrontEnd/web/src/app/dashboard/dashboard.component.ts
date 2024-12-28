@@ -43,6 +43,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   showAddTrajetModal = false;
   showEditProfileModal: boolean = false;
   showEditTrajetModal = false;
+  showDetailsModal = false;
+  selectedTrajet: any = null;
   
   newTrajet = {
     nomConducteur: '',
@@ -573,5 +575,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         console.error('Erreur lors de la déconnexion:', error);
       }
     });
+  }
+
+  showDetails(trajet: any) {
+    this.selectedTrajet = trajet;
+    this.showDetailsModal = true;
+  }
+
+  closeDetailsModal() {
+    this.showDetailsModal = false;
+    this.selectedTrajet = null;
   }
 }
