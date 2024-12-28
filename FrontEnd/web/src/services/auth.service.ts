@@ -8,7 +8,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class AuthService {
  // private apiUrl = 'http://localhost:8080/api';
-  private apiUrl = 'http://192.168.137.27:8080/api';
+  private apiUrl = 'http://192.168.100.94:8080/api';
   
 
 

@@ -197,51 +197,50 @@
           <div class="filter-bar">
             <select class="filter-select">
               <option value="all">Tous les trajets</option>
-              <option value="completed">Terminés</option>
-              <option value="cancelled">Annulés</option>
             </select>
-            <input type="date" class="filter-date">
+            <input type="date" class="date-picker">
           </div>
         </div>
 
         <div class="historique-list">
-          @for (trajet of historique; track trajet.id) {
-            <div class="historique-card">
-              <div class="historique-date">
+          @for (trajet of trajets; track trajet.id) {
+            <div class="historique-row">
+              <div class="date-col">
                 <i class="fas fa-calendar"></i>
-                <span>{{trajet.date}}</span>
-              </div>
-              
-              <div class="historique-trajet">
-                <div class="trajet-path">
-                  <span class="ville">{{trajet.depart}}</span>
-                  <i class="fas fa-arrow-right"></i>
-                  <span class="ville">{{trajet.arrivee}}</span>
-                </div>
+                {{trajet.date}}
               </div>
 
-              <div class="historique-details">
-                <div class="detail">
-                  <i class="fas fa-user"></i>
-                  <span>{{trajet.conducteur}}</span>
-                </div>
-                <div class="detail">
-                  <i class="fas fa-euro-sign"></i>
-                  <span>{{trajet.prix}}€</span>
-                </div>
-                <div class="detail">
-                  <i class="fas fa-star"></i>
-                  <span>{{trajet.evaluation}}</span>
-                </div>
+              <div class="trajet-col">
+                {{trajet.villeDepart}}
+                <i class="fas fa-arrow-right"></i>
+                {{trajet.villeArrivee}}
               </div>
 
-              <div class="historique-status" [class.completed]="trajet.statut === 'Terminé'">
-                {{trajet.statut}}
+              <div class="conducteur-col">
+                <i class="fas fa-user"></i>
+                {{trajet.nomConducteur}}
               </div>
 
-              <button class="btn-details">
-                <i class="fas fa-info-circle"></i> Détails
-              </button>
+              <div class="prix-col">
+                <i class="fas fa-money-bill"></i>
+                {{trajet.prix}}Dh
+              </div>
+
+              <div class="rating-col">
+                <i class="fas fa-star"></i>
+                4.5
+              </div>
+
+              <div class="status-col">
+                <span class="status-badge">Terminé</span>
+              </div>
+
+              <div class="details-col">
+                <button class="btn-details">
+                  <i class="fas fa-info-circle"></i>
+                  Détails
+                </button>
+              </div>
             </div>
           }
         </div>

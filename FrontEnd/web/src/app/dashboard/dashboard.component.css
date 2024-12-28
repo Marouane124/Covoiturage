@@ -364,120 +364,66 @@ canvas#distributionChart {
 /* Styles pour l'historique */
 .historique-container {
   padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .historique-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-}
-
-.historique-header h2 {
-  color: #333;
-  margin: 0;
+  margin-bottom: 20px;
 }
 
 .filter-bar {
   display: flex;
-  gap: 15px;
+  gap: 10px;
 }
 
-.filter-select, .filter-date {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: white;
-}
-
-.historique-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.historique-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.trajet-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  transition: transform 0.2s;
-  margin-bottom: 15px;
-}
-
-.historique-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.historique-date {
-  min-width: 120px;
-  color: #666;
-}
-
-.historique-date i {
-  margin-right: 8px;
-  color: #4CAF50;
-}
-
-.trajet-path {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  font-weight: 500;
-}
-
-.trajet-path i {
-  color: #4CAF50;
-}
-
-.historique-details {
-  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
   gap: 20px;
 }
 
-.detail {
+.trajet-date, 
+.trajet-route, 
+.trajet-user, 
+.trajet-price, 
+.trajet-rating,
+.trajet-status {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.detail i {
-  color: #4CAF50;
+.trajet-route {
+  flex: 1;
 }
 
-.historique-status {
+.trajet-status {
+  background-color: #e8f5e9;
+  color: #4CAF50;
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.9em;
-  background-color: #e8f5e9;
-  color: #4CAF50;
-}
-
-.historique-status.completed {
-  background-color: #e8f5e9;
-  color: #4CAF50;
 }
 
 .btn-details {
   padding: 8px 16px;
+  background: #f5f5f5;
   border: none;
-  border-radius: 6px;
-  background-color: #f5f5f5;
-  color: #333;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .btn-details:hover {
-  background-color: #e0e0e0;
-}
-
-.btn-details i {
-  margin-right: 5px;
+  background: #e0e0e0;
 }
 
 /* Responsive design */
@@ -1276,4 +1222,122 @@ input:checked + .slider:before {
 .logout-link i {
   color: white !important;
   margin-right: 0;
+}
+
+.historique-card {
+  display: grid;
+  grid-template-columns: 130px 250px 150px 100px 80px 100px 150px;
+  align-items: center;
+  padding: 15px;
+  margin: 10px 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.date-section,
+.trajet-section,
+.conducteur-section,
+.prix-section,
+.rating-section,
+.status-section,
+.details-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trajet-section {
+  gap: 15px;
+}
+
+.status-section span {
+  padding: 6px 12px;
+  background-color: #e8f5e9;
+  color: #4CAF50;
+  border-radius: 20px;
+}
+
+.btn-details {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+/* Styles pour les icônes */
+.fas {
+  color: #4CAF50;
+  width: 16px;
+  text-align: center;
+}
+
+.historique-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  margin: 8px 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Style pour chaque colonne avec flex-basis pour une largeur égale */
+.date-col,
+.trajet-col,
+.conducteur-col,
+.prix-col,
+.rating-col,
+.status-col,
+.details-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+}
+
+/* Ajustements spécifiques pour certaines colonnes si nécessaire */
+.trajet-col {
+  flex: 1.2;
+}
+
+.prix-col,
+.rating-col {
+  flex: 0.8;
+}
+
+.status-col {
+  flex: 0.9;
+}
+
+.details-col {
+  flex: 0.8;
+}
+
+/* Style spécifique pour le statut */
+.status-badge {
+  padding: 6px 12px;
+  background-color: #e8f5e9;
+  color: #4CAF50;
+  border-radius: 20px;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Style pour le bouton détails */
+.btn-details {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
 }
