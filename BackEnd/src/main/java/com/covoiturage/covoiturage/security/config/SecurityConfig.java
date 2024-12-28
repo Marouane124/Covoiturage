@@ -1,3 +1,4 @@
+
 package com.covoiturage.covoiturage.security.config;
 
 import com.covoiturage.covoiturage.security.jwt.AuthEntryPointJwt;
@@ -53,10 +54,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-                .authorizeRequests(auth -> auth
-                        .anyRequest().permitAll()) // Autoriser toutes les requêtes
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
+                .authorizeRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/signin",
+                                "/api/signup",
+                                "/api/auth/refresh",
+                                "/api/roles",
+                                "/api/utilisateur",
+                                "/api/trajets/**"
+                        ).permitAll()
+                        .anyRequest().authenticated());
+
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

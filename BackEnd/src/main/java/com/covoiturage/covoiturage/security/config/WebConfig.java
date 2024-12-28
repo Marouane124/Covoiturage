@@ -1,3 +1,4 @@
+
 package com.covoiturage.covoiturage.security.config;
 
 import org.springframework.context.annotation.Configuration;
