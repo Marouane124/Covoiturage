@@ -174,10 +174,15 @@ public class UserController {
             user.rechercherTrajet();
         }
     }
-
     @PutMapping("/utilisateur/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody Map<String, Object> userData) {
         try {
+            // Validate the username
+            if (userData.get("username") != null && ((String) userData.get("username")).isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new MessageResponse("Error: Username cannot be empty"));
+            }
+
             Optional<User> userOptional = userRepository.findById(id);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
@@ -197,11 +202,11 @@ public class UserController {
                 return ResponseEntity.ok(new MessageResponse("User updated successfully!"));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new MessageResponse("Error: User not found"));
+                        .body(new MessageResponse("Error: User not found"));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new MessageResponse("Error: " + e.getMessage()));
+                    .body(new MessageResponse("Error: " + e.getMessage()));
         }
     }
 
