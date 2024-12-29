@@ -42,17 +42,30 @@ class AuthService {
     required String city,
   }) async {
     try {
+      final String lowerCaseEmail = email.toLowerCase();
+
       print('\n=== Registration Data ===');
       print('Username: $username');
-      print('Email: $email');
+      print('Email: $lowerCaseEmail');
       print('Phone: $phone');
       print('Gender: $gender');
       print('City: $city');
       print('========================\n');
 
+      // Map the localized gender to fixed values
+      String mappedGender;
+      if (gender.toLowerCase() == 'male' || gender.toLowerCase() == 'homme') {
+        mappedGender = 'Homme';
+      } else if (gender.toLowerCase() == 'female' ||
+          gender.toLowerCase() == 'femme') {
+        mappedGender = 'Femme';
+      } else {
+        throw Exception('Invalid gender value');
+      }
+
       // Create Firebase user
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
+        email: lowerCaseEmail,
         password: password,
       );
 
@@ -63,9 +76,9 @@ class AuthService {
       final Map<String, dynamic> userData = {
         'uid': userCredential.user!.uid,
         'username': username,
-        'email': email,
+        'email': lowerCaseEmail,
         'phone': phone,
-        'gender': gender,
+        'gender': mappedGender,
         'city': city,
         'password': password,
         'roles': ['PASSAGER'] // Set default role
@@ -150,14 +163,16 @@ class AuthService {
     required String password,
   }) async {
     try {
+      final String lowerCaseEmail = email.toLowerCase();
+
       print('\n=== Login Attempt ===');
-      print('Email: $email');
+      print('Email: $lowerCaseEmail');
       print('==================\n');
 
       // First authenticate with Firebase
       final UserCredential firebaseUser =
           await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
+        email: lowerCaseEmail,
         password: password,
       );
 
@@ -165,7 +180,7 @@ class AuthService {
       final response = await _dio.post(
         '$baseUrl/signin',
         data: {
-          'email': email,
+          'email': lowerCaseEmail,
           'password': password,
         },
         options: Options(

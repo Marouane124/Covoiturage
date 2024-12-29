@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:map_flutter/services/user_service.dart';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'map_screen.dart';
@@ -142,6 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
+        backgroundColor: Colors.white,
       );
     }
 
