@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { TrajetService } from '../../services/trajet.service';
 import { Trajet } from '../../models/trajet.model';
 import { HttpClientModule } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -41,6 +43,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   showAddTrajetModal = false;
   showEditProfileModal: boolean = false;
   showEditTrajetModal = false;
+  showDetailsModal = false;
+  selectedTrajet: any = null;
   
   newTrajet = {
     nomConducteur: '',
@@ -194,7 +198,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ];
  
 
-  constructor(private trajetService: TrajetService) {
+  constructor(
+    private trajetService: TrajetService,
+    private router: Router,
+    private authService: AuthService
+  ) {
     Chart.register(...registerables);
   }
 
@@ -555,5 +563,27 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         }
       });
     }
+  }
+
+  logout() {
+    // Appeler la méthode de déconnexion du service d'authentification
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Erreur lors de la déconnexion:', error);
+      }
+    });
+  }
+
+  showDetails(trajet: any) {
+    this.selectedTrajet = trajet;
+    this.showDetailsModal = true;
+  }
+
+  closeDetailsModal() {
+    this.showDetailsModal = false;
+    this.selectedTrajet = null;
   }
 }

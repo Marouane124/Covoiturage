@@ -1,3 +1,4 @@
+
 package com.covoiturage.covoiturage.security.config;
 
 import com.covoiturage.covoiturage.security.jwt.AuthEntryPointJwt;

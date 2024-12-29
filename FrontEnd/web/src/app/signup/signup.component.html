@@ -4,39 +4,80 @@
     <h1>Créer un compte</h1>
     
     <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
       <div class="form-group">
-        <label for="name">Nom complet</label>
         <input 
           type="text" 
           id="name" 
           [(ngModel)]="user.name" 
-          name="name" 
+          name="name"
+          placeholder=" "
           required>
+        <label for="name">Nom complet</label>
       </div>
 
       <div class="form-group">
-        <label for="email">Email</label>
         <input 
           type="email" 
           id="email" 
           [(ngModel)]="user.email" 
-          name="email" 
+          name="email"
+          placeholder=" "
           required>
+        <label for="email">Email</label>
       </div>
 
       <div class="form-group">
-        <label for="password">Mot de passe</label>
         <input 
           type="password" 
           id="password" 
           [(ngModel)]="user.password" 
-          name="password" 
+          name="password"
+          placeholder=" "
           required>
+        <label for="password">Mot de passe</label>
       </div>
 
-      <button type="submit" class="signup-button">
-        <span *ngIf="loading" class="spinner"></span>
-        <span>S'inscrire</span>
+      <div class="form-group">
+        <input 
+          type="text" 
+          id="phone" 
+          [(ngModel)]="user.phone" 
+          name="phone"
+          placeholder=" "
+          required>
+        <label for="phone">Téléphone</label>
+      </div>
+
+      <div class="form-group">
+        <select 
+          id="gender" 
+          [(ngModel)]="user.gender" 
+          name="gender" 
+          required>
+          <option value="" disabled selected>Choisissez votre genre</option>
+          <option value="Homme">Homme</option>
+          <option value="Femme">Femme</option>
+        </select>
+        <label for="gender">Genre</label>
+      </div>
+
+      <div class="form-group">
+        <input 
+          type="text" 
+          id="city" 
+          [(ngModel)]="user.city" 
+          name="city"
+          placeholder=" "
+          required>
+        <label for="city">Ville</label>
+      </div>
+
+      <button type="submit" class="signup-button" [disabled]="loading">
+        {{ loading ? 'Inscription en cours...' : 'S\'inscrire' }}
       </button>
 
       <div class="divider">

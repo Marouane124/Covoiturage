@@ -1,11 +1,14 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { from } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -13,19 +16,37 @@ export class LoginComponent implements OnInit, AfterViewInit {
   email: string = '';
   password: string = '';
   loading: boolean = false;
+  errorMessage: string = '';
+  showPassword = false;
+  rememberMe: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Vérifier s'il y a des credentials stockés
+    const storedCredentials = this.authService.getStoredCredentials();
+    if (storedCredentials) {
+      this.email = storedCredentials.email;
+      this.password = storedCredentials.password;
+      this.rememberMe = true;
+    }
+  }
 
   onSubmit() {
     this.loading = true;
-    // Simuler une connexion (à remplacer par votre vraie logique d'auth)
-    setTimeout(() => {
-      this.loading = false;
-      // Redirection vers le dashboard
-      this.router.navigate(['/dashboard']);
-    }, 1500);
+    this.errorMessage = '';
+
+    this.authService.login(this.email, this.password, this.rememberMe).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard']);
+      },
+      error: (error) => {
+        this.errorMessage = 'Mot de passe incorrect ou email invalide.';
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -108,5 +129,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
 
     animate();
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }

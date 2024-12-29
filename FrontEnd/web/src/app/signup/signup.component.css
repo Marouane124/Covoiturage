@@ -1,11 +1,11 @@
 .signup-container {
   width: 100%;
-  min-height: calc(100vh - 70px);
+  min-height: 100vh;
   margin-top: 70px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to right, #1e3c72, #2a5298);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
   position: relative;
   overflow: hidden;
@@ -23,13 +23,12 @@ canvas {
 .signup-card {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 380px;
+  max-width: 480px;
   transform: translateY(0);
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -38,48 +37,84 @@ canvas {
 h1 {
   text-align: center;
   color: #333;
-  margin-bottom: 1.5rem;
-  font-size: 1.8rem;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
 }
 
 .form-group {
-  margin-bottom: 1.2rem;
+  position: relative;
+  margin-bottom: 20px;
 }
 
 label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #666;
-  font-size: 0.9rem;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: #4CAF50;
+  transition: all 0.2s ease-out;
+  pointer-events: none;
+  background: white;
+  padding: 0 5px;
 }
 
-input {
+input, select {
   width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  transition: border-color 0.2s;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
-input:focus {
+input:focus, select:focus {
   border-color: #4CAF50;
   outline: none;
 }
 
-.signup-button {
-  width: 100%;
-  padding: 0.8rem;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
+input:focus ~ label,
+input:not(:placeholder-shown) ~ label,
+select:focus ~ label,
+select:not(:placeholder-shown) ~ label {
+  top: -8px;
+  left: 12px;
+  font-size: 12px;
+  color: #4CAF50;
+  background: white;
 }
 
-.signup-button:hover {
-  background: #45a049;
+/* Styles spécifiques pour le sélecteur de genre */
+select {
+  appearance: none; /* Supprime le style par défaut du sélecteur */
+  background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 10px center; /* Flèche personnalisée */
+  background-size: 12px; /* Taille de la flèche */
+  padding: 10px; /* Ajout de padding pour un meilleur confort */
+  border: 1px solid #ccc; /* Bordure pour le sélecteur */
+  border-radius: 5px; /* Coins arrondis */
+  font-size: 16px; /* Taille de la police */
+  box-shadow: none; /* Enlève l'ombre si présente */
+}
+
+select:focus {
+  outline: none; /* Enlève le contour au focus */
+  border-color: #667eea; /* Change la couleur de la bordure au focus */
+}
+
+.signup-button, .google-button {
+  width: 100%;
+  padding: 10px;
+  background: #4CAF50; /* Couleur verte pour le bouton */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.signup-button:hover, .google-button:hover {
+  background: #45a049; /* Couleur au survol */
 }
 
 .signup-button:disabled {
@@ -109,8 +144,7 @@ input:focus {
 
 .divider {
   text-align: center;
-  margin: 1.2rem 0;
-  position: relative;
+  margin: 20px 0;
 }
 
 .divider::before,
@@ -146,7 +180,7 @@ input:focus {
 }
 
 .login-link a {
-  color: #4CAF50;
+  color: #667eea;
   text-decoration: none;
 }
 
@@ -168,6 +202,12 @@ input:focus {
   100% { transform: rotate(360deg); }
 }
 
+.error-message {
+  color: #ff4444;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .signup-card {
@@ -181,4 +221,27 @@ input:focus {
   input, .signup-button, .google-button {
     padding: 0.7rem;
   }
+}
+
+/* Supprime les lignes de séparation */
+.divider::after,
+.divider::before,
+div::after,
+div::before {
+    display: none !important;
+    content: none !important;
+    border: none !important;
+    background: none !important;
+}
+
+/* Supprime spécifiquement la classe qui crée ces lignes */
+.divider {
+    border: none !important;
+    background: none !important;
+}
+
+/* Assure qu'aucun élément n'a de bordure non désirée */
+input, select, .form-group, label {
+    border-top: none !important;
+    border-bottom: none !important;
 }

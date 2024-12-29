@@ -188,3 +188,71 @@ button.loading::after {
         transform: rotate(360deg);
     }
 }
+
+.error-message {
+    color: red; /* Couleur du texte d'erreur */
+    margin-top: 10px; /* Espacement au-dessus du message d'erreur */
+}
+
+
+
+.remember-me-container {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espace entre la case à cocher et le texte */
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+}
+
+.checkbox-wrapper label {
+    color: #555;
+    font-size: 0.9rem;
+    margin: 0;
+    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+}
+
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-input-wrapper i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.password-input-wrapper input {
+    padding-right: 40px; /* Pour éviter que le texte ne chevauche l'icône */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+}
+
+.toggle-password:hover {
+    color: #333;
+}

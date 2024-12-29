@@ -364,120 +364,66 @@ canvas#distributionChart {
 /* Styles pour l'historique */
 .historique-container {
   padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .historique-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-}
-
-.historique-header h2 {
-  color: #333;
-  margin: 0;
+  margin-bottom: 20px;
 }
 
 .filter-bar {
   display: flex;
-  gap: 15px;
+  gap: 10px;
 }
 
-.filter-select, .filter-date {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: white;
-}
-
-.historique-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.historique-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.trajet-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  transition: transform 0.2s;
-  margin-bottom: 15px;
-}
-
-.historique-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.historique-date {
-  min-width: 120px;
-  color: #666;
-}
-
-.historique-date i {
-  margin-right: 8px;
-  color: #4CAF50;
-}
-
-.trajet-path {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  font-weight: 500;
-}
-
-.trajet-path i {
-  color: #4CAF50;
-}
-
-.historique-details {
-  display: flex;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
   gap: 20px;
 }
 
-.detail {
+.trajet-date, 
+.trajet-route, 
+.trajet-user, 
+.trajet-price, 
+.trajet-rating,
+.trajet-status {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.detail i {
-  color: #4CAF50;
+.trajet-route {
+  flex: 1;
 }
 
-.historique-status {
+.trajet-status {
+  background-color: #e8f5e9;
+  color: #4CAF50;
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.9em;
-  background-color: #e8f5e9;
-  color: #4CAF50;
-}
-
-.historique-status.completed {
-  background-color: #e8f5e9;
-  color: #4CAF50;
 }
 
 .btn-details {
   padding: 8px 16px;
+  background: #f5f5f5;
   border: none;
-  border-radius: 6px;
-  background-color: #f5f5f5;
-  color: #333;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .btn-details:hover {
-  background-color: #e0e0e0;
-}
-
-.btn-details i {
-  margin-right: 5px;
+  background: #e0e0e0;
 }
 
 /* Responsive design */
@@ -548,19 +494,19 @@ canvas#distributionChart {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1100;
+  z-index: 1000;
 }
 
-.modal-content {
-  background-color: white;
-  padding: 25px;
+.details-modal {
+  background: white;
   border-radius: 8px;
   width: 90%;
-  max-width: 600px;
+  max-width: 500px;
+  padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -571,6 +517,12 @@ canvas#distributionChart {
   margin-bottom: 20px;
 }
 
+.modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
 .close-button {
   background: none;
   border: none;
@@ -579,63 +531,34 @@ canvas#distributionChart {
   color: #666;
 }
 
-.form-group {
-  margin-bottom: 15px;
+.section {
+  margin-bottom: 20px;
 }
 
-.form-row {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
+.section h3 {
   color: #333;
-  font-weight: 500;
+  font-size: 18px;
+  margin-bottom: 15px;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.modal-footer {
+.info-row {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+  align-items: center;
+  padding: 12px;
+  margin: 8px 0;
+  background-color: #f8f9fa;
+  border-radius: 8px;
 }
 
-.btn-cancel {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #dc3545;
-  color: white;
-  cursor: pointer;
+.info-row i {
+  color: #4CAF50;
+  width: 20px;
+  margin-right: 15px;
 }
 
-.btn-submit {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
-}
-
-.btn-submit:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-input.ng-invalid.ng-touched {
-  border-color: #f44336;
+.info-row span {
+  color: #666;
+  font-size: 15px;
 }
 
 /* Styles pour le profil */
@@ -1217,3 +1140,361 @@ input:checked + .slider:before {
 .btn-delete i {
   color: white !important;
 }
+
+.logout-container {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  padding: 0 15px;
+}
+
+.logout-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+
+.logout-button i {
+  font-size: 16px;
+}
+
+.logout-item {
+  margin-top: auto;
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: calc(100% - 30px);
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.logout-link {
+  color: white !important;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 5px;
+  gap: 10px;
+}
+
+.logout-link:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logout-link i {
+  color: white !important;
+  margin-right: 0;
+}
+
+.historique-card {
+  display: grid;
+  grid-template-columns: 130px 250px 150px 100px 80px 100px 150px;
+  align-items: center;
+  padding: 15px;
+  margin: 10px 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.date-section,
+.trajet-section,
+.conducteur-section,
+.prix-section,
+.rating-section,
+.status-section,
+.details-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trajet-section {
+  gap: 15px;
+}
+
+.status-section span {
+  padding: 6px 12px;
+  background-color: #e8f5e9;
+  color: #4CAF50;
+  border-radius: 20px;
+}
+
+.btn-details {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+/* Styles pour les icônes */
+.fas {
+  color: #4CAF50;
+  width: 16px;
+  text-align: center;
+}
+
+.historique-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  margin: 8px 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Style pour chaque colonne avec flex-basis pour une largeur égale */
+.date-col,
+.trajet-col,
+.conducteur-col,
+.prix-col,
+.rating-col,
+.status-col,
+.details-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+}
+
+/* Ajustements spécifiques pour certaines colonnes si nécessaire */
+.trajet-col {
+  flex: 1.2;
+}
+
+.prix-col,
+.rating-col {
+  flex: 0.8;
+}
+
+.status-col {
+  flex: 0.9;
+}
+
+.details-col {
+  flex: 0.8;
+}
+
+/* Style spécifique pour le statut */
+.status-badge {
+  padding: 6px 12px;
+  background-color: #e8f5e9;
+  color: #4CAF50;
+  border-radius: 20px;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Style pour le bouton détails */
+.btn-details {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Styles spécifiques pour le modal d'ajout de trajet */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100; /* Assurez-vous qu'il est au-dessus des autres éléments */
+}
+
+.modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px; /* Largeur maximale */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #dc3545; /* Couleur rouge pour annuler */
+  color: white;
+  cursor: pointer;
+}
+
+.btn-submit {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50; /* Couleur verte pour créer */
+  color: white;
+  cursor: pointer;
+}
+
+.btn-submit:disabled {
+  background-color: #cccccc; /* Couleur grise pour le bouton désactivé */
+  cursor: not-allowed;
+}
+
+input.ng-invalid.ng-touched {
+  border-color: #f44336; /* Bordure rouge pour les champs invalides */
+}
+
+/* Styles pour la section des détails du trajet */
+.details-modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px; /* Largeur maximale */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.details-modal h2 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.info-section {
+  margin-bottom: 15px;
+}
+
+.info-section label {
+  font-weight: bold;
+  color: #4CAF50; /* Couleur pour les titres */
+}
+
+.info-section p {
+  margin: 5px 0;
+  color: #666; /* Couleur pour le texte */
+}
+
+.details-modal i {
+  color: #4CAF50; /* Couleur pour les icônes */
+}
+
+/* Styles spécifiques pour les détails du trajet */
+.section-details {
+  margin-bottom: 20px;
+}
+
+.section-details h3 {
+  color: #333;
+  font-size: 18px;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 8px 0;
+}
+
+.info-item i {
+  color: #4CAF50;
+  width: 20px;
+  margin-right: 15px;
+}
+
+.info-item span {
+  color: #666;
+  font-size: 15px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
