@@ -22,29 +22,72 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit() {
-    // Vérifier s'il y a des credentials stockés dans le localStorage
-    const rememberedEmail = localStorage.getItem('rememberedEmail');
-    const rememberedPassword = localStorage.getItem('rememberedPassword');
+  // ngOnInit() {
+  //   // Restaurer les valeurs au chargement
+  //   if (localStorage.getItem('rememberMe') === 'true') {
+  //     this.email = localStorage.getItem('rememberedEmail') || '';
+  //     this.password = localStorage.getItem('rememberedPassword') || '';
+  //     this.rememberMe = true;
+  //   }
+  // }
+
+  // onSubmit() {
+  //   if (this.rememberMe) {
+  //     localStorage.setItem('rememberedEmail', this.email);
+  //     localStorage.setItem('rememberedPassword', this.password);
+  //     localStorage.setItem('rememberMe', 'true');
+  //   } else {
+  //     localStorage.removeItem('rememberedEmail');
+  //     localStorage.removeItem('rememberedPassword');
+  //     localStorage.removeItem('rememberMe');
+  //   }
+
+  // ngOnInit() {
+  //   // Vérifier s'il y a des credentials stockés dans le localStorage
+  //   const rememberedEmail = localStorage.getItem('rememberedEmail');
+  //   const rememberedPassword = localStorage.getItem('rememberedPassword');
     
-    if (rememberedEmail && rememberedPassword) {
-      this.email = rememberedEmail;
-      this.password = rememberedPassword;
+  //   if (rememberedEmail && rememberedPassword) {
+  //     this.email = rememberedEmail;
+  //     this.password = rememberedPassword;
+  //     this.rememberMe = true;
+  //   }
+  // }
+  
+
+  // onSubmit() {
+  //   this.loading = true;
+  //   this.errorMessage = '';
+
+  //   // Gérer le stockage des credentials si "Remember Me" est coché
+  //   if (this.rememberMe) {
+  //     localStorage.setItem('rememberedEmail', this.email);
+  //     localStorage.setItem('rememberedPassword', this.password);
+  //   } else {
+  //     localStorage.removeItem('rememberedEmail');
+  //     localStorage.removeItem('rememberedPassword');
+  //   }
+  ngOnInit() {
+    // Vérifier si "Se souvenir de moi" était activé
+    const remembered = localStorage.getItem('rememberMe') === 'true';
+    if (remembered) {
+      this.email = localStorage.getItem('email') || '';
+      this.password = localStorage.getItem('password') || '';
       this.rememberMe = true;
     }
   }
 
   onSubmit() {
-    this.loading = true;
-    this.errorMessage = '';
-
-    // Gérer le stockage des credentials si "Remember Me" est coché
     if (this.rememberMe) {
-      localStorage.setItem('rememberedEmail', this.email);
-      localStorage.setItem('rememberedPassword', this.password);
+      // Sauvegarder les informations
+      localStorage.setItem('email', this.email);
+      localStorage.setItem('password', this.password);
+      localStorage.setItem('rememberMe', 'true');
     } else {
-      localStorage.removeItem('rememberedEmail');
-      localStorage.removeItem('rememberedPassword');
+      // Effacer les informations
+      localStorage.removeItem('email');
+      localStorage.removeItem('password');
+      localStorage.removeItem('rememberMe');
     }
 
     this.authService.login(this.email, this.password, this.rememberMe).subscribe({
