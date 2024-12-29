@@ -198,6 +198,7 @@ public class UserController {
                 if (userData.get("city") != null) {
                     user.setCity((String) userData.get("city"));
                 }
+
                 userRepository.save(user);
                 return ResponseEntity.ok(new MessageResponse("User updated successfully!"));
             } else {
@@ -209,6 +210,7 @@ public class UserController {
                     .body(new MessageResponse("Error: " + e.getMessage()));
         }
     }
+
 
     @GetMapping("/utilisateur/{uid}")
     public ResponseEntity<User> getUserByUid(@PathVariable String uid) {

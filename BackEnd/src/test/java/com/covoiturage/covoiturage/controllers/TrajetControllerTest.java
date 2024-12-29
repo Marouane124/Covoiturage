@@ -27,6 +27,9 @@ class TrajetControllerTest {
     @Mock
     private TrajetRepository trajetRepository;
 
+
+
+
     @Test
     void getAllTrajets_ReturnsList() {
         // Mock data
@@ -85,4 +88,39 @@ class TrajetControllerTest {
 
         Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
+
+    @Test
+    void findByVilleDepart_ReturnsTrajets() {
+        List<Trajet> mockTrajets = List.of(new Trajet(), new Trajet());
+        Mockito.when(trajetRepository.findByVilleDepart("Paris")).thenReturn(mockTrajets);
+
+        ResponseEntity<List<Trajet>> response = trajetController.findByVilleDepart("Paris");
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    void findByVilleArrivee_ReturnsTrajets() {
+        List<Trajet> mockTrajets = List.of(new Trajet(), new Trajet());
+        Mockito.when(trajetRepository.findByVilleArrivee("Lyon")).thenReturn(mockTrajets);
+
+        ResponseEntity<List<Trajet>> response = trajetController.findByVilleArrivee("Lyon");
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    void findByPrixLessThanEqual_ReturnsTrajets() {
+        List<Trajet> mockTrajets = List.of(new Trajet(), new Trajet());
+        Mockito.when(trajetRepository.findByPrixLessThanEqual(50.0)).thenReturn(mockTrajets);
+
+        ResponseEntity<List<Trajet>> response = trajetController.findByPrixLessThanEqual(50.0);
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertEquals(2, response.getBody().size());
+    }
+
+
 }

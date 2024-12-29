@@ -1,6 +1,7 @@
 package com.covoiturage.covoiturage.controllers;
 
 import com.covoiturage.covoiturage.models.User;
+import com.covoiturage.covoiturage.payload.request.LoginRequest;
 import com.covoiturage.covoiturage.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,10 +10,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,6 +52,11 @@ class UserControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     private User existingUser;
+
+    @Autowired
+    private PasswordEncoder encoder;
+
+
 
     @BeforeEach
     void setUp() {
@@ -111,6 +130,61 @@ class UserControllerIntegrationTest {
                 .andExpect(status().isBadRequest()) // Expect a Bad Request response
                 .andExpect(jsonPath("$.message").value("Error: Username cannot be empty")); // Expect the validation error message
     }
+
+    @Test
+    void testSignup_Success() throws Exception {
+        // Create signup request data
+        Map<String, Object> signupData = new HashMap<>();
+        signupData.put("uid", "unique123");
+        signupData.put("username", "newUser");
+        signupData.put("email", "newuser@example.com");
+        signupData.put("password", "password123");
+        signupData.put("phone", "123456789");
+        signupData.put("gender", "Male");
+        signupData.put("city", "New City");
+
+
+        // Perform the signup request
+        mockMvc.perform(post("/api/signup")
+                        .contentType(MediaType.APPLICATION_JSON) // Set Content-Type header
+                        .content(objectMapper.writeValueAsString(signupData))) // Set request body
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("User registered successfully!"));
+
+        // Verify the user is saved in the database
+        User user = userRepository.findByUsername("newUser")
+                .orElseThrow(() -> new AssertionError("User not found"));
+        assertEquals("newUser", user.getUsername());
+        assertEquals("newuser@example.com", user.getEmail());
+    }
+
+    @Test
+    void testSignin_Success() throws Exception {
+        // Create signup request data
+        Map<String, Object> signupData = new HashMap<>();
+        signupData.put("uid", "unique123");
+        signupData.put("username", "newUser");
+        signupData.put("email", "newuser@example.com");
+        signupData.put("password", "password123");
+        signupData.put("phone", "123456789");
+        signupData.put("gender", "Male");
+        signupData.put("city", "New City");
+
+
+        // Perform the signup request
+        mockMvc.perform(post("/api/signup")
+                        .contentType(MediaType.APPLICATION_JSON) // Set Content-Type header
+                        .content(objectMapper.writeValueAsString(signupData))) // Set request body
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("User registered successfully!"));
+
+        // Verify the user is saved in the database
+        User user = userRepository.findByUsername("newUser")
+                .orElseThrow(() -> new AssertionError("User not found"));
+        assertEquals("newUser", user.getUsername());
+        assertEquals("newuser@example.com", user.getEmail());
+    }
+
 
 
 }

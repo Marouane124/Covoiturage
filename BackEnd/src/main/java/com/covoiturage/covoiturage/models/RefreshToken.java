@@ -15,4 +15,22 @@ public class RefreshToken {
     private String token;
     private Instant expiryDate;
     private String userId;
+
+    // Default constructor
+    public RefreshToken() {
+    }
+
+    // Constructor that accepts a String token
+    public RefreshToken(String token) {
+        this.token = token;
+    }
+
+    // Getter and Setter
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
