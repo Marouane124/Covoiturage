@@ -23,11 +23,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    // Vérifier s'il y a des credentials stockés
-    const storedCredentials = this.authService.getStoredCredentials();
-    if (storedCredentials) {
-      this.email = storedCredentials.email;
-      this.password = storedCredentials.password;
+    // Vérifier s'il y a des credentials stockés dans le localStorage
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    const rememberedPassword = localStorage.getItem('rememberedPassword');
+    
+    if (rememberedEmail && rememberedPassword) {
+      this.email = rememberedEmail;
+      this.password = rememberedPassword;
       this.rememberMe = true;
     }
   }
@@ -36,12 +38,26 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.loading = true;
     this.errorMessage = '';
 
+    // Gérer le stockage des credentials si "Remember Me" est coché
+    if (this.rememberMe) {
+      localStorage.setItem('rememberedEmail', this.email);
+      localStorage.setItem('rememberedPassword', this.password);
+    } else {
+      localStorage.removeItem('rememberedEmail');
+      localStorage.removeItem('rememberedPassword');
+    }
+
     this.authService.login(this.email, this.password, this.rememberMe).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         this.errorMessage = 'Mot de passe incorrect ou email invalide.';
+        if (!this.rememberMe) {
+          // Effacer les credentials en cas d'erreur si "Remember Me" n'est pas coché
+          localStorage.removeItem('rememberedEmail');
+          localStorage.removeItem('rememberedPassword');
+        }
       },
       complete: () => {
         this.loading = false;
