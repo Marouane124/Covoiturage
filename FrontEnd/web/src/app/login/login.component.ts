@@ -18,16 +18,25 @@ export class LoginComponent implements OnInit, AfterViewInit {
   loading: boolean = false;
   errorMessage: string = '';
   showPassword = false;
+  rememberMe: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Vérifier s'il y a des credentials stockés
+    const storedCredentials = this.authService.getStoredCredentials();
+    if (storedCredentials) {
+      this.email = storedCredentials.email;
+      this.password = storedCredentials.password;
+      this.rememberMe = true;
+    }
+  }
 
   onSubmit() {
     this.loading = true;
     this.errorMessage = '';
 
-    this.authService.login(this.email, this.password).subscribe({
+    this.authService.login(this.email, this.password, this.rememberMe).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']);
       },

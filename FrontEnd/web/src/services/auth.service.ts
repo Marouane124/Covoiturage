@@ -1,31 +1,77 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common'; // Importer la fonction pour vérifier l'environnement
+import { isPlatformBrowser } from '@angular/common';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { catchError, from, map, Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+interface StoredCredentials {
+  email: string;
+  password: string;
+  timestamp: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
- // private apiUrl = 'http://localhost:8080/api';
+  private readonly CREDENTIALS_KEY = 'remembered_credentials';
+  private readonly EXPIRATION_TIME = 5 * 60 * 60 * 1000; // 5 heures en millisecondes
   private apiUrl = 'http://192.168.100.94:8080/api';
-  
-
 
   constructor(
-    private auth: Auth, 
-    private http: HttpClient, 
+    private auth: Auth,
+    private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) {
+    // Vérifier et nettoyer les credentials expirés au démarrage
+    this.checkStoredCredentials();
+  }
+
+  // Nouvelles méthodes pour "Se souvenir de moi"
+  saveCredentials(email: string, password: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const credentials: StoredCredentials = {
+        email,
+        password,
+        timestamp: new Date().getTime()
+      };
+      localStorage.setItem(this.CREDENTIALS_KEY, JSON.stringify(credentials));
+    }
+  }
+
+  getStoredCredentials(): StoredCredentials | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+
+    const stored = localStorage.getItem(this.CREDENTIALS_KEY);
+    if (!stored) return null;
+
+    const credentials: StoredCredentials = JSON.parse(stored);
+    const now = new Date().getTime();
+
+    if (now - credentials.timestamp > this.EXPIRATION_TIME) {
+      this.clearStoredCredentials();
+      return null;
+    }
+
+    return credentials;
+  }
+
+  clearStoredCredentials(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(this.CREDENTIALS_KEY);
+    }
+  }
+
+  private checkStoredCredentials(): void {
+    this.getStoredCredentials(); // Cela nettoiera automatiquement si expiré
+  }
 
   register(username: string, email: string, password: string, phone: string, gender: string, city: string): Observable<any> {
     return new Observable((observer) => {
-      // D'abord créer l'utilisateur dans Firebase
       createUserWithEmailAndPassword(this.auth, email, password)
         .then((userCredential) => {
-          // Récupérer l'uid généré par Firebase
           const userData = {
-            uid: userCredential.user.uid,  // uid généré par Firebase
+            uid: userCredential.user.uid,  
             username: username,
             email: email,
             phone: phone,
@@ -50,7 +96,6 @@ export class AuthService {
         });
     });
   }
-
 
   // register(email: string, password: string, username: string, phone: string, gender: string, city: string): Observable<void> {
   //   return new Observable<void>((observer) => {
@@ -94,11 +139,14 @@ export class AuthService {
   // }
 
   // Méthode de login améliorée avec gestion d'erreur
-  login(email: string, password: string): Observable<any> {
+  login(email: string, password: string, rememberMe: boolean = false): Observable<any> {
     return from(signInWithEmailAndPassword(this.auth, email, password))
       .pipe(
         map(() => {
           console.log('Login successful!');
+          if (rememberMe) {
+            this.saveCredentials(email, password);
+          }
           return true;
         }),
         catchError(error => {
@@ -119,11 +167,14 @@ export class AuthService {
         })
       );
   }
-
   logout(): Observable<any> {
     return from(this.auth.signOut()).pipe(
       map(() => {
-        // Nettoyer les données locales si nécessaire
+        // Ne pas effacer les credentials si l'utilisateur a choisi de s'en souvenir
+        const credentials = this.getStoredCredentials();
+        if (!credentials) {
+          this.clearStoredCredentials();
+        }
         return true;
       }),
       catchError(error => {
@@ -133,3 +184,17 @@ export class AuthService {
     );
   }
 }
+
+//   logout(): Observable<any> {
+//     return from(this.auth.signOut()).pipe(
+//       map(() => {
+//         this.clearStoredCredentials(); // Nettoyer les credentials stockés
+//         return true;
+//       }),
+//       catchError(error => {
+//         console.error('Logout failed:', error);
+//         throw error;
+//       })
+//     );
+//   }
+// }
