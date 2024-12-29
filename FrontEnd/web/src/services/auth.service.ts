@@ -70,40 +70,72 @@ export class AuthService {
     this.getStoredCredentials(); // Cela nettoiera automatiquement si expiré
   }
 
+  
   register(username: string, email: string, password: string, phone: string, gender: string, city: string): Observable<any> {
     return new Observable((observer) => {
       createUserWithEmailAndPassword(this.auth, email, password)
         .then((userCredential) => {
-          const user = userCredential.user;
           const userData = {
-            uid: user.uid,
+            uid: userCredential.user.uid,  
             username: username,
             email: email,
             phone: phone,
             gender: gender,
-            city: city
+            city: city,
+            password: password
           };
 
-          // Envoyer les données utilisateur au backend
-          this.http.post(`${this.apiUrl}/users/register`, userData)
-            .subscribe({
-              next: (response) => {
-                console.log('Utilisateur enregistré avec succès:', response);
-                observer.next(response);
-                observer.complete();
-              },
-              error: (error) => {
-                console.error('Erreur lors de l\'enregistrement:', error);
-                observer.error(error);
-              }
-            });
+          // Ensuite envoyer les données au backend Spring
+          this.http.post(`${this.apiUrl}/signup`, userData).subscribe({
+            next: (response) => {
+              observer.next(response);
+              observer.complete();
+            },
+            error: (error) => {
+              observer.error(error);
+            }
+          });
         })
         .catch((error) => {
-          console.error('Échec de l\'inscription Firebase:', error.message);
           observer.error(error);
         });
     });
   }
+
+  // register(username: string, email: string, password: string, phone: string, gender: string, city: string): Observable<any> {
+  //   return new Observable((observer) => {
+  //     createUserWithEmailAndPassword(this.auth, email, password)
+  //       .then((userCredential) => {
+  //         const user = userCredential.user;
+  //         const userData = {
+  //           uid: user.uid,
+  //           username: username,
+  //           email: email,
+  //           phone: phone,
+  //           gender: gender,
+  //           city: city
+  //         };
+
+  //         // Envoyer les données utilisateur au backend
+  //         this.http.post(`${this.apiUrl}/users/register`, userData)
+  //           .subscribe({
+  //             next: (response) => {
+  //               console.log('Utilisateur enregistré avec succès:', response);
+  //               observer.next(response);
+  //               observer.complete();
+  //             },
+  //             error: (error) => {
+  //               console.error('Erreur lors de l\'enregistrement:', error);
+  //               observer.error(error);
+  //             }
+  //           });
+  //       })
+  //       .catch((error) => {
+  //         console.error('Échec de l\'inscription Firebase:', error.message);
+  //         observer.error(error);
+  //       });
+  //   });
+  // }
 
   login(email: string, password: string, rememberMe: boolean = false): Observable<any> {
     return from(signInWithEmailAndPassword(this.auth, email, password))
