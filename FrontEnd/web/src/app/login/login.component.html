@@ -7,8 +7,29 @@
             <label for="email">Adresse e-mail</label>
             <input type="email" id="email" name="email" [(ngModel)]="email" required placeholder="exemple@email.com">
             
-            <label for="password">Mot de passe</label>
-            <input type="password" id="password" name="password" [(ngModel)]="password" required>
+            <div class="password-container">
+                <label for="password">Mot de passe</label>
+                <div class="password-input-wrapper">
+                    <input [type]="showPassword ? 'text' : 'password'" 
+                           id="password" 
+                           name="password" 
+                           [(ngModel)]="password" 
+                           required>
+                    <i class="fas" 
+                       [class.fa-eye]="!showPassword" 
+                       [class.fa-eye-slash]="showPassword"
+                       (click)="togglePasswordVisibility()"
+                       style="cursor: pointer">
+                    </i>
+                </div>
+            </div>
+            
+            <div class="remember-me-container">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">Se souvenir de moi</label>
+                </div>
+            </div>
             
             <button type="submit">Se connecter</button>
         </form>

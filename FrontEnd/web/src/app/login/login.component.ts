@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   password: string = '';
   loading: boolean = false;
   errorMessage: string = '';
+  showPassword = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -119,5 +120,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
 
     animate();
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }
