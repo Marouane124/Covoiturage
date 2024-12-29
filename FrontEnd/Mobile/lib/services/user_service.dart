@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:map_flutter/config/app_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'auth_service.dart';
 
 class UserService {
   final AuthService _authService = AuthService();
-  final String baseUrl = 'http://192.168.1.5:8080/api';
+  final String baseUrl = AppConfig.baseUrl;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<String?> _getToken() async {

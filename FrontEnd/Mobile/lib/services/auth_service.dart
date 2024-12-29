@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:map_flutter/config/app_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final Dio _dio = Dio();
-  final String baseUrl = 'http://192.168.1.5:8080/api';
+  final String baseUrl = AppConfig.baseUrl;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<void> saveTokens(String accessToken, String refreshToken) async {
@@ -41,17 +42,30 @@ class AuthService {
     required String city,
   }) async {
     try {
+      final String lowerCaseEmail = email.toLowerCase();
+
       print('\n=== Registration Data ===');
       print('Username: $username');
-      print('Email: $email');
+      print('Email: $lowerCaseEmail');
       print('Phone: $phone');
       print('Gender: $gender');
       print('City: $city');
       print('========================\n');
 
+      // Map the localized gender to fixed values
+      String mappedGender;
+      if (gender.toLowerCase() == 'male' || gender.toLowerCase() == 'homme') {
+        mappedGender = 'Homme';
+      } else if (gender.toLowerCase() == 'female' ||
+          gender.toLowerCase() == 'femme') {
+        mappedGender = 'Femme';
+      } else {
+        throw Exception('Invalid gender value');
+      }
+
       // Create Firebase user
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
+        email: lowerCaseEmail,
         password: password,
       );
 
@@ -62,9 +76,9 @@ class AuthService {
       final Map<String, dynamic> userData = {
         'uid': userCredential.user!.uid,
         'username': username,
-        'email': email,
+        'email': lowerCaseEmail,
         'phone': phone,
-        'gender': gender,
+        'gender': mappedGender,
         'city': city,
         'password': password,
         'roles': ['PASSAGER'] // Set default role
@@ -149,14 +163,16 @@ class AuthService {
     required String password,
   }) async {
     try {
+      final String lowerCaseEmail = email.toLowerCase();
+
       print('\n=== Login Attempt ===');
-      print('Email: $email');
+      print('Email: $lowerCaseEmail');
       print('==================\n');
 
       // First authenticate with Firebase
       final UserCredential firebaseUser =
           await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
+        email: lowerCaseEmail,
         password: password,
       );
 
@@ -164,7 +180,7 @@ class AuthService {
       final response = await _dio.post(
         '$baseUrl/signin',
         data: {
-          'email': email,
+          'email': lowerCaseEmail,
           'password': password,
         },
         options: Options(
