@@ -63,6 +63,7 @@ public class SecurityConfig {
                                 "/api/auth/refresh",
                                 "/api/roles",
                                 "/api/utilisateur/**",
+                                "/api/utilisateurs",
                                 "/api/trajets/**"
                         ).permitAll()
                         .anyRequest().authenticated());
