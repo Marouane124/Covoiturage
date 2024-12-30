@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Trajet } from '../models/trajet.model';
 
-const API_URL = 'http://192.168.100.94:8080/api/trajets';
+const API_URL = 'http://192.168.8.111:8080/api/trajets';
 
 @Injectable({
   providedIn: 'root'
@@ -78,5 +78,11 @@ export class TrajetService {
     return this.http.delete(`${API_URL}/${id}`, { headers });
   }
 
-  
+  getStatistics(): Observable<any> {
+    return this.http.get(`${API_URL}/stats`);
+  }
+
+  getRecentTrajets(): Observable<Trajet[]> {
+    return this.http.get<Trajet[]>(`${API_URL}/recent`);
+  }
 }

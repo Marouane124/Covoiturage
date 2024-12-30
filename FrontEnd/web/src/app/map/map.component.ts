@@ -5,11 +5,10 @@ import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-map',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './map.component.html',
-  styleUrl: './map.component.css'
+    selector: 'app-map',
+    imports: [FormsModule],
+    templateUrl: './map.component.html',
+    styleUrl: './map.component.css'
 })
 export class MapComponent implements OnInit, OnDestroy {
   map!: mapboxgl.Map;

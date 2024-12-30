@@ -1,7 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { catchError, from, map, Observable, of } from 'rxjs';
+import { catchError, from, map, Observable, of, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 interface StoredCredentials {
@@ -16,7 +16,7 @@ interface StoredCredentials {
 export class AuthService {
   private readonly CREDENTIALS_KEY = 'remembered_credentials';
   private readonly EXPIRATION_TIME = 5 * 60 * 60 * 1000; // 5 heures en millisecondes
-  private apiUrl = 'http://192.168.100.94:8080/api';
+  private apiUrl = 'http://192.168.8.111:8080/api';
 
   constructor(
     private auth: Auth,
@@ -180,6 +180,20 @@ export class AuthService {
       catchError(error => {
         console.error('Logout failed:', error);
         throw error;
+      })
+    );
+  }
+
+  getCurrentUser(): Observable<any> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      return throwError(() => new Error('No authenticated user'));
+    }
+
+    return this.http.get(`${this.apiUrl}/utilisateur/${user.uid}`).pipe(
+      catchError(error => {
+        console.error('Error fetching user data:', error);
+        return throwError(() => error);
       })
     );
   }
