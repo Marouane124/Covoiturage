@@ -61,7 +61,7 @@ public class RegisterTest {
     @Test
     public void testSuccessfulRegistration() {
         driver.get("http://localhost:4200/signup");
-        fillForm("John Doe", "john1111175.doe@example.com", "Password123!", "1234567890", "Homme", "Paris");
+        fillForm("John Doe", "john118811175.doe@example.com", "Password123!", "1234567890", "Homme", "Paris");
         clickSignupButton();
 
         try {

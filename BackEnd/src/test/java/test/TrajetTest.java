@@ -20,6 +20,7 @@ public class TrajetTest {
     @BeforeEach
     public void setUp() {
         WebDriverManager.chromedriver().setup();
+
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         driver.manage().window().maximize();
@@ -46,10 +47,10 @@ public class TrajetTest {
                 By.cssSelector("input[placeholder=\"Ville d'arrivée\"]")));
 
         villeDepart.clear();
-        villeDepart.sendKeys("casa");
+        villeDepart.sendKeys("Oujda");
 
         villeArrivee.clear();
-        villeArrivee.sendKeys("nador");
+        villeArrivee.sendKeys("Nador");
 
         // 3. Cliquer sur le bouton de recherche
         WebElement searchButton = wait.until(ExpectedConditions.elementToBeClickable(
@@ -62,10 +63,10 @@ public class TrajetTest {
 
         // 5. Vérifier l'itinéraire et le prix
         WebElement trajetRoute = trajetCard.findElement(By.cssSelector("div.trajet-route h3"));
-        assertTrue(trajetRoute.getText().contains("casa → nador"), "L'itinéraire n'est pas correct");
+        assertTrue(trajetRoute.getText().contains("Oujda → Nador"), "L'itinéraire n'est pas correct");
 
         WebElement trajetPrice = trajetCard.findElement(By.cssSelector("div.trajet-price"));
-        assertTrue(trajetPrice.getText().contains("30Dh"), "Le prix n'est pas correct");
+        assertTrue(trajetPrice.getText().contains("140Dh"), "Le prix n'est pas correct");
     }
 
 
