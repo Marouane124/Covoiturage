@@ -16,7 +16,7 @@ interface StoredCredentials {
 export class AuthService {
   private readonly CREDENTIALS_KEY = 'remembered_credentials';
   private readonly EXPIRATION_TIME = 5 * 60 * 60 * 1000; // 5 heures en millisecondes
-  private apiUrl = 'http://192.168.100.94:8080/api';
+  private apiUrl = 'http://192.168.1.5:8080/api';
 
   constructor(
     private auth: Auth,
