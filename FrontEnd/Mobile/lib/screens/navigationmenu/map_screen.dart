@@ -11,6 +11,7 @@ import 'dart:ui';
 import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
 import 'package:map_flutter/screens/transport/screens/select_transport_screen.dart';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
+import 'package:location/location.dart';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2ltb2FpdGVsZ2F6emFyIiwiYSI6ImNtMzVzeXYyazA2bWkybHMzb2Fxb3p6aGIifQ.ORYyvkZ2Z1H8WmouDkXtvQ';
@@ -44,27 +45,30 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _getCurrentLocation() async {
     try {
-      print("Début de la géolocalisation");
+      final Location location = Location();
       
       // Vérifier si le service de localisation est activé
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Veuillez activer la localisation'),
-              backgroundColor: Colors.red,
-            ),
-          );
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Veuillez activer la localisation'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
         }
-        return;
       }
 
       // Vérifier les permissions
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -77,18 +81,14 @@ class _MapScreenState extends State<MapScreen> {
         }
       }
 
-      print("Demande de position en cours...");
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
-      print("Position obtenue: ${position.latitude}, ${position.longitude}");
+      // Obtenir la position
+      final LocationData locationData = await location.getLocation();
 
       if (mounted) {
         setState(() {
-          _currentPosition = LatLng(position.latitude, position.longitude);
+          _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
           // Ajouter le marqueur à la position actuelle
-          _markers.clear(); // Effacer les marqueurs existants
+          _markers.clear();
           _markers.add(
             Marker(
               width: 30.0,
@@ -616,22 +616,19 @@ class _MapScreenState extends State<MapScreen> {
           Positioned(
             top: -70,
             right: 1,
-            child: Container(
-              width: 54,
-              height: 54,
-              decoration: ShapeDecoration(
-                color: const Color(0xFF008955),
+            child: ElevatedButton(
+              onPressed: () {
+                print("Bouton cliqué");
+                _getCurrentLocation();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF008955),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
+                minimumSize: Size(54, 54),
               ),
-              child: IconButton(
-                icon: const Icon(Icons.my_location, color: Colors.white),
-                onPressed: () async {
-                  print("Bouton de localisation pressé"); // Pour déboguer
-                  await _getCurrentLocation();
-                },
-              ),
+              child: const Icon(Icons.my_location, color: Colors.white),
             ),
           ),
           // Contenu principal
@@ -826,6 +823,18 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+          Positioned(
+            top: 100,
+            right: 16,
+            child: FloatingActionButton(
+              onPressed: () {
+                print("Bouton cliqué");
+                _getCurrentLocation();
+              },
+              backgroundColor: const Color(0xFF008955),
+              child: const Icon(Icons.my_location, color: Colors.white),
             ),
           ),
           Positioned(
