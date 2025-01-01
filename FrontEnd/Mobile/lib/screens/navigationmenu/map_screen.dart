@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'dart:convert';
-import 'package:geolocator/geolocator.dart';
-import 'package:map_flutter/screens/navigationmenu/favorite.dart';
+//import 'package:geolocator/geolocator.dart';
+//import 'package:map_flutter/screens/navigationmenu/favorite.dart';
 import '../notification.dart';
 import '../../components/sidemenu.dart';
 import 'dart:ui';
-import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
+//import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
 import 'package:map_flutter/screens/transport/screens/select_transport_screen.dart';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'package:location/location.dart';
@@ -365,7 +366,7 @@ class _MapScreenState extends State<MapScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SelectTransportScreen(),
+                        builder: (context) =>  SelectDriversScreen(),
                       ),
                     );
                   },
@@ -684,7 +685,7 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
           Positioned(
-            top: 350,
+            bottom: 250,
             right: 16,
             child: FloatingActionButton(
               onPressed: () {

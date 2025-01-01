@@ -77,7 +77,7 @@ class DriverService {
       print('==================\n');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        await _updateUserRole(currentUser.uid);
+        await _addRoleToUser(currentUser.uid);
         return true;
       }
 
@@ -91,14 +91,14 @@ class DriverService {
     }
   }
 
-  Future<void> _updateUserRole(String userId) async {
+  Future<void> _addRoleToUser(String userId) async {
     try {
       await _dio.put(
-        '$baseUrl/users/$userId/role',
-        data: {'role': 'DRIVER'},
+        '$baseUrl/users/$userId',
+        data: {'role': 'CONDUCTEUR'},
       );
     } catch (e) {
-      print('Failed to update user role: $e');
+      print('Failed to add role to user: $e');
     }
   }
 }

@@ -6,9 +6,60 @@ import 'package:map_flutter/screens/sidemenu/referral.dart';
 import 'package:map_flutter/screens/sidemenu/aboutus.dart';
 import 'package:map_flutter/screens/sidemenu/settings/settings_screen.dart';
 import 'package:map_flutter/screens/sidemenu/help_and_support_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:map_flutter/services/user_service.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:io';
 
-class SideMenu extends StatelessWidget {
+class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
+
+  @override
+  State<SideMenu> createState() => _SideMenuState();
+}
+
+class _SideMenuState extends State<SideMenu> {
+  final UserService _userService = UserService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  Map<String, dynamic>? _userProfile;
+  bool _isLoading = true;
+  Uint8List? _profileImageBytes;
+  String? _profileImagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        throw Exception('Utilisateur non connecté');
+      }
+
+      final profile = await _userService.getCurrentUserProfile();
+      if (mounted) {
+        setState(() {
+          _userProfile = profile;
+          _isLoading = false;
+          _profileImagePath = profile['photoUrl'];
+          if (profile['profileImage'] != null) {
+            _profileImageBytes = base64Decode(profile['profileImage']);
+          }
+        });
+      }
+    } catch (e) {
+      print('Erreur de chargement du profil: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   Widget _buildMenuItem(BuildContext context, IconData icon, String title) {
     return ListTile(
@@ -109,22 +160,59 @@ class SideMenu extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-            const CircleAvatar(
-              radius: 35,
-              backgroundImage: AssetImage(''),
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF08B783), width: 1),
+              ),
+              child: ClipOval(
+                child: _profileImageBytes != null
+                    ? Image.memory(
+                        _profileImageBytes!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.person,
+                            size: 40,
+                            color: Color(0xFF08B783),
+                          );
+                        },
+                      )
+                    : _profileImagePath != null
+                        ? Image.file(
+                            File(_profileImagePath!),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(
+                                Icons.person,
+                                size: 40,
+                                color: Color(0xFF08B783),
+                              );
+                            },
+                          )
+                        : const Icon(
+                            Icons.person,
+                            size: 40,
+                            color: Color(0xFF08B783),
+                          ),
+              ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Nate Samson',
-              style: TextStyle(
+            Text(
+              _userProfile?['username'] ?? 'Chargement...',
+              style: const TextStyle(
                 fontSize: 16,
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const Text(
-              'nate@email.com',
-              style: TextStyle(
+            Text(
+              _isLoading 
+                  ? 'Chargement...' 
+                  : (_userProfile?['email'] ?? 'Email non disponible'),
+              style: const TextStyle(
                 color: Color(0xFF898989),
                 fontSize: 12,
                 fontFamily: 'Poppins',

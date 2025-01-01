@@ -270,4 +270,31 @@ public class UserController {
         }
     }
 
+    @PostMapping("/utilisateur/{uid}/role")
+    public ResponseEntity<?> addRoleToUser(@PathVariable String uid, @RequestBody Map<String, String> roleData) {
+        try {
+            // Validate the role
+            String roleName = roleData.get("role");
+            if (roleName == null || roleName.isEmpty()) {
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Role cannot be empty"));
+            }
+
+            // Find the user by UID
+            User user = userRepository.findByUid(uid)
+                    .orElseThrow(() -> new RuntimeException("Error: User not found"));
+
+            // Find the role
+            Role role = roleRepository.findByName(ERole.valueOf(roleName))
+                    .orElseThrow(() -> new RuntimeException("Error: Role not found"));
+
+            // Add the role to the user
+            user.getRoles().add(role);
+            userRepository.save(user);
+
+            return ResponseEntity.ok(new MessageResponse("Role added successfully!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Error: " + e.getMessage()));
+        }
+    }
 }
