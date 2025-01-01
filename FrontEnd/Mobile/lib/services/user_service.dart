@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:map_flutter/config/app_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'auth_service.dart';
 
 class UserService {
   final AuthService _authService = AuthService();
-  final String baseUrl = 'http://192.168.1.5:8080/api';
+  final String baseUrl = AppConfig.baseUrl;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<String?> _getToken() async {
@@ -49,8 +50,9 @@ class UserService {
 
       if (response.statusCode == 200) {
         return response.data;
+      } else if (response.statusCode == 404) {
+        throw Exception('User profile not found. Please check the UID.');
       } else if (response.statusCode == 401) {
-        // Token expired or invalid
         await _authService.signOut();
         throw Exception('Session expired. Please login again.');
       }

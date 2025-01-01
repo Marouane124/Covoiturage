@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:map_flutter/config/app_config.dart';
 import 'package:http_parser/http_parser.dart';
 
 class DriverService {
   final Dio _dio = Dio();
-  final String baseUrl = 'http://192.168.1.5:8080/api';
+  final String baseUrl = AppConfig.baseUrl;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<bool> registerDriver({

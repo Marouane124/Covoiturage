@@ -26,5 +26,26 @@ public class Trajet {
     private int placesDisponibles;
     private double prix;
     private String voiture;
+
+
+    // Constructor without ID (useful for new Trajet creation)
+    public Trajet(String nomConducteur, String villeDepart, String villeArrivee, Date date, String heure, int placesDisponibles, double prix, String voiture) {
+        this.nomConducteur = nomConducteur;
+        this.villeDepart = villeDepart;
+        this.villeArrivee = villeArrivee;
+        this.date = date;
+        this.heure = heure;
+        this.placesDisponibles = placesDisponibles;
+        this.prix = prix;
+        this.voiture = voiture;
+    }
+
+    // Constructor with only mandatory fields
+    public Trajet(String villeDepart, String villeArrivee, double prix) {
+        this.villeDepart = villeDepart;
+        this.villeArrivee = villeArrivee;
+        this.prix = prix;
+    }
+
 }
 
