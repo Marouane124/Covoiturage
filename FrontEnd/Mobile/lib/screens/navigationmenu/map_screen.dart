@@ -91,39 +91,41 @@ class _MapScreenState extends State<MapScreen> {
           _markers.clear();
           _markers.add(
             Marker(
-              width: 30.0,
-              height: 30.0,
+              width: 120.0,
+              height: 80.0,
               point: _currentPosition!,
-              child: Container(
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.red,
-                      size: 30,
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        'Vous êtes ici',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.location_on,
+                    color: Colors.red,
+                    size: 30,
+                  ),
+                  Container(
+                    constraints: BoxConstraints(maxWidth: 120),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                    child: const Text(
+                      'Vous êtes ici',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -572,7 +574,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget _buildMainContainer() {
     return Container(
       width: 364,
-      height: 141,
+      height: 54, // Hauteur réduite car on ne garde que la barre de recherche
       decoration: ShapeDecoration(
         color: Color(0xFFB9E5D1),
         shape: RoundedRectangleBorder(
@@ -580,172 +582,56 @@ class _MapScreenState extends State<MapScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
       ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Bouton Rental - Ajusté pour s'aligner avec le container principal
-          Positioned(
-            top: -70,
-            left: 0,
-            child: Container(
-              width: 172,
-              height: 54,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 60, vertical: 15.50),
-              decoration: ShapeDecoration(
-                color: Color(0xFF008955),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14.0),
+        child: Container(
+          width: 336,
+          height: 54,
+          decoration: ShapeDecoration(
+            color: Color(0xFFE2F5ED),
+            shape: RoundedRectangleBorder(
+              side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
               ),
-              child: Center(
-                child: Text(
-                  'Rental',
-                  textAlign: TextAlign.center,
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 16,
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w500,
                   ),
-                ),
-              ),
-            ),
-          ),
-          // Bouton de localisation à droite
-          Positioned(
-            top: -70,
-            right: 1,
-            child: ElevatedButton(
-              onPressed: () {
-                print("Bouton cliqué");
-                _getCurrentLocation();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF008955),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                minimumSize: Size(54, 54),
-              ),
-              child: const Icon(Icons.my_location, color: Colors.white),
-            ),
-          ),
-          // Contenu principal
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // Champ de recherche
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                child: Container(
-                  width: 336,
-                  height: 54,
-                  decoration: ShapeDecoration(
-                    color: Color(0xFFE2F5ED),
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
-                      borderRadius: BorderRadius.circular(8),
+                  decoration: InputDecoration(
+                    hintText: 'Where would you go?',
+                    hintStyle: TextStyle(
+                      color: Color(0xFFA0A0A0),
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
                     ),
+                    border: InputBorder.none,
                   ),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
-                        child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: _searchController,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Where would you go?',
-                            hintStyle: TextStyle(
-                              color: Color(0xFFA0A0A0),
-                              fontSize: 16,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w500,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                          onTap: _showAddressSelector,
-                          readOnly: true,
-                        ),
-                      ),
-                      IconButton(
-                        icon:
-                            Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
-                        onPressed: () {
-                          // Ajoutez ici la logique pour les favoris
-                        },
-                      ),
-                    ],
-                  ),
+                  onTap: _showAddressSelector,
+                  readOnly: true,
                 ),
               ),
-              // Boutons Transport et Delivery
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 48,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFF008955),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Transport',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 8), // Espacement entre les boutons
-                    Expanded(
-                      child: Container(
-                        height: 48,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFFE2F5ED),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Delivery',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFF414141),
-                              fontSize: 16,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              IconButton(
+                icon: Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
+                onPressed: () {
+                  // Ajoutez ici la logique pour les favoris
+                },
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -768,7 +654,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
               children: [
                 TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
                   userAgentPackageName: 'com.example.app',
                 ),
                 MarkerLayer(
@@ -794,39 +680,11 @@ class _MapScreenState extends State<MapScreen> {
               clipBehavior: Clip.none,
               children: [
                 _buildMainContainer(),
-                Positioned(
-                  top:
-                      -70, // Ajusté pour éloigner le container "Rental" du rectangle principal
-                  left: 1, // Aligné à droite avec le rectangle principal
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 60, vertical: 15.50),
-                    decoration: ShapeDecoration(
-                      color: Color(0xFF008955),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Rental',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
           Positioned(
-            top: 100,
+            top: 350,
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
