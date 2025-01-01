@@ -32,6 +32,7 @@ class _MapScreenState extends State<MapScreen> {
   List<LatLng> _route = [];
   bool _isMenuOpen = false;
   bool _showAddressForm = false;
+  List<Marker> _markers = [];
 
   @override
   void initState() {
@@ -42,35 +43,115 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    bool serviceEnabled;
-
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
+    try {
+      print("Début de la géolocalisation");
+      
+      // Vérifier si le service de localisation est activé
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Veuillez activer la localisation'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
         return;
       }
+
+      // Vérifier les permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Permission de localisation refusée'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+      }
+
+      print("Demande de position en cours...");
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      print("Position obtenue: ${position.latitude}, ${position.longitude}");
+
+      if (mounted) {
+        setState(() {
+          _currentPosition = LatLng(position.latitude, position.longitude);
+          // Ajouter le marqueur à la position actuelle
+          _markers.clear(); // Effacer les marqueurs existants
+          _markers.add(
+            Marker(
+              width: 30.0,
+              height: 30.0,
+              point: _currentPosition!,
+              child: Container(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        'Vous êtes ici',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+
+        // Centrer la carte sur la position actuelle avec animation
+        _mapController.move(_currentPosition!, 15);
+
+        // Afficher un message de succès
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Position actuelle trouvée'),
+            backgroundColor: Color(0xFF008955),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Erreur de géolocalisation: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur de localisation: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
-
-    if (permission == LocationPermission.deniedForever) {
-      return;
-    }
-
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    setState(() {
-      _currentPosition = LatLng(position.latitude, position.longitude);
-    });
-
-    _mapController.move(_currentPosition!, 15);
   }
 
   Future<void> _searchLocation() async {
@@ -539,15 +620,16 @@ class _MapScreenState extends State<MapScreen> {
               width: 54,
               height: 54,
               decoration: ShapeDecoration(
-                color: Color(0xFF008955),
+                color: const Color(0xFF008955),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: IconButton(
-                icon: Icon(Icons.my_location, color: Colors.white),
-                onPressed: () {
-                  _getCurrentLocation();
+                icon: const Icon(Icons.my_location, color: Colors.white),
+                onPressed: () async {
+                  print("Bouton de localisation pressé"); // Pour déboguer
+                  await _getCurrentLocation();
                 },
               ),
             ),
@@ -689,12 +771,11 @@ class _MapScreenState extends State<MapScreen> {
               ),
               children: [
                 TileLayer(
-                  urlTemplate:
-                      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                  additionalOptions: {
-                    'accessToken': mapboxAccessToken,
-                    'id': 'mapbox/streets-v11',
-                  },
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.app',
+                ),
+                MarkerLayer(
+                  markers: _markers,
                 ),
                 if (_route.isNotEmpty)
                   PolylineLayer(
@@ -703,21 +784,6 @@ class _MapScreenState extends State<MapScreen> {
                         points: _route,
                         strokeWidth: 4.0,
                         color: Colors.blue,
-                      ),
-                    ],
-                  ),
-                if (_currentPosition != null)
-                  MarkerLayer(
-                    markers: [
-                      Marker(
-                        point: _currentPosition!,
-                        width: 30.0,
-                        height: 30.0,
-                        child: Icon(
-                          Icons.location_on,
-                          size: 30,
-                          color: Colors.red,
-                        ),
                       ),
                     ],
                   ),
@@ -862,3 +928,4 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
+
