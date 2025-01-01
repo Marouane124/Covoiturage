@@ -62,7 +62,8 @@ public class SecurityConfig {
                                 "/api/signup",
                                 "/api/auth/refresh",
                                 "/api/roles",
-                                "/api/utilisateur/**",
+                                "/api/utilisateur/*" +
+                                        "*",
                                 "/api/utilisateurs",
                                 "/api/trajets/**"
                         ).permitAll()

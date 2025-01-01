@@ -29,7 +29,7 @@ public class RefreshTokenService {
     }
 
     public RefreshToken createRefreshToken(String userId) {
-        RefreshToken refreshToken = new RefreshToken();
+        RefreshToken refreshToken = new RefreshToken("mockRefreshToken");
         refreshToken.setUserId(userId);
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());

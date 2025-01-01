@@ -33,6 +33,20 @@ export class SignupComponent implements OnInit {
     this.initStarfield();
   }
 
+  // Méthode pour mapper les erreurs Firebase à des messages conviviaux
+  private getErrorMessage(errorCode: string): string {
+    switch (errorCode) {
+      case 'auth/email-already-in-use':
+        return 'Cet email est déjà utilisé. Veuillez en choisir un autre.';
+      case 'auth/invalid-email':
+        return 'L\'email fourni est invalide. Veuillez vérifier.';
+      case 'auth/weak-password':
+        return 'Le mot de passe doit contenir au moins 6 caractères.';
+      default:
+        return 'Une erreur est survenue. Veuillez réessayer.';
+    }
+  }
+
   onSubmit(): void {
     this.loading = true;
     this.errorMessage = ''; // Réinitialiser le message d'erreur
@@ -40,7 +54,7 @@ export class SignupComponent implements OnInit {
     this.authService.register(
       this.user.name,    // username
       this.user.email,   // email
-      this.user.password,// password
+      this.user.password, // password
       this.user.phone,   // phone
       this.user.gender,  // gender
       this.user.city     // city
@@ -52,7 +66,8 @@ export class SignupComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erreur lors de l\'inscription:', error);
-        this.errorMessage = error.message || 'Erreur lors de l\'inscription';
+        // Utiliser la méthode pour obtenir un message d'erreur convivial
+        this.errorMessage = this.getErrorMessage(error.code) || 'Erreur lors de l\'inscription';
         this.loading = false;
       },
       complete: () => {

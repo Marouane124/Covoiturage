@@ -4,7 +4,7 @@
     <h1>Créer un compte</h1>
     
     <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
-      <div *ngIf="errorMessage" class="error-message">
+      <div *ngIf="errorMessage" class="error-message" style="color: red;">
         {{ errorMessage }}
       </div>
 

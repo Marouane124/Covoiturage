@@ -21,19 +21,73 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   constructor(private authService: AuthService, private router: Router) {}
 
+  // ngOnInit() {
+  //   // Restaurer les valeurs au chargement
+  //   if (localStorage.getItem('rememberMe') === 'true') {
+  //     this.email = localStorage.getItem('rememberedEmail') || '';
+  //     this.password = localStorage.getItem('rememberedPassword') || '';
+  //     this.rememberMe = true;
+  //   }
+  // }
+
+  // onSubmit() {
+  //   if (this.rememberMe) {
+  //     localStorage.setItem('rememberedEmail', this.email);
+  //     localStorage.setItem('rememberedPassword', this.password);
+  //     localStorage.setItem('rememberMe', 'true');
+  //   } else {
+  //     localStorage.removeItem('rememberedEmail');
+  //     localStorage.removeItem('rememberedPassword');
+  //     localStorage.removeItem('rememberMe');
+  //   }
+
+  // ngOnInit() {
+  //   // Vérifier s'il y a des credentials stockés dans le localStorage
+  //   const rememberedEmail = localStorage.getItem('rememberedEmail');
+  //   const rememberedPassword = localStorage.getItem('rememberedPassword');
+    
+  //   if (rememberedEmail && rememberedPassword) {
+  //     this.email = rememberedEmail;
+  //     this.password = rememberedPassword;
+  //     this.rememberMe = true;
+  //   }
+  // }
+  
+
+  // onSubmit() {
+  //   this.loading = true;
+  //   this.errorMessage = '';
+
+  //   // Gérer le stockage des credentials si "Remember Me" est coché
+  //   if (this.rememberMe) {
+  //     localStorage.setItem('rememberedEmail', this.email);
+  //     localStorage.setItem('rememberedPassword', this.password);
+  //   } else {
+  //     localStorage.removeItem('rememberedEmail');
+  //     localStorage.removeItem('rememberedPassword');
+  //   }
   ngOnInit() {
-    // Vérifier s'il y a des credentials stockés
-    const storedCredentials = this.authService.getStoredCredentials();
-    if (storedCredentials) {
-      this.email = storedCredentials.email;
-      this.password = storedCredentials.password;
+    // Vérifier si "Se souvenir de moi" était activé
+    const remembered = localStorage.getItem('rememberMe') === 'true';
+    if (remembered) {
+      this.email = localStorage.getItem('email') || '';
+      this.password = localStorage.getItem('password') || '';
       this.rememberMe = true;
     }
   }
 
   onSubmit() {
-    this.loading = true;
-    this.errorMessage = '';
+    if (this.rememberMe) {
+      // Sauvegarder les informations
+      localStorage.setItem('email', this.email);
+      localStorage.setItem('password', this.password);
+      localStorage.setItem('rememberMe', 'true');
+    } else {
+      // Effacer les informations
+      localStorage.removeItem('email');
+      localStorage.removeItem('password');
+      localStorage.removeItem('rememberMe');
+    }
 
     this.authService.login(this.email, this.password, this.rememberMe).subscribe({
       next: () => {
@@ -41,6 +95,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
       },
       error: (error) => {
         this.errorMessage = 'Mot de passe incorrect ou email invalide.';
+        if (!this.rememberMe) {
+          // Effacer les credentials en cas d'erreur si "Remember Me" n'est pas coché
+          localStorage.removeItem('rememberedEmail');
+          localStorage.removeItem('rememberedPassword');
+        }
       },
       complete: () => {
         this.loading = false;

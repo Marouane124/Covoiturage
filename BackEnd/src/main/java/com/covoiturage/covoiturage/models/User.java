@@ -3,6 +3,7 @@ package com.covoiturage.covoiturage.models;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class User {
     @Id
     private String id;
     private String uid;
+    @NotEmpty(message = "Username cannot be empty")
     private String username;
     private String email;
     private String password;
