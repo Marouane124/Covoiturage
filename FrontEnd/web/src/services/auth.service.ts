@@ -1,9 +1,8 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { catchError, from, map, Observable, of } from 'rxjs';
+import { catchError, from, map, Observable, of, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {throwError} from 'rxjs';
 
 interface StoredCredentials {
   email: string;
