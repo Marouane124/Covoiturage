@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { catchError, from, map, Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {throwError} from 'rxjs';
 
 interface StoredCredentials {
   email: string;
@@ -186,4 +187,33 @@ export class AuthService {
       })
     );
   }
+
+  getCurrentUser(): Observable<any> {
+    const user = this.auth.currentUser;
+    if (!user) {
+      return throwError(() => new Error('No authenticated user'));
+    }
+
+    return this.http.get(`${this.apiUrl}/utilisateur/${user.uid}`).pipe(
+      catchError(error => {
+        console.error('Error fetching user data:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 }
+
+//   logout(): Observable<any> {
+//     return from(this.auth.signOut()).pipe(
+//       map(() => {
+//         this.clearStoredCredentials(); // Nettoyer les credentials stockés
+//         return true;
+//       }),
+//       catchError(error => {
+//         console.error('Logout failed:', error);
+//         throw error;
+//       })
+//     );
+//   }
+// }
+

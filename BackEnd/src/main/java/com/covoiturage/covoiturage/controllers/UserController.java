@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -242,4 +243,31 @@ public class UserController {
                 .body(new MessageResponse(e.getMessage()));
         }
     }
+
+    @PostMapping("/utilisateur/updateProfileImage")
+    public ResponseEntity<?> updateProfileImage(@RequestParam("photo") MultipartFile file, @RequestParam("uid") String currentUserId) {
+        if (file.isEmpty() || currentUserId == null) {
+            return ResponseEntity.badRequest().body("Missing required fields");
+        }
+
+        try {
+            // Convert the file to a byte array
+            byte[] imageBytes = file.getBytes();
+            String encodedImage = Base64.getEncoder().encodeToString(imageBytes);
+
+            // Find the user by ID and update the profile image
+            User user = userRepository.findByUid(currentUserId).orElse(null);
+            if (user != null) {
+                user.setProfileImage(encodedImage);
+                userRepository.save(user);
+                return ResponseEntity.ok("Profile image updated successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
+    }
+
 }

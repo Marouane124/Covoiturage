@@ -78,5 +78,11 @@ export class TrajetService {
     return this.http.delete(`${API_URL}/${id}`, { headers });
   }
 
-  
+  getStatistics(): Observable<any> {
+    return this.http.get(`${API_URL}/stats`);
+  }
+
+  getRecentTrajets(): Observable<Trajet[]> {
+    return this.http.get<Trajet[]>(`${API_URL}/recent`);
+  }
 }

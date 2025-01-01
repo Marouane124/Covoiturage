@@ -28,8 +28,8 @@ public class User {
     private String password;
     private String phone;
     private String gender;
-   // private String adresse;
-    //private String photo;
+    // private String adresse;
+    private String profileImage;
     private String city;
 
     // Relations

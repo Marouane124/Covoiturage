@@ -6,11 +6,10 @@ import { from } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    selector: 'app-login',
+    imports: [CommonModule, FormsModule, RouterModule],
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, AfterViewInit {
   email: string = '';

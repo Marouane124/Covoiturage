@@ -12,7 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.HashMap;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -188,6 +190,43 @@ public class TrajetController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(trajets, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getStatistics() {
+        Map<String, Object> stats = new HashMap<>();
+        
+        // Total trajets
+        long totalTrajets = trajetRepository.count();
+        
+        // Total passagers
+        long totalPassagers = trajetRepository.findAll().stream()
+            .mapToInt(Trajet::getPlacesDisponibles) // Assuming placesDisponibles represents the number of passengers
+            .sum();
+        
+        // Total économies (assuming prix is the price per trajet)
+        double totalEconomies = trajetRepository.findAll().stream()
+            .mapToDouble(Trajet::getPrix) // Assuming prix is the price of each trajet
+            .sum();
+
+        stats.put("totalTrajets", totalTrajets);
+        stats.put("totalPassagers", totalPassagers);
+        stats.put("economies", totalEconomies);
+        
+        return new ResponseEntity<>(stats, HttpStatus.OK);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<Trajet>> getRecentTrajets() {
+        try {
+            List<Trajet> recentTrajets = trajetRepository.findTop2ByOrderByDateDesc(); // Assuming you have this method in your repository
+            if (recentTrajets.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(recentTrajets, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

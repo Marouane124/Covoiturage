@@ -5,6 +5,11 @@ import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'map_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:map_flutter/screens/auth/welcome_screen.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -19,6 +24,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isLoading = true;
   final TextEditingController _phoneController = TextEditingController();
   String _selectedGender = 'Homme';
+  String? _profileImagePath;
+  Uint8List? _profileImageBytes;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -100,16 +108,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? 'Homme'
             : profile['gender'] ?? 'Homme';
         _isLoading = false;
+        _profileImagePath = profile['photoUrl'];
+        if (profile['profileImage'] != null) {
+          _profileImageBytes = base64Decode(profile['profileImage']);
+        }
       });
     } catch (e) {
+      print('Error loading user profile: $e');
+    } finally {
       setState(() {
         _isLoading = false;
       });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load profile: $e')),
-        );
-      }
     }
   }
 
@@ -134,6 +143,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       validator: (value) => value == null ? 'Please select a gender' : null,
     );
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
+    if (image != null) {
+      setState(() {
+        _profileImagePath = image.path;
+      });
+      await _uploadProfileImage(File(image.path));
+    }
+  }
+
+  Future<void> _uploadProfileImage(File image) async {
+    try {
+      await _userService.updateUserProfileImage(image);
+      _loadUserProfile();
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
   }
 
   @override
@@ -197,34 +229,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      Container(
-                        width: 138,
-                        height: 138,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: const Color(0xFF08B783), width: 1),
-                          color: const Color(0xFFE2F5ED),
-                        ),
-                        child: _userProfile?['photoUrl'] != null
-                            ? ClipOval(
-                                child: Image.network(
-                                  _userProfile!['photoUrl'],
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          width: 138,
+                          height: 138,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                color: const Color(0xFF08B783), width: 1),
+                            color: const Color(0xFFE2F5ED),
+                          ),
+                          child: _profileImageBytes != null
+                              ? ClipOval(
+                                  child: Image.memory(
+                                    _profileImageBytes!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(
+                                        Icons.person,
+                                        size: 80,
+                                        color: Color(0xFF08B783),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : _profileImagePath != null
+                                  ? ClipOval(
+                                      child: Image.file(
+                                        File(_profileImagePath!),
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return const Icon(
+                                            Icons.person,
+                                            size: 80,
+                                            color: Color(0xFF08B783),
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  : const Icon(
                                       Icons.person,
                                       size: 80,
                                       color: Color(0xFF08B783),
-                                    );
-                                  },
-                                ),
-                              )
-                            : const Icon(
-                                Icons.person,
-                                size: 80,
-                                color: Color(0xFF08B783),
-                              ),
+                                    ),
+                        ),
                       ),
                       Container(
                         width: 20,

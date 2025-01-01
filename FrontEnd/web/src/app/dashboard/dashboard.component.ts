@@ -9,12 +9,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
-  providers: [TrajetService],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+    selector: 'app-dashboard',
+    imports: [CommonModule, FormsModule, HttpClientModule],
+    providers: [TrajetService],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('tripsChart') tripsChartRef!: ElementRef;
@@ -69,16 +68,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   };
 
   userProfile = {
-    id: 1,
-    nom: 'Jean Dupont',
-    email: 'jean.dupont@email.com',
-    telephone: '06 12 34 56 78',
-    dateInscription: '2024-01-15',
+    id: '',
+    nom: '',
+    email: '',
+    telephone: '',
+    dateInscription: '',
     voiture: {
-      marque: 'Peugeot',
-      modele: '308',
-      annee: 2022,
-      couleur: 'Gris'
+      marque: '',
+      modele: '',
+      annee: 0,
+      couleur: ''
     },
     statistiques: {
       totalTrajets: 45,
@@ -94,7 +93,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   };
 
-  historique = [
+  /*historique = [
     {
       id: 1,
       date: '2024-03-20',
@@ -195,8 +194,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       conducteur: 'Claire Leroy',
       evaluation: 4.8
     }
-  ];
+  ];*/
  
+  recentTrajets: Trajet[] = [];
 
   constructor(
     private trajetService: TrajetService,
@@ -207,27 +207,34 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.showStats();
     this.loadTrajets();
+    this.loadUserProfile();
+    this.loadStatistics();
+    this.loadRecentTrajets();
+    this.showStats();
+
   }
 
   ngAfterViewInit() {
     if (this.showingStats) {
-      this.initCharts();
+        if (this.trajets.length > 0) {
+            this.initCharts();
+        }
     }
   }
 
   loadTrajets(): void {
     console.log('Chargement des trajets...');
     this.trajetService.getAllTrajets().subscribe({
-      next: (data) => {
-        this.trajets = data;
-        this.calculerTrajetsPageCourante();
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement des trajets:', error);
-        this.error = 'Erreur lors du chargement des trajets';
-      }
+        next: (data) => {
+            this.trajets = data;
+            this.calculerTrajetsPageCourante();
+            this.initCharts();
+        },
+        error: (error) => {
+            console.error('Erreur lors du chargement des trajets:', error);
+            this.error = 'Erreur lors du chargement des trajets';
+        }
     });
   }
 
@@ -312,65 +319,99 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   
 
   initCharts() {
+    // Prepare data for the trips chart
+    const tripsPerMonth = Array(12).fill(0); // Array to hold counts for each month
+    const distributionData = [0, 0, 0]; // Morning, Afternoon, Evening
+
+    this.trajets.forEach(trajet => {
+        if (trajet.date) { // Check if date is not null or undefined
+            const dateParts = trajet.date.split('/'); // Assuming date is in dd/MM/yyyy format
+            if (dateParts.length === 3) {
+                const date = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`); // Convert to YYYY-MM-DD
+                const month = date.getMonth(); // Get month (0-11)
+                if (!isNaN(month)) {
+                    tripsPerMonth[month] += 1; // Increment the count for the corresponding month
+                }
+            } else {
+                console.warn('Invalid date format:', trajet.date);
+            }
+
+            // Determine the time of day for distribution
+            const hour = parseInt(trajet.heure.split(':')[0]);
+            if (hour >= 5 && hour < 12) {
+                distributionData[0] += 1; // Morning
+            } else if (hour >= 12 && hour < 18) {
+                distributionData[1] += 1; // Afternoon
+            } else {
+                distributionData[2] += 1; // Evening
+            }
+        } else {
+            console.warn('Date is null or undefined for trajet:', trajet);
+        }
+    });
+
+    console.log('Trips per month:', tripsPerMonth); // Log the trips per month for debugging
+    console.log('Distribution data:', distributionData); // Log the distribution data for debugging
+
     // Graphique des trajets par mois
     const tripsChart = new Chart('tripsChart', {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
-        datasets: [{
-          label: 'Nombre de trajets',
-          data: [12, 19, 15, 25, 22, 30],
-          borderColor: '#4CAF50',
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          }
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+            datasets: [{
+                label: 'Nombre de trajets',
+                data: tripsPerMonth,
+                borderColor: '#4CAF50',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
         }
-      }
     });
 
     // Graphique de répartition
     const distributionChart = new Chart('distributionChart', {
-      type: 'doughnut',
-      data: {
-        labels: ['Matin', 'Après-midi', 'Soir'],
-        datasets: [{
-          data: [35, 40, 25],
-          backgroundColor: [
-            '#4CAF50',
-            '#2196F3',
-            '#FFC107'
-          ],
-          borderWidth: 0,
-          borderRadius: 3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        cutout: '70%',
-        layout: {
-          padding: 20
+        type: 'doughnut',
+        data: {
+            labels: ['Matin', 'Après-midi', 'Soir'],
+            datasets: [{
+                data: distributionData,
+                backgroundColor: [
+                    '#4CAF50',
+                    '#2196F3',
+                    '#FFC107'
+                ],
+                borderWidth: 0,
+                borderRadius: 3
+            }]
         },
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              padding: 15,
-              usePointStyle: true,
-              font: {
-                size: 12,
-                family: "'Arial', sans-serif"
-              }
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '70%',
+            layout: {
+                padding: 20
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        font: {
+                            size: 12,
+                            family: "'Arial', sans-serif"
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     });
   }
 
@@ -422,7 +463,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.trajetService.createTrajet(trajetToSend).subscribe({
       next: (response) => {
         console.log('Réponse du serveur:', response);
-        this.loadTrajets();
+        this.loadTrajets(); // Reload trajets
+        this.loadStatistics(); // Refresh statistics
         this.closeAddTrajetModal();
         alert('Trajet créé avec succès!');
       },
@@ -523,45 +565,49 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   // Méthode pour sauvegarder les modifications
   onSubmitEditTrajet() {
     if (this.trajetToEdit.id) {
-      this.trajetService.updateTrajet(this.trajetToEdit.id, this.trajetToEdit).subscribe({
-        next: (response) => {
-          console.log('Trajet mis à jour:', response);
-          this.loadTrajets(); // Recharger la liste des trajets
-          this.closeEditTrajetModal();
-          alert('Trajet mis à jour avec succès!');
-        },
-        error: (error) => {
-          console.error('Erreur lors de la mise à jour:', error);
-          if (error.error && error.error.message) {
-            alert(error.error.message);
-          } else {
-            alert('Erreur lors de la mise à jour du trajet');
-          }
-        }
-      });
+        // Format the date before sending
+        this.trajetToEdit.date = this.formatDate(this.trajetToEdit.date);
+
+        this.trajetService.updateTrajet(this.trajetToEdit.id, this.trajetToEdit).subscribe({
+            next: (response) => {
+                console.log('Trajet mis à jour:', response);
+                this.loadTrajets(); // Recharger la liste des trajets
+                this.closeEditTrajetModal();
+                alert('Trajet mis à jour avec succès!');
+            },
+            error: (error) => {
+                console.error('Erreur lors de la mise à jour:', error);
+                if (error.error && error.error.message) {
+                    alert(error.error.message);
+                } else {
+                    alert('Erreur lors de la mise à jour du trajet');
+                }
+            }
+        });
     }
   }
 
   // Méthode pour supprimer un trajet
   deleteTrajet(id: string | undefined) {
     if (!id) {
-      console.error('ID du trajet non défini');
-      alert('Impossible de supprimer ce trajet : ID non défini');
-      return;
+        console.error('ID du trajet non défini');
+        alert('Impossible de supprimer ce trajet : ID non défini');
+        return;
     }
 
     if (confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?')) {
-      this.trajetService.deleteTrajet(id).subscribe({
-        next: () => {
-          console.log('Trajet supprimé avec succès');
-          this.loadTrajets();
-          alert('Trajet supprimé avec succès!');
-        },
-        error: (error) => {
-          console.error('Erreur lors de la suppression:', error);
-          alert('Erreur lors de la suppression du trajet');
-        }
-      });
+        this.trajetService.deleteTrajet(id).subscribe({
+            next: () => {
+                console.log('Trajet supprimé avec succès');
+                this.loadTrajets(); // Reload trajets
+                this.loadStatistics(); // Refresh statistics
+                alert('Trajet supprimé avec succès!');
+            },
+            error: (error) => {
+                console.error('Erreur lors de la suppression:', error);
+                alert('Erreur lors de la suppression du trajet');
+            }
+        });
     }
   }
 
@@ -585,5 +631,105 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   closeDetailsModal() {
     this.showDetailsModal = false;
     this.selectedTrajet = null;
+  }
+
+  async loadUserProfile() {
+    try {
+      const user = await this.authService.getCurrentUser().toPromise();
+      if (user) {
+        this.userProfile = {
+          id: user.id,
+          nom: user.username,
+          email: user.email,
+          telephone: user.phone || '',
+          dateInscription: new Date().toISOString().split('T')[0], // You might want to store this in your user model
+          voiture: {
+            marque: user.vehicleModel || '',
+            modele: user.vehicleType || '',
+            annee: 2024,
+            couleur: ''
+          },
+          statistiques: {
+            totalTrajets: 45,
+            totalPassagers: 132,
+            evaluationMoyenne: 4.8,
+            economiesCO2: 234
+          },
+          preferences: {
+            fumeur: false,
+            animaux: false,
+            musique: false,
+            discussion: false
+          }
+        };
+      }
+      console.log('Fetched user data:', user);
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+      // Handle error appropriately
+    }
+  }
+
+  loadStatistics(): void {
+    this.trajetService.getStatistics().subscribe({
+        next: (data) => {
+            this.totalTrajets = data.totalTrajets;
+            this.totalPassagers = data.totalPassagers;
+            this.economies = data.economies;
+        },
+        error: (error) => {
+            console.error('Erreur lors du chargement des statistiques:', error);
+        }
+    });
+  }
+
+  totalTrajets: number = 0;
+  totalPassagers: number = 0;
+  economies: number = 0;
+
+  loadRecentTrajets(): void {
+    this.trajetService.getRecentTrajets().subscribe({
+        next: (data) => {
+            this.recentTrajets = data;
+        },
+        error: (error) => {
+            console.error('Erreur lors du chargement des trajets récents:', error);
+        }
+    });
+  }
+
+  calculateDuration(date: string): string {
+
+    // Convert DD/MM/YYYY to YYYY-MM-DD
+    const parts = date.split('/');
+    if (parts.length === 3) {
+        const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert to YYYY-MM-DD
+        const trajetDate = new Date(formattedDate);
+        
+       
+        // Check if the date is valid
+        if (isNaN(trajetDate.getTime())) {
+            return 'Date invalide';
+        }
+
+        const now = new Date();
+        const diffInMs = now.getTime() - trajetDate.getTime();
+        const diffInSeconds = Math.floor(diffInMs / 1000);
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        const diffInDays = Math.floor(diffInHours / 24);
+
+        if (diffInDays > 0) {
+            return `Il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''}`;
+        } else if (diffInHours > 0) {
+            return `Il y a ${diffInHours} heure${diffInHours > 1 ? 's' : ''}`;
+        } else if (diffInMinutes > 0) {
+            return `Il y a ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''}`;
+        } else {
+            return 'Il y a quelques instants';
+        }
+    } else {
+        return 'Date invalide';
+    }
   }
 }

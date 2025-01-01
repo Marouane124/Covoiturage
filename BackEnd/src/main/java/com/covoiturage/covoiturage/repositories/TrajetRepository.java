@@ -48,4 +48,6 @@ public interface TrajetRepository extends MongoRepository<Trajet, String> {
     // Requête pour trouver les trajets disponibles (places > 0)
     @Query("{ 'placesDisponibles': { $gt: 0 } }")
     List<Trajet> findTrajetsDisponibles();
+
+    List<Trajet> findTop2ByOrderByDateDesc();
 }
