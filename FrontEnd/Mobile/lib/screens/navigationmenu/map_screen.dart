@@ -556,123 +556,113 @@ class _MapScreenState extends State<MapScreen> {
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
-                width: 336,
-                height: 54,
-                decoration: ShapeDecoration(
-                  color: Color(0xFFE2F5ED),
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
+              // Champ de recherche
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                child: Container(
+                  width: 336,
+                  height: 54,
+                  decoration: ShapeDecoration(
+                    color: Color(0xFFE2F5ED),
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(width: 1, color: Color(0xFF8AD4B5)),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Where would you go?',
-                          hintStyle: TextStyle(
-                            color: Color(0xFFA0A0A0),
+                  ),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Icon(Icons.search, color: Color(0xFFA0A0A0)),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          style: TextStyle(
+                            color: Colors.black,
                             fontSize: 16,
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w500,
                           ),
-                          border: InputBorder.none,
+                          decoration: InputDecoration(
+                            hintText: 'Where would you go?',
+                            hintStyle: TextStyle(
+                              color: Color(0xFFA0A0A0),
+                              fontSize: 16,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w500,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                          onTap: _showAddressSelector,
+                          readOnly: true,
                         ),
-                        onTap: _showAddressSelector,
-                        readOnly: true,
+                      ),
+                      IconButton(
+                        icon:
+                            Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
+                        onPressed: () {
+                          // Ajoutez ici la logique pour les favoris
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Boutons Transport et Delivery
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 48,
+                        decoration: ShapeDecoration(
+                          color: Color(0xFF008955),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Transport',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      icon:
-                          Icon(Icons.favorite_border, color: Color(0xFFA0A0A0)),
-                      onPressed: () {
-                        // Ajoutez ici la logique pour les favoris
-                      },
+                    SizedBox(width: 8), // Espacement entre les boutons
+                    Expanded(
+                      child: Container(
+                        height: 48,
+                        decoration: ShapeDecoration(
+                          color: Color(0xFFE2F5ED),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Delivery',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF414141),
+                              fontSize: 16,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    width: 168,
-                    height: 48,
-                    decoration: ShapeDecoration(
-                      color: Color(0xFF008955),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Transport',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 168,
-                    height: 48,
-                    decoration: ShapeDecoration(
-                      color: Color(0xFFE2F5ED),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Delivery',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF414141),
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 24,
-                    height: 24,
-                    padding: const EdgeInsets.only(
-                        top: 2, left: 2, right: 3, bottom: 3),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Transform(
-                          transform: Matrix4.identity()
-                            ..translate(0.0, 0.0)
-                            ..rotateZ(3.14),
-                          child:
-                              Container(width: 19, height: 19, child: Stack()),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
