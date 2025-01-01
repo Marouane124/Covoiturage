@@ -685,7 +685,7 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
           Positioned(
-            top: 350,
+            bottom: 250,
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
