@@ -187,7 +187,7 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
 
       try {
         final driverService = DriverService();
-        await driverService.registerDriver(
+        bool success = await driverService.registerDriver(
           licenseNumber: _licenseNumberController.text,
           vehicleModel: _vehicleModelController.text,
           vehicleYear: _vehicleYearController.text,
@@ -196,21 +196,27 @@ class _ConducteurRegisterScreenState extends State<ConducteurRegisterScreen> {
           licenseBackImage: File(_licenseBackImage!),
         );
 
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, '/map');
-        }
-      } catch (e) {
-        if (mounted) {
+        if (success) {
+          // Redirect to the login screen after successful registration
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/login', // Replace with your actual login route name
+            (Route<dynamic> route) => false,
+          );
+        } else {
+          // Handle registration failure
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registration failed: $e')),
+            SnackBar(content: Text("Non reussit")),
           );
         }
+      } catch (e) {
+        print('Registration error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("erreur")),
+        );
       } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }

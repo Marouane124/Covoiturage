@@ -4,6 +4,7 @@ import 'package:map_flutter/config/app_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'auth_service.dart';
+import 'dart:io';
 
 class UserService {
   final AuthService _authService = AuthService();
@@ -135,6 +136,26 @@ class UserService {
       print('Message: $e');
       print('========================\n');
       rethrow;
+    }
+  }
+
+  Future<void> updateUserProfileImage(File image) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    try {
+      // Create FormData to send the file
+      FormData formData = FormData.fromMap({
+        'photo': await MultipartFile.fromFile(image.path,
+            filename: 'profile_image.jpg'),
+        'uid': currentUser.uid,
+      });
+
+      await Dio()
+          .post('$baseUrl/utilisateur/updateProfileImage', data: formData);
+    } catch (e) {
+      print('Error updating profile image: $e');
+      throw e; // Rethrow the error for further handling
     }
   }
 }
