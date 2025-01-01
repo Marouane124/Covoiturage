@@ -136,7 +136,7 @@ class _SelectDriversScreenState extends State<SelectDriversScreen> {
                       // Action pour voir la liste des voitures
                     },
                     child: Text(
-                      'View car list',
+                      'View driver list',
                       style: TextStyle(color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
