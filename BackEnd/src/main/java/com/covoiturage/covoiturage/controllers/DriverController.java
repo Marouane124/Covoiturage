@@ -17,6 +17,7 @@ public class DriverController {
     @Autowired
     private DriverService driverService;
 
+
     @PostMapping("/register")
     public ResponseEntity<?> registerDriver(
             @RequestParam("uid") String userId,
@@ -28,7 +29,7 @@ public class DriverController {
             @RequestParam("licenseBackImage") MultipartFile licenseBackImage) {
 
         try {
-            // Convert images to Base64 or binary as needed
+            // Convert images to Base64
             String licenseFrontImageBase64 = Base64.getEncoder().encodeToString(licenseFrontImage.getBytes());
             String licenseBackImageBase64 = Base64.getEncoder().encodeToString(licenseBackImage.getBytes());
 
@@ -37,6 +38,9 @@ public class DriverController {
 
             // Save the driver
             Driver createdDriver = driverService.createDriver(driver);
+
+            // Add role to the user
+            driverService.addRoleToUser(userId, "CONDUCTEUR"); // Assuming you have this method in your DriverService
 
             // Return success response
             return ResponseEntity.status(HttpStatus.CREATED).body(createdDriver);
@@ -48,7 +52,6 @@ public class DriverController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed: " + e.getMessage());
         }
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<Driver> getDriver(@PathVariable String id) {
         Optional<Driver> driver = driverService.getDriver(id);
@@ -66,4 +69,5 @@ public class DriverController {
         driverService.deleteDriver(id);
         return ResponseEntity.noContent().build();
     }
+
 }
