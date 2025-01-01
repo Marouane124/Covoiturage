@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
+
 @RequestMapping("/api/trajets")
 public class TrajetController {
 
