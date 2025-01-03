@@ -39,8 +39,14 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _mapController.move(myPosition, 15);
+      
+      await _getCurrentLocation();
+      
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -649,6 +655,8 @@ class _MapScreenState extends State<MapScreen> {
               options: MapOptions(
                 minZoom: 5,
                 maxZoom: 25,
+                initialCenter: myPosition,
+                initialZoom: 15,
                 onTap: (_, latLng) {
                   _onMapTapped(latLng);
                 },
