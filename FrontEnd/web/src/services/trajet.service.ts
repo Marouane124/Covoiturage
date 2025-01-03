@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Trajet } from '../models/trajet.model';
 
-const API_URL = 'http://24.20.0.182:8080/api/trajets';
+const API_URL = 'http://192.168.100.94:8080/api/trajets';
 
 @Injectable({
   providedIn: 'root'
