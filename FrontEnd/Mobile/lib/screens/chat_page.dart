@@ -8,15 +8,11 @@ import 'package:map_flutter/services/user_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatPage extends StatefulWidget {
-  final String receiverId = "iIbvb4SwYmPNXnDcWYdWXIz1O5R2";
-  final String receiverEmail = "chat1@gmail.com";
+  final String receiverId;
+  final String receiverEmail;
 
-  //final String receiverId = "of8Qcbby0aS7qJ2FEH7OHNjNhoO2";
-  //final String receiverEmail = "chat2@gmail.com";
-
-  //const ChatPage(
-  //{super.key, required this.receiverId, required this.receiverEmail});
-  final String receiverPhoneNumber = "1234567890";
+  const ChatPage(
+      {super.key, required this.receiverId, required this.receiverEmail});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -28,6 +24,7 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String receiverName = '';
+  String receiverPhoneNumber = '';
 
   @override
   void initState() {
@@ -39,6 +36,7 @@ class _ChatPageState extends State<ChatPage> {
     var profile = await userService.getProfile(widget.receiverId);
     setState(() {
       receiverName = profile['username'] ?? 'Unknown';
+      receiverPhoneNumber = profile['phone'] ?? '1234567890';
     });
   }
 
@@ -52,7 +50,7 @@ class _ChatPageState extends State<ChatPage> {
   void _callReceiver() async {
     final Uri launchUri = Uri(
       scheme: 'tel',
-      path: widget.receiverPhoneNumber,
+      path: receiverPhoneNumber,
     );
     await launchUrl(launchUri);
   }
@@ -68,11 +66,35 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         title: Center(child: Text(receiverName)),
         backgroundColor: Colors.green,
+        actions: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white),
+              borderRadius: BorderRadius.circular(8),
+              color: const Color.fromARGB(255, 10, 118, 219),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.phone, color: Colors.white),
+              onPressed: _callReceiver,
+            ),
+          ),
+          SizedBox(width: 8),
+          Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(8),
+                color: const Color.fromARGB(255, 219, 34, 10)),
+            child: IconButton(
+              icon: Icon(Icons.payment, color: Colors.white),
+              onPressed: _proceedToPayment,
+            ),
+          ),
+          SizedBox(width: 16),
+        ],
       ),
       body: Column(
         children: [
           Expanded(child: _buildMessageList()),
-          _buildActionButtons(),
           _buildMessageInput(),
         ],
       ),
@@ -152,8 +174,8 @@ class _ChatPageState extends State<ChatPage> {
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
                     children: [
-                      Text(formattedTime, style: TextStyle(color: Colors.grey)),
                       ChatBubble(message: messageData['message']),
+                      Text(formattedTime, style: TextStyle(color: Colors.grey))
                     ],
                   ),
                 ),
@@ -189,6 +211,7 @@ class _ChatPageState extends State<ChatPage> {
               hintStyle:
                   TextStyle(color: const Color.fromARGB(255, 111, 105, 105)),
             ),
+            style: TextStyle(color: Colors.black),
           ),
         ),
         IconButton(
@@ -196,44 +219,6 @@ class _ChatPageState extends State<ChatPage> {
           icon: Icon(Icons.send, size: 30, color: Colors.green),
         ),
       ],
-    );
-  }
-
-  // Build action buttons
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.green,
-                ),
-                child: IconButton(
-                  onPressed: _callReceiver,
-                  icon: Icon(Icons.phone, color: Colors.white, size: 30),
-                ),
-              ),
-              SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.blue,
-                ),
-                child: IconButton(
-                  onPressed: _proceedToPayment,
-                  icon: Icon(Icons.payment, color: Colors.white, size: 30),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

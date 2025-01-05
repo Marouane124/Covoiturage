@@ -115,7 +115,7 @@ public class TrajetController {
 
         if (trajetData.isPresent()) {
             Trajet updatedTrajet = trajetData.get();
-            updatedTrajet.setNomConducteur(trajet.getNomConducteur());
+            updatedTrajet.setConducteurId(trajet.getConducteurId());
             updatedTrajet.setVilleDepart(trajet.getVilleDepart());
             updatedTrajet.setVilleArrivee(trajet.getVilleArrivee());
             updatedTrajet.setDate(trajet.getDate());

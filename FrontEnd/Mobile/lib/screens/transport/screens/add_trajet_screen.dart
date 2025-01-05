@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:map_flutter/config/app_config.dart';
+import 'package:map_flutter/screens/transport/models/trajet.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
-
+import 'package:map_flutter/services/trajet_service.dart';
 
 class AddTrajetScreen extends StatefulWidget {
   const AddTrajetScreen({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class AddTrajetScreen extends StatefulWidget {
 
 class _AddTrajetScreenState extends State<AddTrajetScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TrajetService _trajetService = TrajetService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _villeDepartController = TextEditingController();
   final TextEditingController _villeArriveeController = TextEditingController();
@@ -91,180 +93,45 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
   }
 
   Future<void> _submitTrajet() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final User? currentUser = _auth.currentUser;
-        if (currentUser == null) {
-          throw Exception('Aucun utilisateur connecté');
-        }
+    // Get the current user's ID from Firebase
+    final User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      // Handle the case where the user is not logged in
+      print('No user is currently logged in.');
+      return;
+    }
 
-        final response = await http.post(
-          Uri.parse('${AppConfig.baseUrl}/trajets'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${await currentUser.getIdToken()}',
-          },
-          body: jsonEncode({
-            "nomConducteur": currentUser.displayName ?? "Utilisateur",
-            "villeDepart": _villeDepartController.text,
-            "villeArrivee": _villeArriveeController.text,
-            "date": _dateController.text,
-            "heure": _heureController.text,
-            "placesDisponibles": int.parse(_placesController.text),
-            "prix": double.parse(_prixController.text),
-            "voiture": _voitureController.text,
-            "userId": currentUser.uid,
-          }),
-        );
+    // Parse the date using DateFormat
+    DateTime parsedDate;
+    try {
+      parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return;
+    }
 
-        if (response.statusCode == 201) {
-          Navigator.pop(context);
-          
-          showModalBottomSheet(
-            context: context,
-            backgroundColor: Colors.transparent,
-            builder: (context) => Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: const ShapeDecoration(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'Confirm Location',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.location_on, color: Colors.grey),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Current location',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                _villeDepartController.text,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.location_on, color: Color(0xFF08B783)),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Office',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                _villeArriveeController.text,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SelectDriversScreen(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF008955),
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Confirm Location',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        } else {
-          throw Exception('Erreur lors de l\'ajout du trajet: ${response.body}');
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+    final trajet = Trajet(
+      conducteurId: currentUser.uid,
+      villeDepart: _villeDepartController.text,
+      villeArrivee: _villeArriveeController.text,
+      date: parsedDate,
+      heure: _heureController.text,
+      placesDisponibles: int.parse(_placesController.text),
+      prix: double.parse(_prixController.text),
+      voiture: _voitureController.text,
+      timestamp: DateTime.now(),
+    );
+
+    try {
+      await _trajetService.addTrajet(trajet);
+      print('Trajet added successfully!');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SelectDriversScreen()),
+      );
+    } catch (e) {
+      // Handle error (e.g., show an error message)
+      print('Error adding trajet: $e');
     }
   }
 
@@ -287,7 +154,8 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                   labelText: 'Point de départ',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) => value?.isEmpty ?? true ? 'Ce champ est requis' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -296,7 +164,8 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                   labelText: 'Point d\'arrivée',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) => value?.isEmpty ?? true ? 'Ce champ est requis' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
               ),
               const SizedBox(height: 16),
               GestureDetector(
@@ -319,7 +188,8 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                     style: const TextStyle(color: Colors.white),
                     readOnly: true,
                     onTap: () => _selectDate(context),
-                    validator: (value) => value?.isEmpty ?? true ? 'La date est requise' : null,
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'La date est requise' : null,
                   ),
                 ),
               ),
@@ -335,7 +205,8 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                   ),
                 ),
                 readOnly: true,
-                validator: (value) => value?.isEmpty ?? true ? 'Ce champ est requis' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
                 onTap: () => _selectTime(context),
               ),
               const SizedBox(height: 16),
@@ -346,7 +217,8 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
-                validator: (value) => value?.isEmpty ?? true ? 'Ce champ est requis' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -356,7 +228,8 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
-                validator: (value) => value?.isEmpty ?? true ? 'Ce champ est requis' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -365,7 +238,8 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                   labelText: 'Voiture',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) => value?.isEmpty ?? true ? 'Ce champ est requis' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
               ),
               const SizedBox(height: 24),
               ElevatedButton(

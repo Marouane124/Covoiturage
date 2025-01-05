@@ -8,6 +8,8 @@ import 'package:map_flutter/screens/auth/welcome_screen.dart';
 import 'package:map_flutter/screens/chat_page.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
+import 'package:map_flutter/screens/transport/screens/add_trajet_screen.dart';
+import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'generated/l10n.dart';
 import 'package:map_flutter/screens/sidemenu/settings/settings_screen.dart';
 import 'package:map_flutter/screens/sidemenu/settings/change_password_screen.dart';
@@ -58,7 +60,7 @@ class MyApp extends StatelessWidget {
             '/welcome': (context) => const WelcomeScreen(),
             '/login': (context) => const LoginScreen(),
             '/register': (context) => const RegisterScreen(),
-            '/chat': (context) => ChatPage(),
+            '/chat': (context) => ChatPage(receiverId: '', receiverEmail: ''),
             '/map': (context) => const AuthWrapper(
                   requireAuth: true,
                   child: MapScreen(),
@@ -73,6 +75,8 @@ class MyApp extends StatelessWidget {
             '/privacy-policy': (context) => const PrivacyPolicyScreen(),
             '/contact-us': (context) => const ContactUsScreen(),
             '/delete-account': (context) => const DeleteAccountScreen(),
+            '/add-trajet': (context) => const AddTrajetScreen(),
+            '/select-driver': (context) => SelectDriversScreen(),
             '/conducteur-register': (context) =>
                 const ConducteurRegisterScreen(),
           },
