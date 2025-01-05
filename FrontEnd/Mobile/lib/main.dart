@@ -5,6 +5,7 @@ import 'package:map_flutter/screens/auth/register_screen.dart';
 import 'package:map_flutter/screens/auth/splash_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:map_flutter/screens/auth/welcome_screen.dart';
+import 'package:map_flutter/screens/chat_page.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
 import 'generated/l10n.dart';
@@ -57,6 +58,7 @@ class MyApp extends StatelessWidget {
             '/welcome': (context) => const WelcomeScreen(),
             '/login': (context) => const LoginScreen(),
             '/register': (context) => const RegisterScreen(),
+            '/chat': (context) => ChatPage(),
             '/map': (context) => const AuthWrapper(
                   requireAuth: true,
                   child: MapScreen(),

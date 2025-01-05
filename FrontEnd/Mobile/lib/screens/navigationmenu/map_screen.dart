@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'package:map_flutter/screens/transport/screens/add_trajet_screen.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'dart:convert';
 //import 'package:geolocator/geolocator.dart';
@@ -29,19 +30,36 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _fromController = TextEditingController();
+  final TextEditingController _destinationController = TextEditingController();
   LatLng? _currentPosition;
   bool _tracking = false;
   List<LatLng> _route = [];
   bool _isMenuOpen = false;
   bool _showAddressForm = false;
   List<Marker> _markers = [];
+  List<Map<String, dynamic>> _suggestions = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _mapController.move(myPosition, 15);
+      
+      await _getCurrentLocation();
+      
+      if (mounted) {
+        setState(() {});
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _fromController.dispose();
+    _destinationController.dispose();
+    super.dispose();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -241,7 +259,23 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _showLocationConfirmation() {
+  Future<String> _getAddressFromLatLng(LatLng latLng) async {
+    final url = Uri.parse(
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/${latLng.longitude},${latLng.latitude}.json?access_token=$mapboxAccessToken',
+    );
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['features'].isNotEmpty) {
+        return data['features'][0]['place_name'];
+      }
+    }
+    return 'Unknown location';
+  }
+
+  void _showLocationConfirmation(LatLng currentLocation, String destination) async {
+    String currentAddress = await _getAddressFromLatLng(currentLocation);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -284,30 +318,23 @@ class _MapScreenState extends State<MapScreen> {
             // Current Location
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.location_on, color: Colors.red),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Current location',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          '2972 Westheimer Rd. Santa Ana, Illinois 85486',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                      ],
+                  Text(
+                    'Current location', // Titre
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black, // Couleur du titre
+                    ),
+                  ),
+                  Text(
+                    '40, 3, Jl. Marrakesh, Marrakesh-Sa', // Adresse actuelle
+                    style: TextStyle(
+                      color: Colors.black, // Changer la couleur ici
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
                     ),
                   ),
                 ],
@@ -333,7 +360,7 @@ class _MapScreenState extends State<MapScreen> {
                           ),
                         ),
                         Text(
-                          '1901 Thornridge Cir. Shiloh, Hawaii 81063',
+                          destination,
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 12,
@@ -396,8 +423,41 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  // Modifier les gestionnaires d'événements dans _showAddressSelector
-  void _showAddressSelector() {
+  Future<void> _getSuggestions(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _suggestions = [];
+      });
+      return;
+    }
+
+    try {
+      final url = Uri.parse(
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=$mapboxAccessToken&types=place,address&limit=5',
+      );
+
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _suggestions = List<Map<String, dynamic>>.from(data['features'].map((feature) => {
+            'place_name': feature['place_name'],
+            'coordinates': LatLng(feature['center'][1], feature['center'][0]),
+          }));
+        });
+      }
+    } catch (e) {
+      print('Error getting suggestions: $e');
+    }
+  }
+
+  // Modifier _showAddressSelector pour inclure les suggestions
+  void _showAddressSelector() async {
+    if (_currentPosition != null) {
+      String currentAddress = await _getAddressFromLatLng(_currentPosition!);
+      _fromController.text = currentAddress;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -442,12 +502,13 @@ class _MapScreenState extends State<MapScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: TextField(
+                controller: _fromController,
                 decoration: InputDecoration(
                   prefixIcon:
-                      Icon(Icons.my_location_outlined, color: Colors.grey[400]),
+                      Icon(Icons.my_location_outlined, color: const Color.fromARGB(255, 9, 9, 9)),
                   hintText: 'From',
                   hintStyle: TextStyle(
-                    color: Colors.grey[400],
+                    color: Colors.black,
                     fontSize: 16,
                     fontFamily: 'Poppins',
                   ),
@@ -469,7 +530,7 @@ class _MapScreenState extends State<MapScreen> {
                 onSubmitted: (value) {
                   if (value.isNotEmpty) {
                     Navigator.pop(context);
-                    _showLocationConfirmation();
+                    _showLocationConfirmation(_currentPosition!, value);
                   }
                 },
               ),
@@ -479,12 +540,18 @@ class _MapScreenState extends State<MapScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: TextField(
+                controller: _destinationController,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontFamily: 'Poppins',
+                ),
                 decoration: InputDecoration(
                   prefixIcon:
-                      Icon(Icons.location_on_outlined, color: Colors.grey[400]),
+                      Icon(Icons.location_on_outlined, color: const Color.fromARGB(255, 9, 9, 9)),
                   hintText: 'To',
                   hintStyle: TextStyle(
-                    color: Colors.grey[400],
+                    color: const Color.fromARGB(255, 246, 184, 184),
                     fontSize: 16,
                     fontFamily: 'Poppins',
                   ),
@@ -503,14 +570,46 @@ class _MapScreenState extends State<MapScreen> {
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    Navigator.pop(context);
-                    _showLocationConfirmation();
-                  }
+                onChanged: (value) {
+                  _getSuggestions(value);
                 },
               ),
             ),
+            if (_suggestions.isNotEmpty)
+              Container(
+                constraints: BoxConstraints(maxHeight: 200),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _suggestions.length,
+                  itemBuilder: (context, index) {
+                    final suggestion = _suggestions[index];
+                    return ListTile(
+                      leading: Icon(Icons.location_on_outlined, color: Colors.grey[600]),
+                      title: Text(suggestion['place_name']),
+                      onTap: () async {
+                        _destinationController.text = suggestion['place_name'];
+                        setState(() => _suggestions = []);
+                        await _getRoute(suggestion['coordinates']);
+                        if (mounted) {
+                          Navigator.pop(context);
+                          _showLocationConfirmation(_currentPosition!, suggestion['place_name']);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
             // Recent places title
             const Padding(
               padding: EdgeInsets.only(left: 16.0, top: 24.0, bottom: 8.0),
@@ -530,8 +629,41 @@ class _MapScreenState extends State<MapScreen> {
             // Liste des lieux récents
             _buildRecentPlace('Office', '2.7km', 'Old Town Road 1234'),
             _buildRecentPlace('Coffee shop', '1.8km', 'New Street 5678'),
-            _buildRecentPlace('Shopping center', '4.9km', 'Market Square 910'),
-            _buildRecentPlace('Shopping mall', '4.5km', 'Mall Avenue 1112'),
+            
+            // Ajouter un Spacer pour pousser le bouton vers le bas
+            const Spacer(),
+            
+            // Nouveau bouton Ajouter un trajet
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Fermer la modal bottom sheet
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddTrajetScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF008955),
+                  minimumSize: const Size(double.infinity, 50), // Largeur maximale
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Ajouter un trajet',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -567,7 +699,7 @@ class _MapScreenState extends State<MapScreen> {
       ),
       onTap: () {
         Navigator.pop(context);
-        _showLocationConfirmation();
+        _showLocationConfirmation(_currentPosition!, address);
       },
     );
   }
@@ -649,6 +781,8 @@ class _MapScreenState extends State<MapScreen> {
               options: MapOptions(
                 minZoom: 5,
                 maxZoom: 25,
+                initialCenter: myPosition,
+                initialZoom: 15,
                 onTap: (_, latLng) {
                   _onMapTapped(latLng);
                 },
@@ -789,6 +923,36 @@ class _MapScreenState extends State<MapScreen> {
               bottom: 0,
               child: SideMenu(),
             ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddTrajetScreen(), // Remplacez par le nom de votre écran
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF008955), // Couleur du bouton
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Ajouter un trajet',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
       extendBody: true,
@@ -796,4 +960,3 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-
