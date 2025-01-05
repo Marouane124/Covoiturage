@@ -2,18 +2,25 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:map_flutter/config/app_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 
 import 'auth_service.dart';
 import 'dart:io';
+import 'dart:convert';
 
 class UserService {
   final AuthService _authService = AuthService();
   final String baseUrl = AppConfig.baseUrl;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('access_token');
+    final User? currentUser = _firebaseAuth.currentUser;
+    if (currentUser != null) {
+      return await currentUser.getIdToken();
+    }
+    return null;
   }
 
   Future<Map<String, dynamic>> getCurrentUserProfile() async {
@@ -51,8 +58,8 @@ class UserService {
 
       if (response.statusCode == 200) {
         return response.data;
-      } else if (response.statusCode == 404) {
-        throw Exception('User profile not found. Please check the UID.');
+        //} else if (response.statusCode == 404) {
+        //  throw Exception('User profile not found. Please check the UID.');
       } else if (response.statusCode == 401) {
         await _authService.signOut();
         throw Exception('Session expired. Please login again.');
@@ -60,18 +67,19 @@ class UserService {
 
       throw Exception(response.data['message'] ?? 'Failed to fetch profile');
     } catch (e) {
-      print('\n=== Get Profile Error ===');
-      print('Type: ${e.runtimeType}');
-      print('Message: $e');
-      print('========================\n');
+      //print('\n=== Get Profile Error ===');
+      //print('Type: ${e.runtimeType}');
+      //print('Message: $e');
+      //print('========================\n');
       rethrow;
     }
   }
 
   Future<Map<String, dynamic>> getProfile(String userId) async {
     try {
-      if (userId == null) {
-        throw Exception('No authenticated user found');
+      final User? currentUser = _firebaseAuth.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not logged in');
       }
 
       final token = await _getToken();
@@ -80,14 +88,13 @@ class UserService {
       }
 
       print('\n=== Get Profile Request ===');
-      print('Firebase UID: ${userId}');
-      print('Endpoint: $baseUrl/utilisateur/${userId}');
+      print('User ID: $userId');
+      print('Endpoint: $baseUrl/utilisateur/$userId');
       print('========================\n');
 
       final response = await Dio().get(
-        '$baseUrl/utilisateur/${userId}',
+        '$baseUrl/utilisateur/$userId',
         options: Options(
-          validateStatus: (status) => true,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -102,8 +109,8 @@ class UserService {
 
       if (response.statusCode == 200) {
         return response.data;
-      } else if (response.statusCode == 404) {
-        throw Exception('User profile not found. Please check the UID.');
+        //} else if (response.statusCode == 404) {
+        //  throw Exception('User profile not found. Please check the UID.');
       } else if (response.statusCode == 401) {
         await _authService.signOut();
         throw Exception('Session expired. Please login again.');
@@ -111,10 +118,10 @@ class UserService {
 
       throw Exception(response.data['message'] ?? 'Failed to fetch profile');
     } catch (e) {
-      print('\n=== Get Profile Error ===');
-      print('Type: ${e.runtimeType}');
-      print('Message: $e');
-      print('========================\n');
+      //print('\n=== Get Profile Error ===');
+      //print('Type: ${e.runtimeType}');
+      //print('Message: $e');
+      //print('========================\n');
       rethrow;
     }
   }

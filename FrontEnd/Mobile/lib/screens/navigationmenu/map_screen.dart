@@ -45,9 +45,9 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _mapController.move(myPosition, 15);
-      
+
       await _getCurrentLocation();
-      
+
       if (mounted) {
         setState(() {});
       }
@@ -65,7 +65,7 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _getCurrentLocation() async {
     try {
       final Location location = Location();
-      
+
       // Vérifier si le service de localisation est activé
       bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
@@ -105,7 +105,8 @@ class _MapScreenState extends State<MapScreen> {
 
       if (mounted) {
         setState(() {
-          _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
+          _currentPosition =
+              LatLng(locationData.latitude!, locationData.longitude!);
           // Ajouter le marqueur à la position actuelle
           _markers.clear();
           _markers.add(
@@ -274,7 +275,8 @@ class _MapScreenState extends State<MapScreen> {
     return 'Unknown location';
   }
 
-  void _showLocationConfirmation(LatLng currentLocation, String destination) async {
+  void _showLocationConfirmation(
+      LatLng currentLocation, String destination) async {
     String currentAddress = await _getAddressFromLatLng(currentLocation);
     showModalBottomSheet(
       context: context,
@@ -393,7 +395,7 @@ class _MapScreenState extends State<MapScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>  SelectDriversScreen(),
+                        builder: (context) => SelectDriversScreen(),
                       ),
                     );
                   },
@@ -440,10 +442,12 @@ class _MapScreenState extends State<MapScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          _suggestions = List<Map<String, dynamic>>.from(data['features'].map((feature) => {
-            'place_name': feature['place_name'],
-            'coordinates': LatLng(feature['center'][1], feature['center'][0]),
-          }));
+          _suggestions = List<Map<String, dynamic>>.from(
+              data['features'].map((feature) => {
+                    'place_name': feature['place_name'],
+                    'coordinates':
+                        LatLng(feature['center'][1], feature['center'][0]),
+                  }));
         });
       }
     } catch (e) {
@@ -504,8 +508,8 @@ class _MapScreenState extends State<MapScreen> {
               child: TextField(
                 controller: _fromController,
                 decoration: InputDecoration(
-                  prefixIcon:
-                      Icon(Icons.my_location_outlined, color: const Color.fromARGB(255, 9, 9, 9)),
+                  prefixIcon: Icon(Icons.my_location_outlined,
+                      color: const Color.fromARGB(255, 9, 9, 9)),
                   hintText: 'From',
                   hintStyle: TextStyle(
                     color: Colors.black,
@@ -547,8 +551,8 @@ class _MapScreenState extends State<MapScreen> {
                   fontFamily: 'Poppins',
                 ),
                 decoration: InputDecoration(
-                  prefixIcon:
-                      Icon(Icons.location_on_outlined, color: const Color.fromARGB(255, 9, 9, 9)),
+                  prefixIcon: Icon(Icons.location_on_outlined,
+                      color: const Color.fromARGB(255, 9, 9, 9)),
                   hintText: 'To',
                   hintStyle: TextStyle(
                     color: const Color.fromARGB(255, 246, 184, 184),
@@ -595,7 +599,8 @@ class _MapScreenState extends State<MapScreen> {
                   itemBuilder: (context, index) {
                     final suggestion = _suggestions[index];
                     return ListTile(
-                      leading: Icon(Icons.location_on_outlined, color: Colors.grey[600]),
+                      leading: Icon(Icons.location_on_outlined,
+                          color: Colors.grey[600]),
                       title: Text(suggestion['place_name']),
                       onTap: () async {
                         _destinationController.text = suggestion['place_name'];
@@ -603,7 +608,8 @@ class _MapScreenState extends State<MapScreen> {
                         await _getRoute(suggestion['coordinates']);
                         if (mounted) {
                           Navigator.pop(context);
-                          _showLocationConfirmation(_currentPosition!, suggestion['place_name']);
+                          _showLocationConfirmation(
+                              _currentPosition!, suggestion['place_name']);
                         }
                       },
                     );
@@ -629,10 +635,10 @@ class _MapScreenState extends State<MapScreen> {
             // Liste des lieux récents
             _buildRecentPlace('Office', '2.7km', 'Old Town Road 1234'),
             _buildRecentPlace('Coffee shop', '1.8km', 'New Street 5678'),
-            
+
             // Ajouter un Spacer pour pousser le bouton vers le bas
             const Spacer(),
-            
+
             // Nouveau bouton Ajouter un trajet
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -648,7 +654,8 @@ class _MapScreenState extends State<MapScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF008955),
-                  minimumSize: const Size(double.infinity, 50), // Largeur maximale
+                  minimumSize:
+                      const Size(double.infinity, 50), // Largeur maximale
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -789,7 +796,8 @@ class _MapScreenState extends State<MapScreen> {
               ),
               children: [
                 TileLayer(
-                  urlTemplate: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
+                  urlTemplate:
+                      'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
                   userAgentPackageName: 'com.example.app',
                 ),
                 MarkerLayer(
@@ -932,7 +940,8 @@ class _MapScreenState extends State<MapScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddTrajetScreen(), // Remplacez par le nom de votre écran
+                    builder: (context) =>
+                        AddTrajetScreen(), // Remplacez par le nom de votre écran
                   ),
                 );
               },

@@ -68,7 +68,7 @@ public class SecurityConfig {
                                 "/api/trajets/**",
                                 "/api/drivers/**"
                         ).permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 

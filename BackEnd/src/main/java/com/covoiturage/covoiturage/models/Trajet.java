@@ -17,7 +17,7 @@ import java.util.Date;
 public class Trajet {
     @Id
     private String id;
-    private String nomConducteur;
+    private String conducteurId;
     private String villeDepart;
     private String villeArrivee;
     @JsonFormat(pattern = "dd/MM/yyyy")
@@ -26,11 +26,13 @@ public class Trajet {
     private int placesDisponibles;
     private double prix;
     private String voiture;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    private Date timestamp;
 
 
     // Constructor without ID (useful for new Trajet creation)
-    public Trajet(String nomConducteur, String villeDepart, String villeArrivee, Date date, String heure, int placesDisponibles, double prix, String voiture) {
-        this.nomConducteur = nomConducteur;
+    public Trajet(String conducteurId, String villeDepart, String villeArrivee, Date date, String heure, int placesDisponibles, double prix, String voiture, Date timestamp) {
+        this.conducteurId = conducteurId;
         this.villeDepart = villeDepart;
         this.villeArrivee = villeArrivee;
         this.date = date;
@@ -38,6 +40,7 @@ public class Trajet {
         this.placesDisponibles = placesDisponibles;
         this.prix = prix;
         this.voiture = voiture;
+        this.timestamp = timestamp;
     }
 
     // Constructor with only mandatory fields
