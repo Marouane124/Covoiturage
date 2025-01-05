@@ -5,13 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:map_flutter/screens/transport/screens/add_trajet_screen.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'dart:convert';
-//import 'package:geolocator/geolocator.dart';
-//import 'package:map_flutter/screens/navigationmenu/favorite.dart';
 import '../notification.dart';
 import '../../components/sidemenu.dart';
 import 'dart:ui';
-//import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
-import 'package:map_flutter/screens/transport/screens/select_transport_screen.dart';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'package:location/location.dart';
 
@@ -27,7 +23,7 @@ class MapScreen extends StatefulWidget {
   _MapScreenState createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _fromController = TextEditingController();
@@ -36,80 +32,64 @@ class _MapScreenState extends State<MapScreen> {
   bool _tracking = false;
   List<LatLng> _route = [];
   bool _isMenuOpen = false;
-  bool _showAddressForm = false;
+  //bool _showAddressForm = false;
   List<Marker> _markers = [];
   List<Map<String, dynamic>> _suggestions = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _mapController.move(myPosition, 15);
-
-      await _getCurrentLocation();
-
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    WidgetsBinding.instance.addObserver(this);
+    // Initialiser immédiatement la carte
+    _initializeMap();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _searchController.dispose();
     _fromController.dispose();
     _destinationController.dispose();
     super.dispose();
   }
 
-  Future<void> _getCurrentLocation() async {
+  // Cette méthode est appelée quand l'état de l'application change
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Mettre à jour la position immédiatement quand l'app reprend
+      _getCurrentLocation();
+    }
+  }
+
+  Future<void> _initializeMap() async {
     try {
       final Location location = Location();
-
-      // Vérifier si le service de localisation est activé
+      
+      // Vérifier les permissions une seule fois au démarrage
       bool serviceEnabled = await location.serviceEnabled();
       if (!serviceEnabled) {
         serviceEnabled = await location.requestService();
         if (!serviceEnabled) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Veuillez activer la localisation'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
           return;
         }
       }
 
-      // Vérifier les permissions
       PermissionStatus permissionGranted = await location.hasPermission();
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await location.requestPermission();
         if (permissionGranted != PermissionStatus.granted) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Permission de localisation refusée'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
           return;
         }
       }
 
-      // Obtenir la position
+      // Obtenir la position initiale
       final LocationData locationData = await location.getLocation();
-
+      
       if (mounted) {
         setState(() {
-          _currentPosition =
-              LatLng(locationData.latitude!, locationData.longitude!);
-          // Ajouter le marqueur à la position actuelle
-          _markers.clear();
-          _markers.add(
+          _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
+          _markers = [
             Marker(
               width: 120.0,
               height: 80.0,
@@ -148,31 +128,125 @@ class _MapScreenState extends State<MapScreen> {
                 ],
               ),
             ),
+          ];
+        });
+
+        // Centrer la carte sur la position initiale
+        _mapController.move(_currentPosition!, 15);
+      }
+
+      // Configurer les mises à jour de position uniquement lorsque nécessaire
+      location.onLocationChanged.listen((LocationData currentLocation) {
+        if (mounted && _tracking) { // Mettre à jour uniquement si le tracking est activé
+          setState(() {
+            _currentPosition = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+            // Mettre à jour le marqueur si nécessaire
+            if (_markers.isNotEmpty) {
+              _markers[0] = Marker(
+                width: 120.0,
+                height: 80.0,
+                point: _currentPosition!,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 120),
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: const Text(
+                        'Vous êtes ici',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          });
+        }
+      });
+
+    } catch (e) {
+      print("Erreur d'initialisation de la carte: $e");
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      final Location location = Location();
+      final LocationData locationData = await location.getLocation();
+
+      if (mounted) {
+        setState(() {
+          _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
+          // Mettre à jour les marqueurs
+          _markers.clear();
+          _markers.add(
+            Marker(
+              width: 120.0,
+              height: 80.0,
+              point: _currentPosition!,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.location_on,
+                    color: Colors.red,
+                    size: 30,
+                  ),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 120),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      'Vous êtes ici',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         });
 
-        // Centrer la carte sur la position actuelle avec animation
+        // Centrer la carte sur la position actuelle
         _mapController.move(_currentPosition!, 15);
-
-        // Afficher un message de succès
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Position actuelle trouvée'),
-            backgroundColor: Color(0xFF008955),
-            duration: Duration(seconds: 2),
-          ),
-        );
       }
     } catch (e) {
       print("Erreur de géolocalisation: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur de localisation: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     }
   }
 
@@ -277,7 +351,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _showLocationConfirmation(
       LatLng currentLocation, String destination) async {
-    String currentAddress = await _getAddressFromLatLng(currentLocation);
+   // String currentAddress = await _getAddressFromLatLng(currentLocation);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -778,194 +852,201 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                minZoom: 5,
-                maxZoom: 25,
-                initialCenter: myPosition,
-                initialZoom: 15,
-                onTap: (_, latLng) {
-                  _onMapTapped(latLng);
-                },
+    return WillPopScope(
+      onWillPop: () async {
+        // Mettre à jour la position quand l'utilisateur revient en arrière
+        _getCurrentLocation();
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  minZoom: 5,
+                  maxZoom: 25,
+                  initialCenter: myPosition,
+                  initialZoom: 15,
+                  onTap: (_, latLng) {
+                    _onMapTapped(latLng);
+                  },
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
+                    userAgentPackageName: 'com.example.app',
+                  ),
+                  MarkerLayer(
+                    markers: _markers,
+                  ),
+                  if (_route.isNotEmpty)
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: _route,
+                          strokeWidth: 4.0,
+                          color: Colors.blue,
+                        ),
+                      ],
+                    ),
+                ],
               ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                      'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
-                  userAgentPackageName: 'com.example.app',
-                ),
-                MarkerLayer(
-                  markers: _markers,
-                ),
-                if (_route.isNotEmpty)
-                  PolylineLayer(
-                    polylines: [
-                      Polyline(
-                        points: _route,
-                        strokeWidth: 4.0,
-                        color: Colors.blue,
-                      ),
-                    ],
-                  ),
-              ],
             ),
-          ),
-          Positioned(
-            bottom: 160,
-            left: 16,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                _buildMainContainer(),
-              ],
+            Positioned(
+              bottom: 160,
+              left: 16,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _buildMainContainer(),
+                ],
+              ),
             ),
-          ),
-          Positioned(
-            bottom: 250,
-            right: 16,
-            child: FloatingActionButton(
-              onPressed: () {
-                print("Bouton cliqué");
-                _getCurrentLocation();
-              },
-              backgroundColor: const Color(0xFF008955),
-              child: const Icon(Icons.my_location, color: Colors.white),
+            Positioned(
+              bottom: 250,
+              right: 16,
+              child: FloatingActionButton(
+                onPressed: () {
+                  print("Bouton cliqué");
+                  _getCurrentLocation();
+                },
+                backgroundColor: const Color(0xFF008955),
+                child: const Icon(Icons.my_location, color: Colors.white),
+              ),
             ),
-          ),
-          Positioned(
-            top: 40,
-            left: 16,
-            right: 16,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF08B783),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+            Positioned(
+              top: 40,
+              left: 16,
+              right: 16,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF08B783),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.menu),
+                      color: Colors.black,
+                      onPressed: () {
+                        setState(() {
+                          _isMenuOpen = !_isMenuOpen; // Toggle the menu state
+                        });
+                      },
+                    ),
                   ),
-                  child: IconButton(
-                    icon: Icon(Icons.menu),
-                    color: Colors.black,
-                    onPressed: () {
-                      setState(() {
-                        _isMenuOpen = !_isMenuOpen; // Toggle the menu state
-                      });
-                    },
-                  ),
-                ),
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.notifications_none),
-                        color: Colors.black,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const NotificationScreen(),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.notifications_none),
+                          color: Colors.black,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NotificationScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
                             ),
-                          );
-                        },
-                      ),
-                      Positioned(
-                        right: 8,
-                        top: 8,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_isMenuOpen)
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.02),
                   ),
                 ),
-              ],
-            ),
-          ),
-          if (_isMenuOpen)
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-                child: Container(
-                  color: Colors.black.withOpacity(0.02),
-                ),
               ),
-            ),
-          if (_isMenuOpen)
-            const Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              child: SideMenu(),
-            ),
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        AddTrajetScreen(), // Remplacez par le nom de votre écran
+            if (_isMenuOpen)
+              const Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: SideMenu(),
+              ),
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AddTrajetScreen(), // Remplacez par le nom de votre écran
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF008955), // Couleur du bouton
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF008955), // Couleur du bouton
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
                 ),
-              ),
-              child: const Text(
-                'Ajouter un trajet',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                child: const Text(
+                  'Ajouter un trajet',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+        extendBody: true,
+        bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
       ),
-      extendBody: true,
-      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
     );
   }
 }

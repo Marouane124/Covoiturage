@@ -84,27 +84,55 @@ class _DriverModeState extends State<DriverMode> {
         setState(() {
           isDriverMode = !isDriverMode;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data['message'] ?? 'Rôle changé avec succès'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        
+        // Reformuler le message pour qu'il soit plus clair
+        String role = isDriverMode ? 'CONDUCTEUR' : 'PASSAGER';
+        String message = 'Rôle changé avec succès en $role.';
+        
+        // Afficher une boîte de dialogue avec le message
+        _showAlertDialog(message);
       } else {
         throw Exception('Échec du changement de rôle');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // Afficher une boîte de dialogue d'erreur
+      _showAlertDialog('Une erreur est survenue lors du changement de rôle.');
       // Remettre le switch dans son état précédent en cas d'erreur
       setState(() {
         isDriverMode = !isDriverMode;
       });
     }
+  }
+
+  // Fonction pour afficher une boîte de dialogue
+  void _showAlertDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Information',
+            style: TextStyle(color: Colors.black),
+          ),
+          content: Text(
+            message,
+            style: const TextStyle(color: Colors.black),
+          ),
+          backgroundColor: Colors.white,
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.blue),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

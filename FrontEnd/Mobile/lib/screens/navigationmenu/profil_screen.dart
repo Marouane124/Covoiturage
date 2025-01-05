@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:map_flutter/services/user_service.dart';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'map_screen.dart';
@@ -9,7 +8,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:dio/dio.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

@@ -234,6 +234,8 @@ class _SideMenuState extends State<SideMenu> {
                     const Divider(height: 1, color: Color(0xFFE0E0E0)),
                     _buildMenuItem(context, Icons.settings_outlined, 'Settings'),
                     const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                    _buildMenuItem(context, Icons.directions_car, 'Driver Mode'),
+                    const Divider(height: 1, color: Color(0xFFE0E0E0)),
                     _buildMenuItem(context, Icons.help_outline, 'Driver Mode'),
                     const Divider(height: 1, color: Color(0xFFE0E0E0)),
                   ],
