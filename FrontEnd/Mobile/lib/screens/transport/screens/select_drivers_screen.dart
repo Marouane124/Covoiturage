@@ -3,10 +3,9 @@ import '../../../services/trajet_service.dart';
 import '../../../services/user_service.dart';
 import '../models/trajet.dart';
 import 'dart:math';
-import 'driver_details_screen.dart';
 import 'package:map_flutter/screens/chat_page.dart';
 import 'dart:typed_data';
-import 'dart:convert'; // Import for base64 decoding
+import 'dart:convert'; 
 
 class SelectDriversScreen extends StatefulWidget {
   @override

@@ -16,7 +16,7 @@ class DriverDetailsScreen extends StatelessWidget {
     required this.seats,
     required this.price,
     required this.distance,
-    required this.imageUrl,
+    required this.imageUrl, String? photoUrl,
   }) : super(key: key);
 
   @override
