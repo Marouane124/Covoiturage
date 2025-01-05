@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:map_flutter/screens/auth/register_screen.dart';
 import 'package:map_flutter/screens/auth/welcome_screen.dart';
+import 'package:map_flutter/screens/chat_page.dart';
 import 'package:map_flutter/services/auth_service.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/widgets/auth_wrapper.dart';
@@ -189,8 +190,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted && result['firebaseUser'] != null) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-            builder: (context) => const AuthWrapper(
-              child: MapScreen(),
+            builder: (context) => AuthWrapper(
+              child: ChatPage(),
               requireAuth: true,
             ),
           ),
