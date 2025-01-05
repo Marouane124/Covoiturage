@@ -191,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => AuthWrapper(
-              child: ChatPage(),
+              child: MapScreen(),
               requireAuth: true,
             ),
           ),

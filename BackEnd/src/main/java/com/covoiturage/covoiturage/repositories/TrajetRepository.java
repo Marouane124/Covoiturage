@@ -27,7 +27,7 @@ public interface TrajetRepository extends MongoRepository<Trajet, String> {
     );
 
     // Recherche par nom du conducteur
-    List<Trajet> findByNomConducteur(String nomConducteur);
+    //List<Trajet> findByNomConducteur(String nomConducteur);
 
     // Recherche par date
     List<Trajet> findByDate(Date date);
