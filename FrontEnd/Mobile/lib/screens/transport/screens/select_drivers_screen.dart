@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../services/trajet_service.dart';
 import '../models/trajet.dart';
 import 'dart:math';
+import 'driver_details_screen.dart';
 
 class SelectDriversScreen extends StatefulWidget {
   @override
@@ -72,6 +73,21 @@ class _SelectDriversScreenState extends State<SelectDriversScreen> {
                           price: '${trajet.prix.toString()} DH',
                           distance: '${trajet.villeDepart} to ${trajet.villeArrivee}',
                           imageUrl: 'assets/me.jpeg',
+                          onViewDriverList: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DriverDetailsScreen(
+                                  driverName: trajet.nomConducteur,
+                                  carModel: trajet.voiture,
+                                  seats: trajet.placesDisponibles.toString(),
+                                  price: '${trajet.prix.toString()} DH',
+                                  distance: '${trajet.villeDepart} to ${trajet.villeArrivee}',
+                                  imageUrl: 'assets/me.jpeg',
+                                ),
+                              ),
+                            );
+                          },
                         );
                       },
                     ),
@@ -89,6 +105,7 @@ class _SelectDriversScreenState extends State<SelectDriversScreen> {
     required String price,
     required String distance,
     required String imageUrl,
+    required VoidCallback onViewDriverList,
   }) {
     final randomDistance = Random().nextInt(1000) + 100;
     final randomTime = (randomDistance / 200).round();
@@ -132,9 +149,7 @@ class _SelectDriversScreenState extends State<SelectDriversScreen> {
                   ),
                   SizedBox(height: 8),
                   ElevatedButton(
-                    onPressed: () {
-                      // Action pour voir la liste des voitures
-                    },
+                    onPressed: onViewDriverList,
                     child: Text(
                       'View driver list',
                       style: TextStyle(color: Colors.white),

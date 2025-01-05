@@ -7,6 +7,7 @@ class Trajet {
   final int placesDisponibles;
   final double prix;
   final String voiture;
+  final String? photoUrl;
 
   Trajet({
     required this.nomConducteur,
@@ -17,19 +18,20 @@ class Trajet {
     required this.placesDisponibles,
     required this.prix,
     required this.voiture,
+    this.photoUrl,
   });
 
   factory Trajet.fromJson(Map<String, dynamic> json) {
-    // Utiliser la méthode trim() pour nettoyer les chaînes
     return Trajet(
-      nomConducteur: (json['nomConducteur'] ?? '').trim(),
-      villeDepart: (json['villeDepart'] ?? '').trim(),
-      villeArrivee: (json['villeArrivee'] ?? '').trim(),
-      date: (json['date'] ?? '').trim(),
-      heure: (json['heure'] ?? '').trim(),
-      placesDisponibles: json['placesDisponibles'] ?? 0,
-      prix: (json['prix'] ?? 0).toDouble(),
-      voiture: (json['voiture'] ?? '').trim(),
+      nomConducteur: json['nomConducteur'],
+      villeDepart: json['villeDepart'],
+      villeArrivee: json['villeArrivee'],
+      date: json['date'],
+      heure: json['heure'],
+      placesDisponibles: json['placesDisponibles'],
+      prix: json['prix'].toDouble(),
+      voiture: json['voiture'],
+      photoUrl: json['photoUrl'],
     );
   }
 }

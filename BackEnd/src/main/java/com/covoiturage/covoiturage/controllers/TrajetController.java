@@ -1,7 +1,9 @@
 package com.covoiturage.covoiturage.controllers;
 
 import com.covoiturage.covoiturage.models.Trajet;
+import com.covoiturage.covoiturage.models.User;
 import com.covoiturage.covoiturage.repositories.TrajetRepository;
+import com.covoiturage.covoiturage.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -9,12 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.HashMap;
+import java.util.*;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -24,6 +21,8 @@ public class TrajetController {
 
     @Autowired
     private TrajetRepository trajetRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     // Récupérer tous les trajets
     @GetMapping
@@ -98,7 +97,7 @@ public class TrajetController {
         }
     }
 
-    // Créer un nouveau trajet
+     //Créer un nouveau trajet
     @PostMapping
     public ResponseEntity<Trajet> createTrajet(@RequestBody @DateTimeFormat(pattern = "dd/MM/yyyy") Trajet trajet) {
         try {
@@ -231,4 +230,106 @@ public class TrajetController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+//    @PostMapping
+//    public ResponseEntity<Trajet> createTrajet(
+//            @RequestBody @DateTimeFormat(pattern = "dd/MM/yyyy") Trajet trajet,
+//            @RequestParam String userId) {
+//        try {
+//            // Rechercher l'utilisateur
+//            Optional<User> userOpt = userRepository.findById(userId);
+//
+//            if (!userOpt.isPresent()) {
+//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            }
+//
+//            User user = userOpt.get();
+//
+//            // Vérifier si l'utilisateur a le rôle de conducteur
+//            boolean isConducteur = user.getRoles().stream()
+//                    .anyMatch(role -> role.getName().equals("CONDUCTEUR"));
+//
+//            if (!isConducteur) {
+//                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+//            }
+//
+//            // Associer le trajet à l'utilisateur
+//            if (user.getTrajets() == null) {
+//                user.setTrajets(new ArrayList<>());
+//            }
+//
+//            // Sauvegarder le trajet
+//            Trajet newTrajet = trajetRepository.save(trajet);
+//
+//            // Ajouter le trajet à la liste des trajets de l'utilisateur
+//            user.getTrajets().add(newTrajet);
+//            userRepository.save(user);
+//
+//            return new ResponseEntity<>(newTrajet, HttpStatus.CREATED);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+    // Méthode pour obtenir tous les trajets d'un utilisateur
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Trajet>> getTrajetsByUser(@PathVariable String userId) {
+        try {
+            Optional<User> userOpt = userRepository.findById(userId);
+
+            if (!userOpt.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            User user = userOpt.get();
+            List<Trajet> trajets = user.getTrajets();
+
+            if (trajets.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(trajets, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+//    @PostMapping
+//    public ResponseEntity<Trajet> createTrajet(@RequestBody @DateTimeFormat(pattern = "dd/MM/yyyy") Trajet trajet, @RequestParam String userId) {
+//        try {
+//            // Rechercher l'utilisateur
+//            Optional<User> userOpt = userRepository.findById(userId);
+//            if (!userOpt.isPresent()) {
+//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            }
+//
+//            User user = userOpt.get();
+//
+//            // Vérifier si l'utilisateur a le rôle de conducteur
+//            boolean isConducteur = user.getRoles().stream()
+//                    .anyMatch(role -> role.getName().equals("CONDUCTEUR"));
+//
+//            if (!isConducteur) {
+//                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+//            }
+//
+//            // Associer le trajet à l'utilisateur
+//            if (user.getTrajets() == null) {
+//                user.setTrajets(new ArrayList<>());
+//            }
+//
+//            // Sauvegarder le trajet
+//            Trajet newTrajet = trajetRepository.save(trajet);
+//
+//            // Ajouter le trajet à la liste des trajets de l'utilisateur
+//            user.getTrajets().add(newTrajet);
+//            userRepository.save(user);
+//
+//            return new ResponseEntity<>(newTrajet, HttpStatus.CREATED);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+
 }
