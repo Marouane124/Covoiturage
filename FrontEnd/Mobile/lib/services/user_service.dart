@@ -68,6 +68,57 @@ class UserService {
     }
   }
 
+  Future<Map<String, dynamic>> getProfile(String userId) async {
+    try {
+      if (userId == null) {
+        throw Exception('No authenticated user found');
+      }
+
+      final token = await _getToken();
+      if (token == null) {
+        throw Exception('No access token found');
+      }
+
+      print('\n=== Get Profile Request ===');
+      print('Firebase UID: ${userId}');
+      print('Endpoint: $baseUrl/utilisateur/${userId}');
+      print('========================\n');
+
+      final response = await Dio().get(
+        '$baseUrl/utilisateur/${userId}',
+        options: Options(
+          validateStatus: (status) => true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      print('\n=== Profile Response ===');
+      print('Status code: ${response.statusCode}');
+      print('Response data: ${response.data}');
+      print('========================\n');
+
+      if (response.statusCode == 200) {
+        return response.data;
+      } else if (response.statusCode == 404) {
+        throw Exception('User profile not found. Please check the UID.');
+      } else if (response.statusCode == 401) {
+        await _authService.signOut();
+        throw Exception('Session expired. Please login again.');
+      }
+
+      throw Exception(response.data['message'] ?? 'Failed to fetch profile');
+    } catch (e) {
+      print('\n=== Get Profile Error ===');
+      print('Type: ${e.runtimeType}');
+      print('Message: $e');
+      print('========================\n');
+      rethrow;
+    }
+  }
+
   Future<bool> updateUserProfile({
     String? username,
     String? phone,
