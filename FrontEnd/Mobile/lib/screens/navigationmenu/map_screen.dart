@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'package:map_flutter/screens/transport/screens/add_trajet_screen.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'dart:convert';
 //import 'package:geolocator/geolocator.dart';
@@ -317,31 +318,23 @@ class _MapScreenState extends State<MapScreen> {
             // Current Location
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.location_on, color: Colors.red),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Current location',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                        Text(
-                          currentAddress,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                      ],
+                  Text(
+                    'Current location', // Titre
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black, // Couleur du titre
+                    ),
+                  ),
+                  Text(
+                    '40, 3, Jl. Marrakesh, Marrakesh-Sa', // Adresse actuelle
+                    style: TextStyle(
+                      color: Colors.black, // Changer la couleur ici
+                      fontSize: 16,
+                      fontFamily: 'Poppins',
                     ),
                   ),
                 ],
@@ -637,6 +630,40 @@ class _MapScreenState extends State<MapScreen> {
             _buildRecentPlace('Office', '2.7km', 'Old Town Road 1234'),
             _buildRecentPlace('Coffee shop', '1.8km', 'New Street 5678'),
             
+            // Ajouter un Spacer pour pousser le bouton vers le bas
+            const Spacer(),
+            
+            // Nouveau bouton Ajouter un trajet
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Fermer la modal bottom sheet
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddTrajetScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF008955),
+                  minimumSize: const Size(double.infinity, 50), // Largeur maximale
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Ajouter un trajet',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -896,6 +923,36 @@ class _MapScreenState extends State<MapScreen> {
               bottom: 0,
               child: SideMenu(),
             ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddTrajetScreen(), // Remplacez par le nom de votre écran
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF008955), // Couleur du bouton
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Ajouter un trajet',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
       extendBody: true,
