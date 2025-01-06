@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'package:map_flutter/config/app_config.dart';
 import 'package:map_flutter/screens/transport/screens/add_trajet_screen.dart';
+import 'package:map_flutter/screens/transport/screens/search_trajet_screen.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'dart:convert';
 import '../notification.dart';
@@ -10,6 +12,7 @@ import '../../components/sidemenu.dart';
 import 'dart:ui';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'package:location/location.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2ltb2FpdGVsZ2F6emFyIiwiYSI6ImNtMzVzeXYyazA2bWkybHMzb2Fxb3p6aGIifQ.ORYyvkZ2Z1H8WmouDkXtvQ';
@@ -23,7 +26,7 @@ class MapScreen extends StatefulWidget {
   _MapScreenState createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
+class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _fromController = TextEditingController();
@@ -39,27 +42,8 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    // Initialiser immédiatement la carte
+    // Initialiser la carte une seule fois
     _initializeMap();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _searchController.dispose();
-    _fromController.dispose();
-    _destinationController.dispose();
-    super.dispose();
-  }
-
-  // Cette méthode est appelée quand l'état de l'application change
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // Mettre à jour la position immédiatement quand l'app reprend
-      _getCurrentLocation();
-    }
   }
 
   Future<void> _initializeMap() async {
@@ -190,15 +174,60 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     }
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _fromController.dispose();
+    _destinationController.dispose();
+    super.dispose();
+  }
+
   Future<void> _getCurrentLocation() async {
     try {
       final Location location = Location();
+
+      // Vérifier si le service de localisation est activé
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Veuillez activer la localisation'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+      }
+
+      // Vérifier les permissions
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Permission de localisation refusée'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+      }
+
+      // Obtenir la position
       final LocationData locationData = await location.getLocation();
 
       if (mounted) {
         setState(() {
-          _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
-          // Mettre à jour les marqueurs
+          _currentPosition =
+              LatLng(locationData.latitude!, locationData.longitude!);
+          // Ajouter le marqueur à la position actuelle
           _markers.clear();
           _markers.add(
             Marker(
@@ -214,7 +243,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                     size: 30,
                   ),
                   Container(
-                    constraints: const BoxConstraints(maxWidth: 120),
+                    constraints: BoxConstraints(maxWidth: 120),
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -242,11 +271,28 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           );
         });
 
-        // Centrer la carte sur la position actuelle
+        // Centrer la carte sur la position actuelle avec animation
         _mapController.move(_currentPosition!, 15);
+
+        // Afficher un message de succès
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Position actuelle trouvée'),
+            backgroundColor: Color(0xFF008955),
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       print("Erreur de géolocalisation: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur de localisation: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -349,7 +395,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     return 'Unknown location';
   }
 
-  void _showLocationConfirmation(
+  void showLocationConfirmation(
       LatLng currentLocation, String destination) async {
    // String currentAddress = await _getAddressFromLatLng(currentLocation);
     showModalBottomSheet(
@@ -499,6 +545,9 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     );
   }
 
+
+
+
   Future<void> _getSuggestions(String query) async {
     if (query.isEmpty) {
       setState(() {
@@ -534,6 +583,26 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     if (_currentPosition != null) {
       String currentAddress = await _getAddressFromLatLng(_currentPosition!);
       _fromController.text = currentAddress;
+    }
+
+    // Récupérer le mode actuel de l'utilisateur
+    final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    bool isDriverMode = false;
+
+    try {
+      final response = await http.get(
+        Uri.parse('${AppConfig.baseUrl}/utilisateur/$uid/role'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        isDriverMode = data['roles']['conducteur'] ?? false;
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération du rôle: $e');
     }
 
     showModalBottomSheet(
@@ -608,7 +677,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                 onSubmitted: (value) {
                   if (value.isNotEmpty) {
                     Navigator.pop(context);
-                    _showLocationConfirmation(_currentPosition!, value);
+                    showLocationConfirmation(_currentPosition!, value);
                   }
                 },
               ),
@@ -682,7 +751,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                         await _getRoute(suggestion['coordinates']);
                         if (mounted) {
                           Navigator.pop(context);
-                          _showLocationConfirmation(
+                          showLocationConfirmation(
                               _currentPosition!, suggestion['place_name']);
                         }
                       },
@@ -713,38 +782,74 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
             // Ajouter un Spacer pour pousser le bouton vers le bas
             const Spacer(),
 
-            // Nouveau bouton Ajouter un trajet
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // Fermer la modal bottom sheet
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddTrajetScreen(),
+            // Afficher le bouton approprié en fonction du mode
+            if (isDriverMode)
+              // Bouton Ajouter un trajet (visible uniquement en mode conducteur)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddTrajetScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF008955),
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF008955),
-                  minimumSize:
-                      const Size(double.infinity, 50), // Largeur maximale
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Ajouter un trajet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'Ajouter un trajet',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
+              )
+            else
+              // Bouton Chercher un trajet (visible uniquement en mode passager)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SearchTrajetScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF008955),
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Chercher un trajet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
                   ),
                 ),
               ),
-            ),
+            const SizedBox(height: 16), // Espacement en bas
           ],
         ),
       ),
@@ -780,7 +885,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       ),
       onTap: () {
         Navigator.pop(context);
-        _showLocationConfirmation(_currentPosition!, address);
+        showLocationConfirmation(_currentPosition!, address);
       },
     );
   }
@@ -852,201 +957,194 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        // Mettre à jour la position quand l'utilisateur revient en arrière
-        _getCurrentLocation();
-        return true;
-      },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  minZoom: 5,
-                  maxZoom: 25,
-                  initialCenter: myPosition,
-                  initialZoom: 15,
-                  onTap: (_, latLng) {
-                    _onMapTapped(latLng);
-                  },
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
-                    userAgentPackageName: 'com.example.app',
-                  ),
-                  MarkerLayer(
-                    markers: _markers,
-                  ),
-                  if (_route.isNotEmpty)
-                    PolylineLayer(
-                      polylines: [
-                        Polyline(
-                          points: _route,
-                          strokeWidth: 4.0,
-                          color: Colors.blue,
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 160,
-              left: 16,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  _buildMainContainer(),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 250,
-              right: 16,
-              child: FloatingActionButton(
-                onPressed: () {
-                  print("Bouton cliqué");
-                  _getCurrentLocation();
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                minZoom: 5,
+                maxZoom: 25,
+                initialCenter: myPosition,
+                initialZoom: 15,
+                onTap: (_, latLng) {
+                  _onMapTapped(latLng);
                 },
-                backgroundColor: const Color(0xFF008955),
-                child: const Icon(Icons.my_location, color: Colors.white),
               ),
-            ),
-            Positioned(
-              top: 40,
-              left: 16,
-              right: 16,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF08B783),
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.menu),
-                      color: Colors.black,
-                      onPressed: () {
-                        setState(() {
-                          _isMenuOpen = !_isMenuOpen; // Toggle the menu state
-                        });
-                      },
-                    ),
+              children: [
+                TileLayer(
+                  urlTemplate:
+                      'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
+                  userAgentPackageName: 'com.example.app',
+                ),
+                MarkerLayer(
+                  markers: _markers,
+                ),
+                if (_route.isNotEmpty)
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                        points: _route,
+                        strokeWidth: 4.0,
+                        color: Colors.blue,
+                      ),
+                    ],
                   ),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.notifications_none),
-                          color: Colors.black,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const NotificationScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        Positioned(
-                          right: 8,
-                          top: 8,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 160,
+            left: 16,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                _buildMainContainer(),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 250,
+            right: 16,
+            child: FloatingActionButton(
+              onPressed: () {
+                print("Bouton cliqué");
+                _getCurrentLocation();
+              },
+              backgroundColor: const Color(0xFF008955),
+              child: const Icon(Icons.my_location, color: Colors.white),
+            ),
+          ),
+          Positioned(
+            top: 40,
+            left: 16,
+            right: 16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF08B783),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.menu),
+                    color: Colors.black,
+                    onPressed: () {
+                      setState(() {
+                        _isMenuOpen = !_isMenuOpen; // Toggle the menu state
+                      });
+                    },
+                  ),
+                ),
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.notifications_none),
+                        color: Colors.black,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NotificationScreen(),
                             ),
+                          );
+                        },
+                      ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            if (_isMenuOpen)
-              Positioned.fill(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
-                  child: Container(
-                    color: Colors.black.withOpacity(0.02),
-                  ),
-                ),
-              ),
-            if (_isMenuOpen)
-              const Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                child: SideMenu(),
-              ),
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          AddTrajetScreen(), // Remplacez par le nom de votre écran
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF008955), // Couleur du bouton
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Ajouter un trajet',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+          ),
+          if (_isMenuOpen)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+                child: Container(
+                  color: Colors.black.withOpacity(0.02),
                 ),
               ),
             ),
-          ],
-        ),
-        extendBody: true,
-        bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
+          if (_isMenuOpen)
+            const Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: SideMenu(),
+            ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AddTrajetScreen(), // Remplacez par le nom de votre écran
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF008955), // Couleur du bouton
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Chercher  un trajet',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
+      extendBody: true,
+      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
     );
   }
 }
