@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:map_flutter/config/app_config.dart';
 import 'package:map_flutter/screens/transport/models/trajet.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'package:map_flutter/services/trajet_service.dart';
@@ -29,79 +26,120 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
 
   Future<void> _selectDate(BuildContext context) async {
     try {
+      DateTime firstDate = DateTime.now();
+
       final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime.now(),
-        lastDate: DateTime(2025),
+        lastDate: DateTime(2025, 12, 31),
         builder: (context, child) {
           return Theme(
             data: Theme.of(context).copyWith(
               colorScheme: const ColorScheme.light(
-                primary: Color(0xFF008955),
+                primary: Color(0xFF08B783),
                 onPrimary: Colors.white,
+                surface: Colors.white,
+                onSurface: Colors.black,
               ),
-              textButtonTheme: TextButtonThemeData(
-                style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFF008955),
-                ),
-              ),
+              dialogBackgroundColor: Colors.white,
             ),
             child: child!,
           );
         },
-      );
-
-      if (picked != null) {
-        print("Date sélectionnée: $picked"); // Pour le débogage
-        setState(() {
-          _dateController.text = DateFormat('dd/MM/yyyy').format(picked);
-        });
-      }
+      ).then((selectedDate) {
+        if (selectedDate != null) {
+          if (selectedDate.isBefore(firstDate)) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Veuillez sélectionner une date future'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else {
+            setState(() {
+              _dateController.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+            });
+          }
+        }
+      });
     } catch (e) {
-      print("Erreur lors de la sélection de la date: $e"); // Pour le débogage
+      print("Erreur lors de la sélection de la date: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erreur lors de la sélection de la date: $e')),
       );
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF008955),
-              onPrimary: Colors.white,
-            ),
+  // Future<void> _selectTime(BuildContext context) async {
+  //   final TimeOfDay? picked = await showTimePicker(
+  //     context: context,
+  //     initialTime: TimeOfDay.now(),
+  //     builder: (context, child) {
+  //       return Theme(
+  //         data: Theme.of(context).copyWith(
+  //           colorScheme: const ColorScheme.light(
+  //             primary: Color(0xFF08B783),
+  //             onPrimary: Colors.white,
+  //             surface: Colors.white,
+  //             onSurface: Colors.black,
+  //           ),
+  //           dialogBackgroundColor: Colors.white,
+  //         ),
+  //         child: child!,
+  //       );
+  //     },
+  //   );
+  //   if (picked != null) {
+  //     setState(() {
+  //       final hour = picked.hour.toString().padLeft(2, '0');
+  //       final minute = picked.minute.toString().padLeft(2, '0');
+  //       _heureController.text = "$hour:$minute";
+  //     });
+  //   }
+  // }
+
+Future<void> _selectTime(BuildContext context) async {
+  final TimeOfDay? picked = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+    builder: (context, child) {
+      return Theme(
+        data: Theme.of(context).copyWith(
+          timePickerTheme: TimePickerThemeData(
+            hourMinuteTextColor: Colors.black, // Pour l'heure et les minutes
+            helpTextStyle: TextStyle(color: Colors.black, fontSize: 16), // Pour "Sélectionner une heure"
           ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null) {
-      setState(() {
-        // Format avec les zéros pour les minutes < 10
-        final hour = picked.hour.toString().padLeft(2, '0');
-        final minute = picked.minute.toString().padLeft(2, '0');
-        _heureController.text = "$hour:$minute";
-      });
-    }
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFF08B783), // Couleur principale
+            onPrimary: Colors.white, // Texte sur le bouton principal
+            surface: Colors.white, // Fond des boutons
+            onSurface: Colors.black, // Couleur des autres textes
+          ),
+          dialogBackgroundColor: Colors.white, // Couleur du fond du dialogue
+        ),
+        child: child!,
+      );
+    },
+  );
+  if (picked != null) {
+    setState(() {
+      final hour = picked.hour.toString().padLeft(2, '0');
+      final minute = picked.minute.toString().padLeft(2, '0');
+      _heureController.text = "$hour:$minute";
+    });
   }
+}
+
+
 
   Future<void> _submitTrajet() async {
-    // Get the current user's ID from Firebase
     final User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      // Handle the case where the user is not logged in
       print('No user is currently logged in.');
       return;
     }
 
-    // Parse the date using DateFormat
     DateTime parsedDate;
     try {
       parsedDate = DateFormat('dd/MM/yyyy').parse(_dateController.text);
@@ -130,7 +168,6 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
         MaterialPageRoute(builder: (context) => SelectDriversScreen()),
       );
     } catch (e) {
-      // Handle error (e.g., show an error message)
       print('Error adding trajet: $e');
     }
   }
@@ -263,7 +300,6 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialiser la date avec la date actuelle
     _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
   }
 

@@ -1,9 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/components/sidemenu.dart';
-import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 
 class FavoriteScreen extends StatefulWidget {
