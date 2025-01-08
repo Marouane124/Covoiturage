@@ -24,8 +24,17 @@ export class AuthService {
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    // Vérifier et nettoyer les credentials expirés au démarrage
     this.checkStoredCredentials();
+  }
+
+  // Add getUserByUid method
+  getUserByUid(uid: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/utilisateur/${uid}`).pipe(
+      catchError(error => {
+        console.error('Error fetching user data:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   // Nouvelles méthodes pour "Se souvenir de moi"

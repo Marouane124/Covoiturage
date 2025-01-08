@@ -27,11 +27,11 @@
             <i class="fas fa-user"></i> Profil
           </a>
         </li>
-        <li>
+        <!--<li>
           <a (click)="showSettings()" [class.active]="showingSettings">
             <i class="fas fa-cog"></i> Paramètres
           </a>
-        </li>
+        </li>-->
         <li></li>
         <li class="logout-item">
           <a (click)="logout()" class="logout-link">
@@ -133,7 +133,7 @@
                 </div>
                 <div class="detail-item">
                   <i class="fas fa-user"></i>
-                  <span>{{trajet.nomConducteur}}</span>
+                  <span>{{getConducteurName(trajet.conducteurId)}}</span>
                 </div>
                 <div class="detail-item">
                   <i class="fas fa-car"></i>
@@ -206,7 +206,7 @@
 
               <div class="conducteur-col">
                 <i class="fas fa-user"></i>
-                {{trajet.nomConducteur}}
+                {{getConducteurName(trajet.conducteurId)}}
               </div>
 
               <div class="prix-col">
@@ -242,16 +242,6 @@
         </div>
 
         <form #trajetForm="ngForm" (ngSubmit)="onSubmitTrajet()">
-          <div class="form-group">
-            <label for="nomConducteur">Nom du conducteur</label>
-            <input 
-              type="text" 
-              id="nomConducteur" 
-              name="nomConducteur"
-              [(ngModel)]="newTrajet.nomConducteur" 
-              required>
-          </div>
-
           <div class="form-row">
             <div class="form-group">
               <label for="villeDepart">Ville de départ</label>
@@ -396,14 +386,14 @@
             <div class="info-item">
               <i class="fas fa-envelope"></i>
               <div class="info-details">
-                <label>Email</label>
+                <label>Email :</label>
                 <p>{{userProfile.email}}</p>
               </div>
             </div>
             <div class="info-item">
               <i class="fas fa-phone"></i>
               <div class="info-details">
-                <label>Téléphone</label>
+                <label>Téléphone :</label>
                 <p>{{userProfile.telephone}}</p>
               </div>
             </div>
@@ -418,18 +408,20 @@
           </div>
           <div class="section-content vehicle-info">
             <div class="vehicle-details">
-              <div class="info-item">
+               <!--<div class="info-item">
                 <label>Marque & Modèle</label>
                 <p>{{userProfile.voiture.marque}} {{userProfile.voiture.modele}}</p>
+              </div>-->
+              <div class="vehicle-field">
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                <label>Année :</label>
+                <p class="value">{{userProfile.voiture.annee}}</p>
               </div>
-              <div class="info-item">
-                <label>Année</label>
-                <p>{{userProfile.voiture.annee}}</p>
-              </div>
-              <div class="info-item">
+
+               <!--<div class="info-item">
                 <label>Couleur</label>
                 <p>{{userProfile.voiture.couleur}}</p>
-              </div>
+              </div>-->
             </div>
           </div>
         </div>
@@ -441,19 +433,27 @@
             <h3>Mes préférences de trajet</h3>
           </div>
           <div class="preferences-grid">
-            <div class="preference-item" [class.active]="userProfile.preferences.fumeur">
+            <div class="preference-item" 
+                 [class.active]="userProfile.preferences.fumeur" 
+                 (click)="togglePreference('fumeur')">
               <i class="fas fa-smoking"></i>
               <span>Fumeur autorisé</span>
             </div>
-            <div class="preference-item" [class.active]="userProfile.preferences.animaux">
+            <div class="preference-item" 
+                 [class.active]="userProfile.preferences.animaux" 
+                 (click)="togglePreference('animaux')">
               <i class="fas fa-paw"></i>
               <span>Animaux acceptés</span>
             </div>
-            <div class="preference-item" [class.active]="userProfile.preferences.musique">
+            <div class="preference-item" 
+                 [class.active]="userProfile.preferences.musique" 
+                 (click)="togglePreference('musique')">
               <i class="fas fa-music"></i>
               <span>Musique</span>
             </div>
-            <div class="preference-item" [class.active]="userProfile.preferences.discussion">
+            <div class="preference-item" 
+                 [class.active]="userProfile.preferences.discussion" 
+                 (click)="togglePreference('discussion')">
               <i class="fas fa-comments"></i>
               <span>Discussion</span>
             </div>
@@ -604,16 +604,6 @@
         </div>
 
         <form #editTrajetForm="ngForm" (ngSubmit)="onSubmitEditTrajet()">
-          <div class="form-group">
-            <label for="nomConducteur">Nom du conducteur</label>
-            <input 
-              type="text" 
-              id="nomConducteur" 
-              name="nomConducteur"
-              [(ngModel)]="trajetToEdit.nomConducteur" 
-              required>
-          </div>
-
           <div class="form-row">
             <div class="form-group">
               <label for="villeDepart">Ville de départ</label>
@@ -736,7 +726,7 @@
             <h3>Conducteur</h3>
             <div class="info-row">
               <i class="fas fa-user"></i>
-              <span>Nom: {{selectedTrajet.nomConducteur}}</span>
+              <span>Nom: {{getConducteurName(selectedTrajet.conducteurId)}}</span>
             </div>
             <div class="info-row">
               <i class="fas fa-car"></i>
@@ -745,6 +735,11 @@
           </div>
         </div>
       </div>
+    </div>
+    <!-- Notification Modal -->
+    <div class="notification" *ngIf="notificationMessage" [ngClass]="{'success': isSuccess, 'error': !isSuccess}">
+      <p>{{ notificationMessage }}</p>
+      <button class="close-notification" (click)="closeNotification()">×</button>
     </div>
   </div>
 </div>
