@@ -9,10 +9,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
     imports: [
-        CommonModule,
-        RouterModule,
-        NavbarComponent,
-        DashboardComponent
-    ]
+    CommonModule,
+    RouterModule,
+    NavbarComponent
+]
 })
 export class AppComponent { }

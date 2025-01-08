@@ -7,29 +7,149 @@
 <div id="map" class="map-container"></div>
 
 <!-- Barre de recherche -->
-<div class="input-container">
-    <div class="input-wrapper">
-        <span class="search-icon">🔍</span>
-        <input 
-            type="text" 
-            placeholder="Where would you go?" 
-            class="input-field"
-            [(ngModel)]="searchInput"
-            (keyup.enter)="onSearch(searchInput)" 
-        />
-    </div>
-    <div class="button-group">
-        <button class="option-button">Transport</button>
-        <button class="option-button">Delivery</button>
-    </div>
+<div class="search-container">
+  <div class="input-wrapper">
+    <input 
+      type="text" 
+      placeholder="Starting City" 
+      class="input-field"
+      [(ngModel)]="startCity"
+      (keyup.enter)="onSearchStart(startCity)" 
+    />
+    <span class="search-icon" (click)="onSearchStart(startCity)">🔍</span>
+  </div>
+  <div class="input-wrapper">
+    <input 
+      type="text" 
+      placeholder="Destination City" 
+      class="input-field"
+      [(ngModel)]="destinationCity"
+      (keyup.enter)="onSearchDestination(destinationCity)" 
+    />
+    <span class="search-icon" (click)="onSearchDestination(destinationCity)">🔍</span>
+  </div>
+  
+  <!-- Ajouter trajet button -->
+  <button 
+    class="add-trip-button" 
+    (click)="openAddTripComponent()" 
+    [disabled]="!startCity || !destinationCity" 
+    [class.disabled]="!startCity || !destinationCity"
+  >
+    Ajouter trajet
+  </button>
 </div>
 
 <!-- Boutons de contrôle -->
-<div style="position: absolute; top: 20px; left: 20px; z-index: 999;">
-    <button class="location-button" (click)="getCurrentLocation()">
-        <i class="fas fa-location-arrow"></i>
-    </button>
-    <button (click)="resetMap()">Reset Map</button>
+<div style="position: absolute; top: 90px; left: 20px; z-index: 999; display: flex; gap: 10px; align-items: center;">
+  <button class="control-button" (click)="resetMap()">Reset Map</button>
+  <button class="control-button location-button" (click)="goToCurrentLocation()" title="Go to your exact location">
+    <i class="fas fa-location-arrow"></i>
+  </button>  
+</div>
+
+<div class="modal" *ngIf="showAddTrajetModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Ajouter un trajet</h2>
+      <button class="close-button" (click)="closeAddTrajetModal()">&times;</button>
+    </div>
+
+    <form #addTrajetForm="ngForm" (ngSubmit)="onSubmitTrajet()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="villeDepart">Ville de départ</label>
+          <input 
+            type="text" 
+            id="villeDepart" 
+            name="villeDepart"
+            [(ngModel)]="newTrajet.villeDepart" 
+            [value]="startCity"
+            readonly
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="villeArrivee">Ville d'arrivée</label>
+          <input 
+            type="text" 
+            id="villeArrivee" 
+            name="villeArrivee"
+            [(ngModel)]="newTrajet.villeArrivee" 
+            [value]="destinationCity"
+            readonly
+            required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input 
+            type="date" 
+            id="date" 
+            name="date"
+            [(ngModel)]="newTrajet.date" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="heure">Heure</label>
+          <input 
+            type="time" 
+            id="heure" 
+            name="heure"
+            [(ngModel)]="newTrajet.heure" 
+            required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="placesDisponibles">Places disponibles</label>
+          <input 
+            type="number" 
+            id="placesDisponibles" 
+            name="placesDisponibles"
+            [(ngModel)]="newTrajet.placesDisponibles" 
+            min="1" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="prix">Prix</label>
+          <input 
+            type="number" 
+            id="prix" 
+            name="prix"
+            [(ngModel)]="newTrajet.prix" 
+            min="0" 
+            required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="voiture">Voiture</label>
+        <input 
+          type="text" 
+          id="voiture" 
+          name="voiture"
+          [(ngModel)]="newTrajet.voiture" 
+          required>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeAddTrajetModal()">Annuler</button>
+        <button type="submit" class="btn-submit" [disabled]="!addTrajetForm.form.valid">Ajouter</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Notification Modal -->
+<div class="notification" *ngIf="notificationMessage" [ngClass]="{'success': isSuccess, 'error': !isSuccess}">
+  <p>{{ notificationMessage }}</p>
+  <button class="close-notification" (click)="closeNotification()">×</button>
 </div>
     
     

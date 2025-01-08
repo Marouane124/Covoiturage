@@ -17,15 +17,24 @@ interface StoredCredentials {
 export class AuthService {
   private readonly CREDENTIALS_KEY = 'remembered_credentials';
   private readonly EXPIRATION_TIME = 5 * 60 * 60 * 1000; // 5 heures en millisecondes
-  private apiUrl = 'http://192.168.100.94:8080/api';
+  private apiUrl = 'http://192.168.1.5:8080/api';
 
   constructor(
     private auth: Auth,
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    // Vérifier et nettoyer les credentials expirés au démarrage
     this.checkStoredCredentials();
+  }
+
+  // Add getUserByUid method
+  getUserByUid(uid: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/utilisateur/${uid}`).pipe(
+      catchError(error => {
+        console.error('Error fetching user data:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   // Nouvelles méthodes pour "Se souvenir de moi"
