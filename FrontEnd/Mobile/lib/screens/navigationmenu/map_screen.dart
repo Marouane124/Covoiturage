@@ -13,6 +13,7 @@ import 'dart:ui';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'package:location/location.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2ltb2FpdGVsZ2F6emFyIiwiYSI6ImNtMzVzeXYyazA2bWkybHMzb2Fxb3p6aGIifQ.ORYyvkZ2Z1H8WmouDkXtvQ';
@@ -38,6 +39,9 @@ class _MapScreenState extends State<MapScreen> {
   //bool _showAddressForm = false;
   List<Marker> _markers = [];
   List<Map<String, dynamic>> _suggestions = [];
+  String _address = '';
+  double _distance = 0.0;
+  final TextEditingController _addressSearchController = TextEditingController();
 
   @override
   void initState() {
@@ -343,6 +347,7 @@ class _MapScreenState extends State<MapScreen> {
 
         setState(() {
           _route = routePoints;
+          _distance = data['routes'][0]['distance'] / 1000;
         });
 
         // Calculer le centre de l'itinéraire
@@ -545,9 +550,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-
-
-
   Future<void> _getSuggestions(String query) async {
     if (query.isEmpty) {
       setState(() {
@@ -556,25 +558,21 @@ class _MapScreenState extends State<MapScreen> {
       return;
     }
 
-    try {
-      final url = Uri.parse(
-        'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=$mapboxAccessToken&types=place,address&limit=5',
-      );
+    final url = Uri.parse(
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=$mapboxAccessToken&proximity=${myPosition.longitude},${myPosition.latitude}',
+    );
 
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _suggestions = List<Map<String, dynamic>>.from(
-              data['features'].map((feature) => {
-                    'place_name': feature['place_name'],
-                    'coordinates':
-                        LatLng(feature['center'][1], feature['center'][0]),
-                  }));
-        });
-      }
-    } catch (e) {
-      print('Error getting suggestions: $e');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _suggestions = List<Map<String, dynamic>>.from(
+          data['features'].map((feature) => {
+            'place_name': feature['place_name'],
+            'coordinates': LatLng(feature['center'][1], feature['center'][0]),
+          }),
+        );
+      });
     }
   }
 
@@ -955,6 +953,74 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  double _calculateDistance(LatLng start, LatLng end) {
+    const double earthRadius = 6371; // Rayon de la Terre en kilomètres
+    final dLat = _degreesToRadians(end.latitude - start.latitude);
+    final dLon = _degreesToRadians(end.longitude - start.longitude);
+
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+              cos(_degreesToRadians(start.latitude)) * cos(_degreesToRadians(end.latitude)) *
+              sin(dLon / 2) * sin(dLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return earthRadius * c; // Distance en kilomètres
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * (pi / 180);
+  }
+
+  Future<void> _getAddressFromQuery(String query) async {
+    final url = Uri.parse(
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=$mapboxAccessToken',
+    );
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['features'].isNotEmpty) {
+        setState(() {
+          _address = data['features'][0]['place_name']; // Récupérer l'adresse
+          
+          // Récupérer les coordonnées
+          final coordinates = data['features'][0]['center'];
+          final latitude = coordinates[1];
+          final longitude = coordinates[0];
+
+          // Centrer la carte sur la localisation
+          _mapController.move(LatLng(latitude, longitude), 15); // Ajustez le niveau de zoom si nécessaire
+
+          // Dessiner l'itinéraire
+          _getRoute(LatLng(latitude, longitude));
+
+          // Calculer la distance
+          _distance = _calculateDistance(myPosition, LatLng(latitude, longitude));
+        });
+      } else {
+        setState(() {
+          _address = 'Aucune adresse trouvée.';
+        });
+      }
+    } else {
+      setState(() {
+        _address = 'Erreur lors de la récupération de l\'adresse.';
+      });
+    }
+  }
+
+  void _addMarker(LatLng position, String address) {
+    final marker = Marker(
+      point: position,
+      child: Container(
+        child: Icon(Icons.location_on, color: Colors.red, size: 30),
+      ),
+    );
+
+    setState(() {
+      _markers.add(marker); // Ajoutez le marqueur à la liste
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -993,6 +1059,53 @@ class _MapScreenState extends State<MapScreen> {
                     ],
                   ),
               ],
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.1,
+            left: 16,
+            right: 16,
+            child: TextField(
+              controller: _addressSearchController,
+              style: TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                hintText: 'Entrez une rue',
+                hintStyle: TextStyle(color: Colors.grey),
+                border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    _getAddressFromQuery(_addressSearchController.text);
+                  },
+                ),
+              ),
+              onChanged: (value) {
+                _getSuggestions(value);
+              },
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.2,
+            left: 16,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.white,
+              child: Text(
+                _address.isNotEmpty ? _address : 'Adresse affichée ici',
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.25,
+            left: 16,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.white,
+              child: Text(
+                'Distance: ${_distance.toStringAsFixed(2)} km',
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
             ),
           ),
           Positioned(
@@ -1141,6 +1254,33 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
+          if (_suggestions.isNotEmpty)
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.15,
+              left: 16,
+              right: 16,
+              child: Container(
+                color: Colors.white,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _suggestions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_suggestions[index]['place_name']),
+                      onTap: () {
+                        _addressSearchController.text = _suggestions[index]['place_name'];
+                        LatLng destination = _suggestions[index]['coordinates'];
+                        _getAddressFromQuery(_suggestions[index]['place_name']);
+                        _addMarker(destination, _suggestions[index]['place_name']);
+                        setState(() {
+                          _suggestions = [];
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
         ],
       ),
       extendBody: true,
