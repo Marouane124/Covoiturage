@@ -188,115 +188,122 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _getCurrentLocation() async {
     try {
-      final Location location = Location();
+        final Location location = Location();
 
-      // Vérifier si le service de localisation est activé
-      bool serviceEnabled = await location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
+        // Vérifier si le service de localisation est activé
+        bool serviceEnabled = await location.serviceEnabled();
         if (!serviceEnabled) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Veuillez activer la localisation'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          return;
-        }
-      }
-
-      // Vérifier les permissions
-      PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Permission de localisation refusée'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          return;
-        }
-      }
-
-      // Obtenir la position
-      final LocationData locationData = await location.getLocation();
-
-      if (mounted) {
-        setState(() {
-          _currentPosition =
-              LatLng(locationData.latitude!, locationData.longitude!);
-          // Ajouter le marqueur à la position actuelle
-          _markers.clear();
-          _markers.add(
-            Marker(
-              width: 120.0,
-              height: 80.0,
-              point: _currentPosition!,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.location_on,
-                    color: Colors.red,
-                    size: 30,
-                  ),
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 120),
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 4,
+            serviceEnabled = await location.requestService();
+            if (!serviceEnabled) {
+                if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Veuillez activer la localisation'),
+                            backgroundColor: Colors.red,
                         ),
-                      ],
-                    ),
-                    child: const Text(
-                      'Vous êtes ici',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.visible,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
+                    );
+                }
+                return;
+            }
+        }
 
-        // Centrer la carte sur la position actuelle avec animation
-        _mapController.move(_currentPosition!, 15);
+        // Vérifier les permissions
+        PermissionStatus permissionGranted = await location.hasPermission();
+        if (permissionGranted == PermissionStatus.denied) {
+            permissionGranted = await location.requestPermission();
+            if (permissionGranted != PermissionStatus.granted) {
+                if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Permission de localisation refusée'),
+                            backgroundColor: Colors.red,
+                        ),
+                    );
+                }
+                return;
+            }
+        }
 
-        // Afficher un message de succès
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Position actuelle trouvée'),
-            backgroundColor: Color(0xFF008955),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+        // Obtenir la position
+        final LocationData locationData = await location.getLocation();
+
+        if (mounted) {
+            setState(() {
+                _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
+            });
+
+            // Obtenir et afficher l'adresse de la position actuelle
+            String address = await _getAddressFromLatLng(_currentPosition!);
+            print('Position actuelle: $address'); // Affiche l'adresse dans la console
+
+            // Afficher l'adresse dans un SnackBar
+            if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Votre position: $address'),
+                        backgroundColor: const Color(0xFF008955),
+                        duration: const Duration(seconds: 4),
+                    ),
+                );
+            }
+
+            // Mettre à jour les marqueurs et centrer la carte
+            setState(() {
+                _markers.clear();
+                _markers.add(
+                    Marker(
+                        width: 120.0,
+                        height: 80.0,
+                        point: _currentPosition!,
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                                const Icon(
+                                    Icons.location_on,
+                                    color: Colors.red,
+                                    size: 30,
+                                ),
+                                Container(
+                                    constraints: BoxConstraints(maxWidth: 120),
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        boxShadow: const [
+                                            BoxShadow(
+                                                color: Colors.black26,
+                                                blurRadius: 4,
+                                            ),
+                                        ],
+                                    ),
+                                    child: Text(
+                                        address, // Utiliser l'adresse obtenue
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.visible,
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                );
+            });
+
+            _mapController.move(_currentPosition!, 15);
+        }
     } catch (e) {
-      print("Erreur de géolocalisation: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur de localisation: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+        print("Erreur de géolocalisation: $e");
+        if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('Erreur de localisation: $e'),
+                    backgroundColor: Colors.red,
+                ),
+            );
+        }
     }
   }
 
@@ -375,6 +382,14 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         _tracking = true; // Activer le suivi
       });
+      
+      // Appeler la méthode pour obtenir l'adresse à partir des coordonnées
+      _getAddressFromLatLng(latLng).then((address) {
+        // Vous pouvez utiliser l'adresse ici, par exemple, l'afficher dans un Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Adresse: $address'))
+        );
+      });
     }
   }
 
@@ -387,17 +402,50 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<String> _getAddressFromLatLng(LatLng latLng) async {
     final url = Uri.parse(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/${latLng.longitude},${latLng.latitude}.json?access_token=$mapboxAccessToken',
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/${latLng.longitude},${latLng.latitude}.json?access_token=$mapboxAccessToken',
     );
 
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['features'].isNotEmpty) {
-        return data['features'][0]['place_name'];
-      }
+    try {
+        final response = await http.get(url);
+        if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            if (data['features'].isNotEmpty) {
+                final feature = data['features'][0];
+                final context = feature['context'];
+
+                // Initialiser une liste pour stocker les composants d'adresse
+                List<String> addressComponents = [];
+
+                // Ajouter le nom de la rue si disponible
+                if (feature['text'] != null) {
+                    addressComponents.add(feature['text']);
+                }
+
+                // Ajouter les deux premiers composants du contexte
+                if (context != null) {
+                    for (var item in context) {
+                        if (item['text'] != null) {
+                            addressComponents.add(item['text']);
+                        }
+                        // Limiter à deux composants
+                        if (addressComponents.length >= 2) {
+                            break;
+                        }
+                    }
+                }
+
+                // Joindre les composants pour former l'adresse finale
+                String finalAddress = addressComponents.join(', ');
+                print('Adresse trouvée: $finalAddress'); // Debug print
+                return finalAddress.isNotEmpty ? finalAddress : 'Adresse non trouvée';
+            }
+        }
+        print('Aucune adresse trouvée pour les coordonnées: $latLng');
+        return 'Adresse non trouvée';
+    } catch (e) {
+        print('Erreur lors de la récupération de l\'adresse: $e');
+        return 'Erreur de localisation';
     }
-    return 'Unknown location';
   }
 
   void showLocationConfirmation(
