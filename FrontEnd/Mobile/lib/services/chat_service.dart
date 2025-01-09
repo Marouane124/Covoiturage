@@ -7,14 +7,32 @@ class ChatService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  //Envoyer un message
+  // Method to fetch all chat rooms
+  Stream<QuerySnapshot> fetchAllChatRooms() {
+    return _firestore.collection('chatrooms').snapshots();
+  }
+
+  // Method to fetch a specific chat room by ID
+  Future<DocumentSnapshot?> fetchChatRoomById(String chatRoomId) async {
+    print(
+        "Fetching chat room with ID: $chatRoomId"); // Log the ID being fetched
+    try {
+      DocumentSnapshot doc =
+          await _firestore.collection('chatrooms').doc(chatRoomId).get();
+      return doc.exists ? doc : null; // Return the document if it exists
+    } catch (e) {
+      print("Error fetching chat room: $e");
+      return null; // Return null in case of an error
+    }
+  }
+
+  // Method to send a message
   Future<void> sendMessage(String receiverId, String message) async {
-    //Detection de l'utilisateur
     final String currentUserId = _auth.currentUser!.uid;
     final String currentUserEmail = _auth.currentUser!.email!.toString();
     final Timestamp timestamp = Timestamp.now();
 
-    //Création du message
+    // Create the message object
     Message newMessage = Message(
       senderId: currentUserId,
       senderEmail: currentUserEmail,
@@ -23,17 +41,24 @@ class ChatService extends ChangeNotifier {
       timestamp: timestamp,
     );
 
-    //Construction de chatroom
+    // Construct the chat room ID
     List<String> ids = [currentUserId, receiverId];
     ids.sort();
     String chatRoomId = ids.join("_");
 
-    //Enregistrement du message
+    // Save the message
     await _firestore
         .collection('chatrooms')
         .doc(chatRoomId)
         .collection('messages')
         .add(newMessage.toMap());
+
+    // Update chatroom metadata
+    await _firestore.collection('chatrooms').doc(chatRoomId).set({
+      'participants': ids,
+      'lastMessage': message,
+      'lastMessageTimestamp': timestamp,
+    }, SetOptions(merge: true)); // Use merge to avoid overwriting existing data
   }
 
   //Récupérer les messages
@@ -46,6 +71,35 @@ class ChatService extends ChangeNotifier {
         .doc(chatRoomId)
         .collection('messages')
         .orderBy('timestamp', descending: false)
+        .snapshots();
+  }
+
+  Future<void> testFetchChatRoom() async {
+    String chatRoomId =
+        'iIbvb4SwYmPNXnDcWYdWXIz1O5R2_of8Qcbby0aS7qJ2FEH7OHNjNhoO2'; // Your chat room ID
+    try {
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(chatRoomId)
+          .get();
+      if (doc.exists) {
+        print("Chat Room ID: ${doc.id}");
+        // Access other fields if needed
+      } else {
+        print("Chat room not found.");
+      }
+    } catch (e) {
+      print("Error fetching chat room: $e");
+    }
+  }
+
+  // Method to fetch messages from a specific chat room
+  Stream<QuerySnapshot> fetchMessages(String chatRoomId) {
+    return _firestore
+        .collection('chatrooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false) // Order messages by timestamp
         .snapshots();
   }
 }

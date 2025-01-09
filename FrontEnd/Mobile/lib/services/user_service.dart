@@ -33,10 +33,10 @@ class UserService {
         throw Exception('No access token found');
       }
 
-      print('\n=== Get Profile Request ===');
+      /*print('\n=== Get Profile Request ===');
       print('Firebase UID: ${currentUser.uid}');
       print('Endpoint: $baseUrl/utilisateur/${currentUser.uid}');
-      print('========================\n');
+      print('========================\n');*/
 
       final response = await Dio().get(
         '$baseUrl/utilisateur/${currentUser.uid}',
@@ -49,10 +49,10 @@ class UserService {
         ),
       );
 
-      print('\n=== Profile Response ===');
+      /*print('\n=== Profile Response ===');
       print('Status code: ${response.statusCode}');
       print('Response data: ${response.data}');
-      print('========================\n');
+      print('========================\n');*/
 
       if (response.statusCode == 200) {
         return response.data;
@@ -85,10 +85,10 @@ class UserService {
         throw Exception('No access token found');
       }
 
-      print('\n=== Get Profile Request ===');
+      /*print('\n=== Get Profile Request ===');
       print('User ID: $userId');
       print('Endpoint: $baseUrl/utilisateur/$userId');
-      print('========================\n');
+      print('========================\n');*/
 
       final response = await Dio().get(
         '$baseUrl/utilisateur/$userId',
@@ -100,10 +100,10 @@ class UserService {
         ),
       );
 
-      print('\n=== Profile Response ===');
+      /*print('\n=== Profile Response ===');
       print('Status code: ${response.statusCode}');
       print('Response data: ${response.data}');
-      print('========================\n');
+      print('========================\n');*/
 
       if (response.statusCode == 200) {
         return response.data;

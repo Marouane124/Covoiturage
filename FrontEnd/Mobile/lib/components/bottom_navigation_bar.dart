@@ -4,6 +4,7 @@ import 'package:map_flutter/screens/navigationmenu/favorite.dart';
 import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
 import 'package:map_flutter/screens/navigationmenu/wallet/wallet_screen.dart';
 import 'package:map_flutter/screens/navigationmenu/offer_screen.dart';
+import 'package:map_flutter/screens/chat_list_screen.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -13,7 +14,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
     required this.currentIndex,
   }) : super(key: key);
 
-  Widget _buildMenuItem(IconData icon, String label, Color color, VoidCallback onTap) {
+  Widget _buildMenuItem(
+      IconData icon, String label, Color color, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -56,7 +58,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: currentIndex == 2 ? const Color(0xFF08B783) : const Color(0xFF414141),
+              color: currentIndex == 2
+                  ? const Color(0xFF08B783)
+                  : const Color(0xFF414141),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -68,7 +72,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
           Text(
             'Wallet',
             style: TextStyle(
-              color: currentIndex == 2 ? const Color(0xFF08B783) : const Color(0xFF414141),
+              color: currentIndex == 2
+                  ? const Color(0xFF08B783)
+                  : const Color(0xFF414141),
               fontSize: 12,
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w500,
@@ -103,7 +109,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
           _buildMenuItem(
             Icons.home,
             'Home',
-            currentIndex == 0 ? const Color(0xFF08B783) : const Color(0xFF414141),
+            currentIndex == 0
+                ? const Color(0xFF08B783)
+                : const Color(0xFF414141),
             () {
               if (currentIndex != 0) {
                 Navigator.pushReplacement(
@@ -116,26 +124,31 @@ class CustomBottomNavigationBar extends StatelessWidget {
           _buildMenuItem(
             Icons.favorite,
             'Favourite',
-            currentIndex == 1 ? const Color(0xFF08B783) : const Color(0xFF414141),
+            currentIndex == 1
+                ? const Color(0xFF08B783)
+                : const Color(0xFF414141),
             () {
               if (currentIndex != 1) {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const FavoriteScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const FavoriteScreen()),
                 );
               }
             },
           ),
           _buildWalletButton(context),
           _buildMenuItem(
-            Icons.local_offer,
-            'Offer',
-            currentIndex == 3 ? const Color(0xFF08B783) : const Color(0xFF414141),
+            Icons.chat,
+            'Chat',
+            currentIndex == 3
+                ? const Color(0xFF08B783)
+                : const Color(0xFF414141),
             () {
               if (currentIndex != 3) {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const OfferScreen()),
+                  MaterialPageRoute(builder: (context) => ChatListScreen()),
                 );
               }
             },
@@ -143,12 +156,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
           _buildMenuItem(
             Icons.person,
             'Profile',
-            currentIndex == 4 ? const Color(0xFF08B783) : const Color(0xFF414141),
+            currentIndex == 4
+                ? const Color(0xFF08B783)
+                : const Color(0xFF414141),
             () {
               if (currentIndex != 4) {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()),
                 );
               }
             },
