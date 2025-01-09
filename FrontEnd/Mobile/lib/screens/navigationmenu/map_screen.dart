@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -13,6 +14,7 @@ import 'dart:ui';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'package:location/location.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2ltb2FpdGVsZ2F6emFyIiwiYSI6ImNtMzVzeXYyazA2bWkybHMzb2Fxb3p6aGIifQ.ORYyvkZ2Z1H8WmouDkXtvQ';
@@ -38,6 +40,9 @@ class _MapScreenState extends State<MapScreen> {
   //bool _showAddressForm = false;
   List<Marker> _markers = [];
   List<Map<String, dynamic>> _suggestions = [];
+  String _address = '';
+  double _distance = 0.0;
+  final TextEditingController _addressSearchController = TextEditingController();
 
   @override
   void initState() {
@@ -116,7 +121,8 @@ class _MapScreenState extends State<MapScreen> {
         });
 
         // Centrer la carte sur la position initiale
-        _mapController.move(_currentPosition!, 15);
+        _mapController.move(_currentPosition!, 18.5);
+
       }
 
       // Configurer les mises à jour de position uniquement lorsque nécessaire
@@ -184,115 +190,122 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _getCurrentLocation() async {
     try {
-      final Location location = Location();
+        final Location location = Location();
 
-      // Vérifier si le service de localisation est activé
-      bool serviceEnabled = await location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
+        // Vérifier si le service de localisation est activé
+        bool serviceEnabled = await location.serviceEnabled();
         if (!serviceEnabled) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Veuillez activer la localisation'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          return;
-        }
-      }
-
-      // Vérifier les permissions
-      PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Permission de localisation refusée'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-          return;
-        }
-      }
-
-      // Obtenir la position
-      final LocationData locationData = await location.getLocation();
-
-      if (mounted) {
-        setState(() {
-          _currentPosition =
-              LatLng(locationData.latitude!, locationData.longitude!);
-          // Ajouter le marqueur à la position actuelle
-          _markers.clear();
-          _markers.add(
-            Marker(
-              width: 120.0,
-              height: 80.0,
-              point: _currentPosition!,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.location_on,
-                    color: Colors.red,
-                    size: 30,
-                  ),
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 120),
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 4,
+            serviceEnabled = await location.requestService();
+            if (!serviceEnabled) {
+                if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Veuillez activer la localisation'),
+                            backgroundColor: Colors.red,
                         ),
-                      ],
-                    ),
-                    child: const Text(
-                      'Vous êtes ici',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.visible,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
+                    );
+                }
+                return;
+            }
+        }
 
-        // Centrer la carte sur la position actuelle avec animation
-        _mapController.move(_currentPosition!, 15);
+        // Vérifier les permissions
+        PermissionStatus permissionGranted = await location.hasPermission();
+        if (permissionGranted == PermissionStatus.denied) {
+            permissionGranted = await location.requestPermission();
+            if (permissionGranted != PermissionStatus.granted) {
+                if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Permission de localisation refusée'),
+                            backgroundColor: Colors.red,
+                        ),
+                    );
+                }
+                return;
+            }
+        }
 
-        // Afficher un message de succès
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Position actuelle trouvée'),
-            backgroundColor: Color(0xFF008955),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+        // Obtenir la position
+        final LocationData locationData = await location.getLocation();
+
+        if (mounted) {
+            setState(() {
+                _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
+            });
+
+            // Obtenir et afficher l'adresse de la position actuelle
+            String address = await _getAddressFromLatLng(_currentPosition!);
+            print('Position actuelle: $address'); // Affiche l'adresse dans la console
+
+            // Afficher l'adresse dans un SnackBar
+            if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Votre position: $address'),
+                        backgroundColor: const Color(0xFF008955),
+                        duration: const Duration(seconds: 4),
+                    ),
+                );
+            }
+
+            // Mettre à jour les marqueurs et centrer la carte
+            setState(() {
+                _markers.clear();
+                _markers.add(
+                    Marker(
+                        width: 120.0,
+                        height: 80.0,
+                        point: _currentPosition!,
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                                const Icon(
+                                    Icons.location_on,
+                                    color: Colors.red,
+                                    size: 30,
+                                ),
+                                Container(
+                                    constraints: BoxConstraints(maxWidth: 120),
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        boxShadow: const [
+                                            BoxShadow(
+                                                color: Colors.black26,
+                                                blurRadius: 4,
+                                            ),
+                                        ],
+                                    ),
+                                    child: Text(
+                                        address, // Utiliser l'adresse obtenue
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.visible,
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                );
+            });
+
+            _mapController.move(_currentPosition!, 18.5);
+        }
     } catch (e) {
-      print("Erreur de géolocalisation: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur de localisation: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+        print("Erreur de géolocalisation: $e");
+        if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('Erreur de localisation: $e'),
+                    backgroundColor: Colors.red,
+                ),
+            );
+        }
     }
   }
 
@@ -313,7 +326,7 @@ class _MapScreenState extends State<MapScreen> {
         final longitude = location[0];
 
         // Recentrer la carte
-        _mapController.move(LatLng(latitude, longitude), 15);
+        _mapController.move(LatLng(latitude, longitude), 18.5);
 
         setState(() {
           _tracking = true;
@@ -343,6 +356,7 @@ class _MapScreenState extends State<MapScreen> {
 
         setState(() {
           _route = routePoints;
+          _distance = data['routes'][0]['distance'] / 1000;
         });
 
         // Calculer le centre de l'itinéraire
@@ -370,6 +384,14 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         _tracking = true; // Activer le suivi
       });
+      
+      // Appeler la méthode pour obtenir l'adresse à partir des coordonnées
+      _getAddressFromLatLng(latLng).then((address) {
+        // Vous pouvez utiliser l'adresse ici, par exemple, l'afficher dans un Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Adresse: $address'))
+        );
+      });
     }
   }
 
@@ -382,17 +404,50 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<String> _getAddressFromLatLng(LatLng latLng) async {
     final url = Uri.parse(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/${latLng.longitude},${latLng.latitude}.json?access_token=$mapboxAccessToken',
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/${latLng.longitude},${latLng.latitude}.json?access_token=$mapboxAccessToken',
     );
 
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['features'].isNotEmpty) {
-        return data['features'][0]['place_name'];
-      }
+    try {
+        final response = await http.get(url);
+        if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            if (data['features'].isNotEmpty) {
+                final feature = data['features'][0];
+                final context = feature['context'];
+
+                // Initialiser une liste pour stocker les composants d'adresse
+                List<String> addressComponents = [];
+
+                // Ajouter le nom de la rue si disponible
+                if (feature['text'] != null) {
+                    addressComponents.add(feature['text']);
+                }
+
+                // Ajouter les deux premiers composants du contexte
+                if (context != null) {
+                    for (var item in context) {
+                        if (item['text'] != null) {
+                            addressComponents.add(item['text']);
+                        }
+                        // Limiter à deux composants
+                        if (addressComponents.length >= 2) {
+                            break;
+                        }
+                    }
+                }
+
+                // Joindre les composants pour former l'adresse finale
+                String finalAddress = addressComponents.join(', ');
+                print('Adresse trouvée: $finalAddress'); // Debug print
+                return finalAddress.isNotEmpty ? finalAddress : 'Adresse non trouvée';
+            }
+        }
+        print('Aucune adresse trouvée pour les coordonnées: $latLng');
+        return 'Adresse non trouvée';
+    } catch (e) {
+        print('Erreur lors de la récupération de l\'adresse: $e');
+        return 'Erreur de localisation';
     }
-    return 'Unknown location';
   }
 
   void showLocationConfirmation(
@@ -545,9 +600,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-
-
-
   Future<void> _getSuggestions(String query) async {
     if (query.isEmpty) {
       setState(() {
@@ -556,25 +608,21 @@ class _MapScreenState extends State<MapScreen> {
       return;
     }
 
-    try {
-      final url = Uri.parse(
-        'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=$mapboxAccessToken&types=place,address&limit=5',
-      );
+    final url = Uri.parse(
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=$mapboxAccessToken&proximity=${myPosition.longitude},${myPosition.latitude}',
+    );
 
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _suggestions = List<Map<String, dynamic>>.from(
-              data['features'].map((feature) => {
-                    'place_name': feature['place_name'],
-                    'coordinates':
-                        LatLng(feature['center'][1], feature['center'][0]),
-                  }));
-        });
-      }
-    } catch (e) {
-      print('Error getting suggestions: $e');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _suggestions = List<Map<String, dynamic>>.from(
+          data['features'].map((feature) => {
+            'place_name': feature['place_name'],
+            'coordinates': LatLng(feature['center'][1], feature['center'][0]),
+          }),
+        );
+      });
     }
   }
 
@@ -742,8 +790,7 @@ class _MapScreenState extends State<MapScreen> {
                   itemBuilder: (context, index) {
                     final suggestion = _suggestions[index];
                     return ListTile(
-                      leading: Icon(Icons.location_on_outlined,
-                          color: Colors.grey[600]),
+                      leading: Icon(Icons.location_on_outlined, color: Colors.grey[600]),
                       title: Text(suggestion['place_name']),
                       onTap: () async {
                         _destinationController.text = suggestion['place_name'];
@@ -955,6 +1002,74 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  double _calculateDistance(LatLng start, LatLng end) {
+    const double earthRadius = 6371; // Rayon de la Terre en kilomètres
+    final dLat = _degreesToRadians(end.latitude - start.latitude);
+    final dLon = _degreesToRadians(end.longitude - start.longitude);
+
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+              cos(_degreesToRadians(start.latitude)) * cos(_degreesToRadians(end.latitude)) *
+              sin(dLon / 2) * sin(dLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return earthRadius * c; // Distance en kilomètres
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * (pi / 180);
+  }
+
+  Future<void> _getAddressFromQuery(String query) async {
+    final url = Uri.parse(
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=$mapboxAccessToken',
+    );
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['features'].isNotEmpty) {
+        setState(() {
+          _address = data['features'][0]['place_name']; // Récupérer l'adresse
+          
+          // Récupérer les coordonnées
+          final coordinates = data['features'][0]['center'];
+          final latitude = coordinates[1];
+          final longitude = coordinates[0];
+
+          // Centrer la carte sur la localisation
+          _mapController.move(LatLng(latitude, longitude), 18.5); // Ajustez le niveau de zoom si nécessaire
+
+          // Dessiner l'itinéraire
+          _getRoute(LatLng(latitude, longitude));
+
+          // Calculer la distance
+          _distance = _calculateDistance(myPosition, LatLng(latitude, longitude));
+        });
+      } else {
+        setState(() {
+          _address = 'Aucune adresse trouvée.';
+        });
+      }
+    } else {
+      setState(() {
+        _address = 'Erreur lors de la récupération de l\'adresse.';
+      });
+    }
+  }
+
+  void _addMarker(LatLng position, String address) {
+    final marker = Marker(
+      point: position,
+      child: Container(
+        child: Icon(Icons.location_on, color: Colors.red, size: 30),
+      ),
+    );
+
+    setState(() {
+      _markers.add(marker); // Ajoutez le marqueur à la liste
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1114,6 +1229,48 @@ class _MapScreenState extends State<MapScreen> {
             bottom: 16,
             left: 16,
             right: 16,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SearchTrajetScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, color: Colors.grey),
+                    SizedBox(width: 12),
+                    Text(
+                      'Where would you go?',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -1141,6 +1298,33 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
+          if (_suggestions.isNotEmpty)
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.15,
+              left: 16,
+              right: 16,
+              child: Container(
+                color: Colors.white,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _suggestions.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_suggestions[index]['place_name']),
+                      onTap: () {
+                        _addressSearchController.text = _suggestions[index]['place_name'];
+                        LatLng destination = _suggestions[index]['coordinates'];
+                        _getAddressFromQuery(_suggestions[index]['place_name']);
+                        _addMarker(destination, _suggestions[index]['place_name']);
+                        setState(() {
+                          _suggestions = [];
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
         ],
       ),
       extendBody: true,
