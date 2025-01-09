@@ -23,6 +23,7 @@ class _SearchTrajetScreenState extends State<SearchTrajetScreen> {
   List<String> _departSuggestions = [];
   List<String> _arriveeSuggestions = [];
   bool _isLoading = false;
+  bool _isLoadingLocation = true;
   final _formKey = GlobalKey<FormState>();
   Position? _currentPosition;
 
@@ -33,17 +34,42 @@ class _SearchTrajetScreenState extends State<SearchTrajetScreen> {
     final now = DateTime.now();
     _heureController.text = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     _placesController.text = '1';
-    _getCurrentLocation();
+    _initializeLocation();
+  }
+
+  Future<void> _initializeLocation() async {
+    setState(() => _isLoadingLocation = true);
+    await _getCurrentLocation();
+    setState(() => _isLoadingLocation = false);
   }
 
   Future<void> _getCurrentLocation() async {
     try {
+      // Vérifier les permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          print('Location permissions are denied');
+          return;
+        }
+      }
+      
+      if (permission == LocationPermission.deniedForever) {
+        print('Location permissions are permanently denied');
+        return;
+      }
+
+      // Obtenir la position
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high
       );
+      
       setState(() {
         _currentPosition = position;
       });
+      
+      // Obtenir l'adresse à partir des coordonnées
       await _getReverseGeocode(position.latitude, position.longitude);
     } catch (e) {
       print("Error getting location: $e");
@@ -53,7 +79,7 @@ class _SearchTrajetScreenState extends State<SearchTrajetScreen> {
   Future<void> _getReverseGeocode(double lat, double lon) async {
     try {
       final url = Uri.parse(
-        'https://api.mapbox.com/geocoding/v5/mapbox.places/$lon,$lat.json?access_token=${AppConfig.mapboxAccessToken}'
+        'https://api.mapbox.com/geocoding/v5/mapbox.places/$lon,$lat.json?access_token=${AppConfig.mapboxAccessToken}&types=place,locality,neighborhood'
       );
       
       final response = await http.get(url);
@@ -71,11 +97,9 @@ class _SearchTrajetScreenState extends State<SearchTrajetScreen> {
   }
 
   void _useCurrentLocation() async {
-    if (_currentPosition != null) {
-      await _getReverseGeocode(_currentPosition!.latitude, _currentPosition!.longitude);
-    } else {
-      await _getCurrentLocation();
-    }
+    setState(() => _isLoadingLocation = true);
+    await _getCurrentLocation();
+    setState(() => _isLoadingLocation = false);
   }
 
   Future<void> _getSuggestions(String query, bool isDepart) async {
@@ -91,7 +115,7 @@ class _SearchTrajetScreenState extends State<SearchTrajetScreen> {
     }
 
     final url = Uri.parse(
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=${AppConfig.mapboxAccessToken}&country=ma',
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=${AppConfig.mapboxAccessToken}&country=ma&types=place,locality,neighborhood'
     );
 
     try {
@@ -228,10 +252,20 @@ class _SearchTrajetScreenState extends State<SearchTrajetScreen> {
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.location_on, color: Color(0xFF08B783)),
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.my_location, color: Color(0xFF08B783)),
-                        onPressed: _useCurrentLocation,
-                      ),
+                      suffixIcon: _isLoadingLocation
+                        ? Container(
+                            width: 24,
+                            height: 24,
+                            padding: EdgeInsets.all(8),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF08B783),
+                            ),
+                          )
+                        : IconButton(
+                            icon: Icon(Icons.my_location, color: Color(0xFF08B783)),
+                            onPressed: _useCurrentLocation,
+                          ),
                       hintText: 'D\'où partez-vous?',
                       hintStyle: TextStyle(color: Colors.grey),
                       border: OutlineInputBorder(
