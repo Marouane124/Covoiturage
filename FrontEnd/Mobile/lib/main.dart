@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           title: 'Material App',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
-          home: const AuthWrapper(child: SplashScreen()),
+          home: const AuthWrapper(child: MapScreen()),//SplashScreen
           routes: {
             '/welcome': (context) => const WelcomeScreen(),
             '/login': (context) => const LoginScreen(),

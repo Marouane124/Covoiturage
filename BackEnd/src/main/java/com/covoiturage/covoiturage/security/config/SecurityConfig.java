@@ -66,7 +66,8 @@ public class SecurityConfig {
                                         "*",
                                 "/api/utilisateurs",
                                 "/api/trajets/**",
-                                "/api/drivers/**"
+                                "/api/drivers/**",
+                                "/api/paiements"
                         ).permitAll()
                         .anyRequest().permitAll());
 

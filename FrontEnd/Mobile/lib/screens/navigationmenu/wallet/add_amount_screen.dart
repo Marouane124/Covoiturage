@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'add_success_screen.dart';
+import 'package:map_flutter/screens/payment/thanks_screen.dart';
 
 class AddAmountScreen extends StatefulWidget {
   const AddAmountScreen({super.key});
@@ -9,209 +9,103 @@ class AddAmountScreen extends StatefulWidget {
 }
 
 class _AddAmountScreenState extends State<AddAmountScreen> {
-  int selectedPaymentMethod = 0;
-  final List<PaymentMethod> paymentMethods = [
-    PaymentMethod(
-      cardNumber: '**** **** **** 8970',
-      expiryDate: '12/26',
-      icon: Icons.credit_card,
-    ),
-    PaymentMethod(
-      cardNumber: '**** **** **** 8970',
-      expiryDate: '12/26',
-      icon: Icons.credit_card,
-    ),
-    PaymentMethod(
-      cardNumber: 'mailaddress@mail.com',
-      expiryDate: '12/26',
-      icon: Icons.payment,
-    ),
-    PaymentMethod(
-      cardNumber: 'Cash',
-      expiryDate: '12/26',
-      icon: Icons.money,
-    ),
-  ];
+  int selectedTip = 1; // Default $2 tip selected
+  final tipAmounts = [1, 2, 5, 10, 20];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Dialog(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF414141)),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Amount',
-          style: TextStyle(
-            color: Color(0xFF2A2A2A),
-            fontSize: 18,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      insetPadding: EdgeInsets.zero,
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
+            _buildDragHandle(),
+            const Text(
+              'Add Amount',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 8),
             TextField(
               decoration: InputDecoration(
                 hintText: 'Enter Amount',
-                hintStyle: TextStyle(
-                  color: Color(0xFFD0D0D0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Select Tip Amount',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: List.generate(
+                tipAmounts.length,
+                (index) => ChoiceChip(
+                  label: Text('\$${tipAmounts[index]}'),
+                  selected: selectedTip == tipAmounts[index],
+                  onSelected: (isSelected) {
+                    setState(() {
+                      selectedTip = tipAmounts[index];
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ThankYouScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF008955),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Confirm',
+                style: TextStyle(
+                  color: Colors.white,
                   fontSize: 16,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w500,
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Color(0xFFB8B8B8)),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  // Handle add payment method
-                },
-                child: Text(
-                  'Add payment Method',
-                  style: TextStyle(
-                    color: Color(0xFF304FFE),
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Select Payment Method',
-              style: TextStyle(
-                color: Color(0xFF414141),
-                fontSize: 16,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 16),
-            ...List.generate(
-              paymentMethods.length,
-              (index) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedPaymentMethod = index;
-                    });
-                  },
-                  child: _buildPaymentMethodCard(
-                    isActive: selectedPaymentMethod == index,
-                    paymentMethod: paymentMethods[index],
-                  ),
-                ),
               ),
             ),
           ],
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          width: double.infinity,
-          height: 54,
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Close add amount screen
-              showDialog(
-                context: context,
-                builder: (context) => AddSuccessScreen(amount: 220.00), // Pass the actual amount
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF008955),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text(
-              'Confirm',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
         ),
       ),
     );
   }
 
-  Widget _buildPaymentMethodCard({
-    required bool isActive,
-    required PaymentMethod paymentMethod,
-  }) {
-    return Opacity(
-      opacity: isActive ? 1.0 : 0.4,
-      child: Container(
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Color(0xFFE2F5ED),
-          border: Border.all(color: Color(0xFF08B783)),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Row(
-          children: [
-            Icon(paymentMethod.icon, size: 35, color: Color(0xFF08B783)),
-            SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  paymentMethod.cardNumber,
-                  style: TextStyle(
-                    color: Color(0xFF5A5A5A),
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  'Expires: ${paymentMethod.expiryDate}',
-                  style: TextStyle(
-                    color: Color(0xFFB8B8B8),
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+  Widget _buildDragHandle() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      width: 40,
+      height: 5,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }
 }
-
-class PaymentMethod {
-  final String cardNumber;
-  final String expiryDate;
-  final IconData icon;
-
-  PaymentMethod({
-    required this.cardNumber,
-    required this.expiryDate,
-    required this.icon,
-  });
-} 

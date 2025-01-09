@@ -15,6 +15,10 @@ import java.util.Date;
 public class Paiement {
     @Id
     private String id;
+    private String carteBancaire;
+    private String numeroCarte;
+    private String dateExpiration;
+    private String cvv;
     private float montant;
     private Date datePaiement;
 }
