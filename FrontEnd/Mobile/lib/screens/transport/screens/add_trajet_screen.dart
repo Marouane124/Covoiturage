@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:map_flutter/config/app_config.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/screens/transport/models/trajet.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'package:map_flutter/services/trajet_service.dart';
+import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
 
 class AddTrajetScreen extends StatefulWidget {
   const AddTrajetScreen({Key? key}) : super(key: key);
@@ -73,67 +77,37 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
     }
   }
 
-  // Future<void> _selectTime(BuildContext context) async {
-  //   final TimeOfDay? picked = await showTimePicker(
-  //     context: context,
-  //     initialTime: TimeOfDay.now(),
-  //     builder: (context, child) {
-  //       return Theme(
-  //         data: Theme.of(context).copyWith(
-  //           colorScheme: const ColorScheme.light(
-  //             primary: Color(0xFF08B783),
-  //             onPrimary: Colors.white,
-  //             surface: Colors.white,
-  //             onSurface: Colors.black,
-  //           ),
-  //           dialogBackgroundColor: Colors.white,
-  //         ),
-  //         child: child!,
-  //       );
-  //     },
-  //   );
-  //   if (picked != null) {
-  //     setState(() {
-  //       final hour = picked.hour.toString().padLeft(2, '0');
-  //       final minute = picked.minute.toString().padLeft(2, '0');
-  //       _heureController.text = "$hour:$minute";
-  //     });
-  //   }
-  // }
-
-Future<void> _selectTime(BuildContext context) async {
-  final TimeOfDay? picked = await showTimePicker(
-    context: context,
-    initialTime: TimeOfDay.now(),
-    builder: (context, child) {
-      return Theme(
-        data: Theme.of(context).copyWith(
-          timePickerTheme: TimePickerThemeData(
-            hourMinuteTextColor: Colors.black, // Pour l'heure et les minutes
-            helpTextStyle: TextStyle(color: Colors.black, fontSize: 16), // Pour "Sélectionner une heure"
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerThemeData(
+              hourMinuteTextColor: Colors.black, // Pour l'heure et les minutes
+              helpTextStyle: TextStyle(color: Colors.black, fontSize: 16), // Pour "Sélectionner une heure"
+            ),
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF08B783), // Couleur principale
+              onPrimary: Colors.white, // Texte sur le bouton principal
+              surface: Colors.white, // Fond des boutons
+              onSurface: Colors.black, // Couleur des autres textes
+            ),
+            dialogBackgroundColor: Colors.white, // Couleur du fond du dialogue
           ),
-          colorScheme: const ColorScheme.light(
-            primary: Color(0xFF08B783), // Couleur principale
-            onPrimary: Colors.white, // Texte sur le bouton principal
-            surface: Colors.white, // Fond des boutons
-            onSurface: Colors.black, // Couleur des autres textes
-          ),
-          dialogBackgroundColor: Colors.white, // Couleur du fond du dialogue
-        ),
-        child: child!,
-      );
-    },
-  );
-  if (picked != null) {
-    setState(() {
-      final hour = picked.hour.toString().padLeft(2, '0');
-      final minute = picked.minute.toString().padLeft(2, '0');
-      _heureController.text = "$hour:$minute";
-    });
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        final hour = picked.hour.toString().padLeft(2, '0');
+        final minute = picked.minute.toString().padLeft(2, '0');
+        _heureController.text = "$hour:$minute";
+      });
+    }
   }
-}
-
-
 
   Future<void> _submitTrajet() async {
     final User? currentUser = FirebaseAuth.instance.currentUser;
@@ -345,14 +319,17 @@ Future<void> _selectTime(BuildContext context) async {
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
+              TextField(
                 controller: _villeDepartController,
+                style: const TextStyle(color: Colors.black),
                 decoration: const InputDecoration(
-                  labelText: 'Point de départ',
-                  border: OutlineInputBorder(),
+                  hintText: 'Point de départ',
+                  hintStyle: TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
+                readOnly: true,  // Rendre le champ en lecture seule
+                enabled: true,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -460,7 +437,47 @@ Future<void> _selectTime(BuildContext context) async {
   @override
   void initState() {
     super.initState();
+    _getCurrentLocation();
     _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+  }
+
+  Future<void> _getCurrentLocation() async {
+    final Location location = Location();
+
+    try {
+      final LocationData locationData = await location.getLocation();
+      final coordinates = LatLng(locationData.latitude!, locationData.longitude!);
+
+      // Obtenir l'adresse à partir des coordonnées
+      final address = await _getAddressFromCoordinates(coordinates);
+
+      setState(() {
+        _villeDepartController.text = address;
+      });
+    } catch (e) {
+      print('Erreur lors de la récupération de la localisation: $e');
+    }
+  }
+
+  Future<String> _getAddressFromCoordinates(LatLng coordinates) async {
+    final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/${coordinates.longitude},${coordinates.latitude}.json?access_token=$mapboxAccessToken&language=fr';
+    
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['features'] != null && data['features'].isNotEmpty) {
+          // Extraire uniquement le nom de la rue et la ville
+          final place = data['features'][0];
+          final address = place['place_name_fr'] ?? place['place_name'];
+          return address.split(',').take(2).join(', ').trim();
+        }
+      }
+      return 'Adresse non trouvée';
+    } catch (e) {
+      print('Erreur lors de la récupération de l\'adresse: $e');
+      return 'Erreur de localisation';
+    }
   }
 
   @override
