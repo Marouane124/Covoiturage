@@ -558,7 +558,7 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                     Polyline(
                       points: _routePoints,
                       strokeWidth: 4.0,
-                      color: const Color(0xFF08B783),
+                      color: Colors.blue,
                     ),
                   ],
                 ),
