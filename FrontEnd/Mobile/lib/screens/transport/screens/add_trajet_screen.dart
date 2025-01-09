@@ -1,8 +1,10 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:map_flutter/config/app_config.dart';
@@ -11,7 +13,6 @@ import 'package:map_flutter/screens/transport/models/trajet.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'package:map_flutter/services/trajet_service.dart';
 import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:map_flutter/screens/transport/screens/confirm_trajet_screen.dart';
 
@@ -388,140 +389,178 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
     }
   }
 
-  void showLocationConfirmation(LatLng currentLocation, String destination) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isDismissible: false,
-      builder: (context) => Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.my_location,
-                  color: Color(0xFF08B783),
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+  void showLocationConfirmation(LatLng currentLocation, String destination) async {
+    // Obtenir les coordonnées de la destination
+    final url = Uri.parse(
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$destination.json?access_token=$mapboxAccessToken',
+    );
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['features'].isNotEmpty) {
+          final coordinates = data['features'][0]['center'];
+          final destinationLatLng = LatLng(coordinates[1], coordinates[0]);
+          
+          // Calculer la distance
+          final distance = _calculateDistance(currentLocation, destinationLatLng);
+
+          showModalBottomSheet(
+            context: context,
+            backgroundColor: Colors.transparent,
+            isDismissible: false,
+            builder: (context) => Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      const Text(
-                        'Current location',
+                      const Icon(
+                        Icons.my_location,
+                        color: Color(0xFF08B783),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Current location',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              _villeDepartController.text,
+                              style: const TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        color: Colors.green,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'TO',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              destination,
+                              style: const TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '${distance.toStringAsFixed(1)}km',
                         style: TextStyle(
-                          color: Colors.grey,
+                          color: Colors.grey[600],
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Text(
-                        _villeDepartController.text,
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Icon(
-                  Icons.location_on,
-                  color: Colors.green,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'TO',
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const MapScreen()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF08B783),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Confirm Location',
                         style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
+                          color: Colors.white,
                         ),
                       ),
-                      Text(
-                        destination,
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-                Text(
-                  '1.1km',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MapScreen()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF08B783),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Confirm Location',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        }
+      }
+    } catch (e) {
+      print('Erreur lors du calcul de la distance: $e');
+    }
+  }
+
+  double _calculateDistance(LatLng start, LatLng end) {
+    const double earthRadius = 6371; // Rayon de la Terre en kilomètres
+    final dLat = _degreesToRadians(end.latitude - start.latitude);
+    final dLon = _degreesToRadians(end.longitude - start.longitude);
+
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+              cos(_degreesToRadians(start.latitude)) * cos(_degreesToRadians(end.latitude)) *
+              sin(dLon / 2) * sin(dLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return earthRadius * c; // Distance en kilomètres
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * (math.pi / 180);
   }
 
   @override
@@ -667,7 +706,7 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                                   style: const TextStyle(color: Colors.black),
                                   decoration: InputDecoration(
                                     labelText: 'To',
-                                    hintText: 'Ville d\'arrivée',
+                                    hintText: 'point d\'arrivée',
                                     prefixIcon: const Icon(Icons.location_on, color: Colors.red),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
