@@ -12,5 +12,6 @@ class AppConfig {
   }
 
   // Mapbox configuration
-  static const String mapboxAccessToken = 'pk.eyJ1IjoiYWJkZWxhbGlrYXJpbSIsImEiOiJjbHFwOWd3YjQwMGZtMmpxdDVtNGNqZmJ6In0.VVCS9UeT5g_hRcz3YXbCDw';
+  static const String mapboxAccessToken =
+      'pk.eyJ1IjoiYWJkZWxhbGlrYXJpbSIsImEiOiJjbHFwOWd3YjQwMGZtMmpxdDVtNGNqZmJ6In0.VVCS9UeT5g_hRcz3YXbCDw';
 }
