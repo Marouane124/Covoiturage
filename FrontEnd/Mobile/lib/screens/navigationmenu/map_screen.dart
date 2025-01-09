@@ -790,8 +790,7 @@ class _MapScreenState extends State<MapScreen> {
                   itemBuilder: (context, index) {
                     final suggestion = _suggestions[index];
                     return ListTile(
-                      leading: Icon(Icons.location_on_outlined,
-                          color: Colors.grey[600]),
+                      leading: Icon(Icons.location_on_outlined, color: Colors.grey[600]),
                       title: Text(suggestion['place_name']),
                       onTap: () async {
                         _destinationController.text = suggestion['place_name'];
@@ -1226,6 +1225,48 @@ class _MapScreenState extends State<MapScreen> {
               bottom: 0,
               child: SideMenu(),
             ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SearchTrajetScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, color: Colors.grey),
+                    SizedBox(width: 12),
+                    Text(
+                      'Where would you go?',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Positioned(
             bottom: 16,
             left: 16,

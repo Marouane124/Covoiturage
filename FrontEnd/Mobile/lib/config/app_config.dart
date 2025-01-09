@@ -10,4 +10,7 @@ class AppConfig {
   static String get baseUrl {
     return isDevelopment ? developmentBaseUrl : productionBaseUrl;
   }
+
+  // Mapbox configuration
+  static const String mapboxAccessToken = 'pk.eyJ1IjoiYWJkZWxhbGlrYXJpbSIsImEiOiJjbHFwOWd3YjQwMGZtMmpxdDVtNGNqZmJ6In0.VVCS9UeT5g_hRcz3YXbCDw';
 }
