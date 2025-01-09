@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:map_flutter/config/app_config.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/screens/transport/models/trajet.dart';
@@ -11,6 +12,7 @@ import 'package:map_flutter/services/trajet_service.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_map/flutter_map.dart';
+import 'package:map_flutter/screens/transport/screens/confirm_trajet_screen.dart';
 
 class AddTrajetScreen extends StatefulWidget {
   const AddTrajetScreen({Key? key}) : super(key: key);
@@ -33,6 +35,117 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
   final MapController _mapController = MapController();
 
   LatLng? _currentPosition;
+  List<Map<String, dynamic>> _suggestions = [];
+  bool _isLoadingSuggestions = false;
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+    _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+  }
+
+  @override
+  void dispose() {
+    _villeDepartController.dispose();
+    _villeArriveeController.dispose();
+    _dateController.dispose();
+    _heureController.dispose();
+    _placesController.dispose();
+    _prixController.dispose();
+    _voitureController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    final Location location = Location();
+
+    try {
+      final LocationData locationData = await location.getLocation();
+      final coordinates = LatLng(locationData.latitude!, locationData.longitude!);
+
+      // Obtenir l'adresse à partir des coordonnées
+      final address = await _getAddressFromCoordinates(coordinates);
+
+      setState(() {
+        _villeDepartController.text = address;
+        _currentPosition = coordinates;
+      });
+    } catch (e) {
+      print('Erreur lors de la récupération de la localisation: $e');
+    }
+  }
+
+  Future<void> _getSuggestions(String query) async {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      if (query.isEmpty) {
+        setState(() {
+          _suggestions = [];
+          _isLoadingSuggestions = false;
+        });
+        return;
+      }
+
+      setState(() {
+        _isLoadingSuggestions = true;
+      });
+
+      try {
+        final url = Uri.parse(
+          'https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json'
+          '?access_token=$mapboxAccessToken'
+          '&language=fr'
+          '&limit=5'
+        );
+
+        final response = await http.get(url);
+        
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          setState(() {
+            _suggestions = List<Map<String, dynamic>>.from(data['features'].map((feature) {
+              return {
+                'place_name': feature['place_name'],
+                'coordinates': LatLng(
+                  feature['geometry']['coordinates'][1],
+                  feature['geometry']['coordinates'][0],
+                ),
+              };
+            }));
+            _isLoadingSuggestions = false;
+          });
+        }
+      } catch (e) {
+        print('Erreur lors de la récupération des suggestions: $e');
+        setState(() {
+          _isLoadingSuggestions = false;
+          _suggestions = [];
+        });
+      }
+    });
+  }
+
+  Future<String> _getAddressFromCoordinates(LatLng coordinates) async {
+    final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/${coordinates.longitude},${coordinates.latitude}.json?access_token=$mapboxAccessToken&language=fr';
+    
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['features'].isNotEmpty) {
+          return data['features'][0]['place_name'];
+        }
+      }
+      return '';
+    } catch (e) {
+      print('Erreur lors de la récupération de l\'adresse: $e');
+      return '';
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     try {
@@ -420,31 +533,79 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                           ),
                           const SizedBox(height: 16),
                           // Point d'arrivée
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            child: Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.all(12.0),
-                                  child: Icon(Icons.location_on, color: Colors.red),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Colors.grey.shade300),
                                 ),
-                                Expanded(
-                                  child: TextField(
-                                    controller: _villeArriveeController,
-                                    style: const TextStyle(color: Colors.black),
-                                    decoration: const InputDecoration(
-                                      hintText: 'To',
-                                      border: InputBorder.none,
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                child: TextField(
+                                  controller: _villeArriveeController,
+                                  style: const TextStyle(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    labelText: 'To',
+                                    hintText: 'Ville d\'arrivée',
+                                    prefixIcon: const Icon(Icons.location_on, color: Colors.red),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
+                                    suffixIcon: _isLoadingSuggestions
+                                        ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                              ),
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                  onChanged: (value) {
+                                    _getSuggestions(value);
+                                  },
+                                ),
+                              ),
+                              if (_suggestions.isNotEmpty)
+                                Container(
+                                  margin: const EdgeInsets.only(top: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 2,
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    padding: EdgeInsets.zero,
+                                    itemCount: _suggestions.length,
+                                    itemBuilder: (context, index) {
+                                      final suggestion = _suggestions[index];
+                                      return ListTile(
+                                        title: Text(
+                                          suggestion['place_name'],
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        onTap: () {
+                                          setState(() {
+                                            _villeArriveeController.text = suggestion['place_name'];
+                                            _suggestions = [];
+                                          });
+                                        },
+                                      );
+                                    },
                                   ),
                                 ),
-                              ],
-                            ),
+                            ],
                           ),
                           const SizedBox(height: 24),
                           // Date et Heure
@@ -599,64 +760,5 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
         ],
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _getCurrentLocation();
-    _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
-  }
-
-  Future<void> _getCurrentLocation() async {
-    final Location location = Location();
-
-    try {
-      final LocationData locationData = await location.getLocation();
-      final coordinates = LatLng(locationData.latitude!, locationData.longitude!);
-
-      // Obtenir l'adresse à partir des coordonnées
-      final address = await _getAddressFromCoordinates(coordinates);
-
-      setState(() {
-        _villeDepartController.text = address;
-        _currentPosition = coordinates;
-      });
-    } catch (e) {
-      print('Erreur lors de la récupération de la localisation: $e');
-    }
-  }
-
-  Future<String> _getAddressFromCoordinates(LatLng coordinates) async {
-    final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/${coordinates.longitude},${coordinates.latitude}.json?access_token=$mapboxAccessToken&language=fr';
-    
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['features'] != null && data['features'].isNotEmpty) {
-          // Extraire uniquement le nom de la rue et la ville
-          final place = data['features'][0];
-          final address = place['place_name_fr'] ?? place['place_name'];
-          return address.split(',').take(2).join(', ').trim();
-        }
-      }
-      return 'Adresse non trouvée';
-    } catch (e) {
-      print('Erreur lors de la récupération de l\'adresse: $e');
-      return 'Erreur de localisation';
-    }
-  }
-
-  @override
-  void dispose() {
-    _villeDepartController.dispose();
-    _villeArriveeController.dispose();
-    _dateController.dispose();
-    _heureController.dispose();
-    _placesController.dispose();
-    _prixController.dispose();
-    _voitureController.dispose();
-    super.dispose();
   }
 }
