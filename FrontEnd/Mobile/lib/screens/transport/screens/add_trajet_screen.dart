@@ -10,6 +10,7 @@ import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart
 import 'package:map_flutter/services/trajet_service.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_map/flutter_map.dart';
 
 class AddTrajetScreen extends StatefulWidget {
   const AddTrajetScreen({Key? key}) : super(key: key);
@@ -29,6 +30,9 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
   final TextEditingController _placesController = TextEditingController();
   final TextEditingController _prixController = TextEditingController();
   final TextEditingController _voitureController = TextEditingController();
+  final MapController _mapController = MapController();
+
+  LatLng? _currentPosition;
 
   Future<void> _selectDate(BuildContext context) async {
     try {
@@ -310,126 +314,289 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFF08B783),
         title: const Text('Ajouter un Trajet'),
-        backgroundColor: const Color(0xFF008955),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: _currentPosition ?? LatLng(33.5731, -7.5898),
+              initialZoom: 15.0,
+            ),
             children: [
-              TextField(
-                controller: _villeDepartController,
-                style: const TextStyle(color: Colors.black),
-                decoration: const InputDecoration(
-                  hintText: 'Point de départ',
-                  hintStyle: TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-                readOnly: true,  // Rendre le champ en lecture seule
-                enabled: true,
+              TileLayer(
+                urlTemplate: 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                additionalOptions: const {
+                  'accessToken': mapboxAccessToken,
+                  'id': 'mapbox/streets-v11',
+                },
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _villeArriveeController,
-                decoration: const InputDecoration(
-                  labelText: 'Point d\'arrivée',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
-              ),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () => _selectDate(context),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _dateController,
-                    decoration: InputDecoration(
-                      labelText: 'Date',
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: () => _selectDate(context),
-                        color: const Color(0xFF008955),
+              MarkerLayer(
+                markers: [
+                  if (_currentPosition != null)
+                    Marker(
+                      point: _currentPosition!,
+                      width: 40,
+                      height: 40,
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Color(0xFF08B783),
+                        size: 40,
                       ),
-                      filled: true,
-                      fillColor: Colors.grey[900],
-                      labelStyle: const TextStyle(color: Colors.white),
                     ),
-                    style: const TextStyle(color: Colors.white),
-                    readOnly: true,
-                    onTap: () => _selectDate(context),
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'La date est requise' : null,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _heureController,
-                decoration: InputDecoration(
-                  labelText: 'Heure',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.access_time),
-                    onPressed: () => _selectTime(context),
-                  ),
-                ),
-                readOnly: true,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
-                onTap: () => _selectTime(context),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _placesController,
-                decoration: const InputDecoration(
-                  labelText: 'Places disponibles',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _prixController,
-                decoration: const InputDecoration(
-                  labelText: 'Prix',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _voitureController,
-                decoration: const InputDecoration(
-                  labelText: 'Voiture',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value?.isEmpty ?? true ? 'Ce champ est requis' : null,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _submitTrajet,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF008955),
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: const Text(
-                  'Ajouter le trajet',
-                  style: TextStyle(color: Colors.white),
-                ),
+                ],
               ),
             ],
           ),
-        ),
+          DraggableScrollableSheet(
+            initialChildSize: 0.4,
+            minChildSize: 0.2,
+            maxChildSize: 0.8,
+            builder: (context, scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: const Offset(0, -3),
+                    ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Select address',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          // Point de départ
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: Icon(Icons.my_location, color: Color(0xFF08B783)),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _villeDepartController,
+                                    style: const TextStyle(color: Colors.black),
+                                    decoration: const InputDecoration(
+                                      hintText: 'From',
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                    ),
+                                    readOnly: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Point d'arrivée
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: Icon(Icons.location_on, color: Colors.red),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _villeArriveeController,
+                                    style: const TextStyle(color: Colors.black),
+                                    decoration: const InputDecoration(
+                                      hintText: 'To',
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          // Date et Heure
+                          Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => _selectDate(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.grey.shade300),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.calendar_today, color: Color(0xFF08B783)),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          _dateController.text,
+                                          style: const TextStyle(color: Colors.black),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => _selectTime(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: Colors.grey.shade300),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.access_time, color: Color(0xFF08B783)),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          _heureController.text.isEmpty ? 'Heure' : _heureController.text,
+                                          style: const TextStyle(color: Colors.black),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Places et Prix
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.grey.shade300),
+                                  ),
+                                  child: TextField(
+                                    controller: _placesController,
+                                    keyboardType: TextInputType.number,
+                                    style: const TextStyle(color: Colors.black),
+                                    decoration: const InputDecoration(
+                                      hintText: 'Places',
+                                      prefixIcon: Icon(Icons.people, color: Color(0xFF08B783)),
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.grey.shade300),
+                                  ),
+                                  child: TextField(
+                                    controller: _prixController,
+                                    keyboardType: TextInputType.number,
+                                    style: const TextStyle(color: Colors.black),
+                                    decoration: const InputDecoration(
+                                      hintText: 'Prix',
+                                      prefixIcon: Icon(Icons.attach_money, color: Color(0xFF08B783)),
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Voiture
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: TextField(
+                              controller: _voitureController,
+                              style: const TextStyle(color: Colors.black),
+                              decoration: const InputDecoration(
+                                hintText: 'Voiture',
+                                prefixIcon: Icon(Icons.directions_car, color: Color(0xFF08B783)),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          // Bouton Ajouter
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _submitTrajet,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF08B783),
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                'Ajouter le trajet',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -453,6 +620,7 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
 
       setState(() {
         _villeDepartController.text = address;
+        _currentPosition = coordinates;
       });
     } catch (e) {
       print('Erreur lors de la récupération de la localisation: $e');
