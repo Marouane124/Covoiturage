@@ -121,7 +121,8 @@ class _MapScreenState extends State<MapScreen> {
         });
 
         // Centrer la carte sur la position initiale
-        _mapController.move(_currentPosition!, 15);
+        _mapController.move(_currentPosition!, 18.5);
+
       }
 
       // Configurer les mises à jour de position uniquement lorsque nécessaire
@@ -293,7 +294,7 @@ class _MapScreenState extends State<MapScreen> {
                 );
             });
 
-            _mapController.move(_currentPosition!, 15);
+            _mapController.move(_currentPosition!, 18.5);
         }
     } catch (e) {
         print("Erreur de géolocalisation: $e");
@@ -325,7 +326,7 @@ class _MapScreenState extends State<MapScreen> {
         final longitude = location[0];
 
         // Recentrer la carte
-        _mapController.move(LatLng(latitude, longitude), 15);
+        _mapController.move(LatLng(latitude, longitude), 18.5);
 
         setState(() {
           _tracking = true;
@@ -1037,7 +1038,7 @@ class _MapScreenState extends State<MapScreen> {
           final longitude = coordinates[0];
 
           // Centrer la carte sur la localisation
-          _mapController.move(LatLng(latitude, longitude), 15); // Ajustez le niveau de zoom si nécessaire
+          _mapController.move(LatLng(latitude, longitude), 18.5); // Ajustez le niveau de zoom si nécessaire
 
           // Dessiner l'itinéraire
           _getRoute(LatLng(latitude, longitude));

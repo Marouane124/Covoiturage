@@ -541,12 +541,12 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: _currentPosition ?? LatLng(33.5731, -7.5898),
+              initialCenter: _currentPosition ?? const LatLng(33.5731, -7.5898),
               initialZoom: 15.0,
             ),
             children: [
               TileLayer(
-                urlTemplate: 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                urlTemplate: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
                 additionalOptions: const {
                   'accessToken': mapboxAccessToken,
                   'id': 'mapbox/streets-v11',
@@ -722,7 +722,7 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                                             _destinationPosition = suggestion['coordinates'];
                                             _suggestions = [];
                                           });
-                                          await _getRoute(); // Attendre que l'itinéraire soit calculé
+                                          await _getRoute();
                                         },
                                       );
                                     },
@@ -879,79 +879,6 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                 ),
               );
             },
-          ),
-          Container(
-            height: 300, // Augmenter la hauteur de la carte
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Stack(
-                children: [
-                  FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      initialCenter: _currentPosition ?? const LatLng(33.5731, -7.5898),
-                      initialZoom: 13.0,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
-                        additionalOptions: const {
-                          'accessToken': mapboxAccessToken,
-                          'id': 'mapbox/streets-v11',
-                        },
-                      ),
-                      if (_routePoints.isNotEmpty)
-                        PolylineLayer(
-                          polylines: [
-                            Polyline(
-                              points: _routePoints,
-                              strokeWidth: 4.0,
-                              color: const Color(0xFF008955),
-                            ),
-                          ],
-                        ),
-                      MarkerLayer(
-                        markers: [
-                          if (_currentPosition != null)
-                            Marker(
-                              point: _currentPosition!,
-                              width: 40,
-                              height: 40,
-                              child: const Icon(
-                                Icons.location_on,
-                                color: Color(0xFF008955),
-                                size: 40,
-                              ),
-                            ),
-                          if (_destinationPosition != null)
-                            Marker(
-                              point: _destinationPosition!,
-                              width: 40,
-                              height: 40,
-                              child: const Icon(
-                                Icons.location_on,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  if (_isLoadingRoute)
-                    Container(
-                      color: Colors.black.withOpacity(0.1),
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
