@@ -1112,53 +1112,6 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.1,
-            left: 16,
-            right: 16,
-            child: TextField(
-              controller: _addressSearchController,
-              style: TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                hintText: 'Entrez une rue',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    _getAddressFromQuery(_addressSearchController.text);
-                  },
-                ),
-              ),
-              onChanged: (value) {
-                _getSuggestions(value);
-              },
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.2,
-            left: 16,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              color: Colors.white,
-              child: Text(
-                _address.isNotEmpty ? _address : 'Adresse affichée ici',
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.25,
-            left: 16,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              color: Colors.white,
-              child: Text(
-                'Distance: ${_distance.toStringAsFixed(2)} km',
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-            ),
-          ),
-          Positioned(
             bottom: 160,
             left: 16,
             child: Stack(
