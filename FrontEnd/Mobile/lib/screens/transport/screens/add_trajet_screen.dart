@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:map_flutter/config/app_config.dart';
 import 'package:map_flutter/screens/navigationmenu/map_screen.dart';
 import 'package:map_flutter/screens/transport/models/trajet.dart';
@@ -35,8 +36,11 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
   final MapController _mapController = MapController();
 
   LatLng? _currentPosition;
+  LatLng? _destinationPosition;
+  List<LatLng> _routePoints = [];
   List<Map<String, dynamic>> _suggestions = [];
   bool _isLoadingSuggestions = false;
+  bool _isLoadingRoute = false;
   Timer? _debounce;
 
   @override
@@ -63,15 +67,28 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
     final Location location = Location();
 
     try {
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) return;
+      }
+
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) return;
+      }
+
       final LocationData locationData = await location.getLocation();
       final coordinates = LatLng(locationData.latitude!, locationData.longitude!);
+      print('Position actuelle: ${coordinates.latitude}, ${coordinates.longitude}');
 
       // Obtenir l'adresse à partir des coordonnées
       final address = await _getAddressFromCoordinates(coordinates);
 
       setState(() {
-        _villeDepartController.text = address;
         _currentPosition = coordinates;
+        _villeDepartController.text = address;
       });
     } catch (e) {
       print('Erreur lors de la récupération de la localisation: $e');
@@ -145,6 +162,91 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
       print('Erreur lors de la récupération de l\'adresse: $e');
       return '';
     }
+  }
+
+  Future<void> _getRoute() async {
+    if (_currentPosition == null || _destinationPosition == null) {
+      print('Position actuelle ou destination manquante');
+      return;
+    }
+
+    print('Calcul de l\'itinéraire entre:');
+    print('Départ: ${_currentPosition!.latitude}, ${_currentPosition!.longitude}');
+    print('Arrivée: ${_destinationPosition!.latitude}, ${_destinationPosition!.longitude}');
+
+    setState(() {
+      _isLoadingRoute = true;
+    });
+
+    try {
+      final url = Uri.parse(
+        'https://api.mapbox.com/directions/v5/mapbox/driving/'
+        '${_currentPosition!.longitude},${_currentPosition!.latitude};'
+        '${_destinationPosition!.longitude},${_destinationPosition!.latitude}'
+        '?geometries=geojson&access_token=$mapboxAccessToken'
+      );
+
+      print('URL de l\'API: $url');
+
+      final response = await http.get(url);
+      print('Statut de la réponse: ${response.statusCode}');
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          final coordinates = data['routes'][0]['geometry']['coordinates'] as List;
+          print('Nombre de points dans l\'itinéraire: ${coordinates.length}');
+          
+          setState(() {
+            _routePoints = coordinates
+                .map((coord) => LatLng(coord[1] as double, coord[0] as double))
+                .toList();
+            _isLoadingRoute = false;
+          });
+
+          print('Points de l\'itinéraire: $_routePoints');
+          
+          // Ajuster la vue de la carte pour montrer tout l'itinéraire
+          _fitRoute();
+        } else {
+          print('Pas d\'itinéraire trouvé dans la réponse');
+        }
+      } else {
+        print('Erreur de l\'API: ${response.body}');
+      }
+    } catch (e) {
+      print('Erreur lors du calcul de l\'itinéraire: $e');
+      setState(() {
+        _isLoadingRoute = false;
+      });
+    }
+  }
+
+  void _fitRoute() {
+    if (_routePoints.isEmpty) return;
+    
+    double minLat = _routePoints[0].latitude;
+    double maxLat = _routePoints[0].latitude;
+    double minLng = _routePoints[0].longitude;
+    double maxLng = _routePoints[0].longitude;
+
+    for (var point in _routePoints) {
+      minLat = math.min(minLat, point.latitude);
+      maxLat = math.max(maxLat, point.latitude);
+      minLng = math.min(minLng, point.longitude);
+      maxLng = math.max(maxLng, point.longitude);
+    }
+
+    // Calculer le centre de la zone
+    final centerLat = (minLat + maxLat) / 2;
+    final centerLng = (minLng + maxLng) / 2;
+    
+    // Calculer le zoom approprié
+    final latZoom = math.log(360 / (maxLat - minLat)) / math.ln2;
+    final lngZoom = math.log(360 / (maxLng - minLng)) / math.ln2;
+    final zoom = math.min(latZoom, lngZoom) - 1;
+
+    _mapController.move(LatLng(centerLat, centerLng), zoom);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -450,6 +552,16 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                   'id': 'mapbox/streets-v11',
                 },
               ),
+              if (_routePoints.isNotEmpty)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: _routePoints,
+                      strokeWidth: 4.0,
+                      color: const Color(0xFF08B783),
+                    ),
+                  ],
+                ),
               MarkerLayer(
                 markers: [
                   if (_currentPosition != null)
@@ -460,6 +572,15 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                       child: const Icon(
                         Icons.location_on,
                         color: Color(0xFF08B783),
+                        size: 40,
+                      ),
+                    ),
+                  if (_destinationPosition != null)
+                    Marker(
+                      point: _destinationPosition!,
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Colors.red,
                         size: 40,
                       ),
                     ),
@@ -595,11 +716,13 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                                           suggestion['place_name'],
                                           style: const TextStyle(fontSize: 14),
                                         ),
-                                        onTap: () {
+                                        onTap: () async {
                                           setState(() {
                                             _villeArriveeController.text = suggestion['place_name'];
+                                            _destinationPosition = suggestion['coordinates'];
                                             _suggestions = [];
                                           });
+                                          await _getRoute(); // Attendre que l'itinéraire soit calculé
                                         },
                                       );
                                     },
@@ -756,6 +879,79 @@ class _AddTrajetScreenState extends State<AddTrajetScreen> {
                 ),
               );
             },
+          ),
+          Container(
+            height: 300, // Augmenter la hauteur de la carte
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Stack(
+                children: [
+                  FlutterMap(
+                    mapController: _mapController,
+                    options: MapOptions(
+                      initialCenter: _currentPosition ?? const LatLng(33.5731, -7.5898),
+                      initialZoom: 13.0,
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=$mapboxAccessToken',
+                        additionalOptions: const {
+                          'accessToken': mapboxAccessToken,
+                          'id': 'mapbox/streets-v11',
+                        },
+                      ),
+                      if (_routePoints.isNotEmpty)
+                        PolylineLayer(
+                          polylines: [
+                            Polyline(
+                              points: _routePoints,
+                              strokeWidth: 4.0,
+                              color: const Color(0xFF008955),
+                            ),
+                          ],
+                        ),
+                      MarkerLayer(
+                        markers: [
+                          if (_currentPosition != null)
+                            Marker(
+                              point: _currentPosition!,
+                              width: 40,
+                              height: 40,
+                              child: const Icon(
+                                Icons.location_on,
+                                color: Color(0xFF008955),
+                                size: 40,
+                              ),
+                            ),
+                          if (_destinationPosition != null)
+                            Marker(
+                              point: _destinationPosition!,
+                              width: 40,
+                              height: 40,
+                              child: const Icon(
+                                Icons.location_on,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  if (_isLoadingRoute)
+                    Container(
+                      color: Colors.black.withOpacity(0.1),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
