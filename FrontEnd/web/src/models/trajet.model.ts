@@ -1,6 +1,6 @@
 export interface Trajet {
     id?: string;
-    nomConducteur: string;
+    conducteurId: string;
     villeDepart: string;
     villeArrivee: string;
     date: string;
@@ -8,4 +8,5 @@ export interface Trajet {
     placesDisponibles: number;
     prix: number;
     voiture: string;
-  }
+    timestamp?: Date;
+}

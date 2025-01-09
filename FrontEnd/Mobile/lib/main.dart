@@ -18,9 +18,6 @@ import 'package:map_flutter/screens/sidemenu/settings/privacy_policy_screen.dart
 import 'package:map_flutter/screens/sidemenu/settings/contact_us_screen.dart';
 import 'package:map_flutter/screens/sidemenu/settings/delete_account_screen.dart';
 import 'package:map_flutter/screens/auth/conducteur_register_screen.dart';
-import 'screens/payment/payment_screen.dart';
-import 'screens/navigationmenu/wallet/wallet_screen.dart';
-import 'package:map_flutter/services/auth_service.dart';
 import 'package:map_flutter/widgets/auth_wrapper.dart';
 import 'package:provider/provider.dart';
 import 'providers/locale_provider.dart';

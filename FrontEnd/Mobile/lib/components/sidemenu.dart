@@ -5,8 +5,8 @@ import 'package:map_flutter/screens/sidemenu/complain.dart';
 import 'package:map_flutter/screens/sidemenu/referral.dart';
 import 'package:map_flutter/screens/sidemenu/aboutus.dart';
 import 'package:map_flutter/screens/sidemenu/settings/settings_screen.dart';
-import 'package:map_flutter/screens/sidemenu/help_and_support_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:map_flutter/screens/sidemenu/driver_mode.dart';
 import 'package:map_flutter/services/user_service.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -103,10 +103,10 @@ class _SideMenuState extends State<SideMenu> {
             context,
             MaterialPageRoute(builder: (context) => const SettingsScreen()),
           );
-        } else if (title == 'Help and Support') {
+        } else if (title == 'Driver Mode') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const HelpAndSupportScreen()),
+            MaterialPageRoute(builder: (context) => const DriverMode()),
           );
         }
       },
@@ -234,7 +234,9 @@ class _SideMenuState extends State<SideMenu> {
                     const Divider(height: 1, color: Color(0xFFE0E0E0)),
                     _buildMenuItem(context, Icons.settings_outlined, 'Settings'),
                     const Divider(height: 1, color: Color(0xFFE0E0E0)),
-                    _buildMenuItem(context, Icons.help_outline, 'Help and Support'),
+                    _buildMenuItem(context, Icons.directions_car, 'Driver Mode'),
+                    const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                    _buildMenuItem(context, Icons.help_outline, 'Driver Mode'),
                     const Divider(height: 1, color: Color(0xFFE0E0E0)),
                   ],
                 ),

@@ -3,10 +3,9 @@ import '../../../services/trajet_service.dart';
 import '../../../services/user_service.dart';
 import '../models/trajet.dart';
 import 'dart:math';
-import 'driver_details_screen.dart';
 import 'package:map_flutter/screens/chat_page.dart';
 import 'dart:typed_data';
-import 'dart:convert'; // Import for base64 decoding
+import 'dart:convert'; 
 
 class SelectDriversScreen extends StatefulWidget {
   @override
@@ -152,56 +151,92 @@ class _SelectDriversScreenState extends State<SelectDriversScreen> {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Driver: $driverName',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: _buildDriverImage(imageUrl),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    '$carModel | $seats seats | $price',
-                    style: TextStyle(color: Colors.grey[600]),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Driver: $driverName',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '$carModel | $seats seats | $price',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        distance,
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '${randomDistance}m (${randomTime} mins away)',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    distance,
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    '${randomDistance}m (${randomTime} mins away)',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                  SizedBox(height: 8),
-                  ElevatedButton(
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
                     onPressed: onViewDriverList,
-                    child: Text(
-                      'View driver list',
-                      style: TextStyle(color: Colors.white),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF008955),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                    child: const Text(
+                      'Chat with Driver',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(width: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: _buildDriverImage(imageUrl),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Logique pour le nouveau bouton
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF008955),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'View driver info',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

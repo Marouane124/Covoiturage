@@ -45,8 +45,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   showDetailsModal = false;
   selectedTrajet: any = null;
   
-  newTrajet = {
-    nomConducteur: '',
+  newTrajet: Trajet = {
+    conducteurId: '',
     villeDepart: '',
     villeArrivee: '',
     date: '',
@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   };
 
   trajetToEdit: Trajet = {
-    nomConducteur: '',
+    conducteurId: '',
     villeDepart: '',
     villeArrivee: '',
     date: '',
@@ -67,31 +67,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     voiture: ''
   };
 
-  userProfile = {
-    id: '',
-    nom: '',
-    email: '',
-    telephone: '',
-    dateInscription: '',
-    voiture: {
-      marque: '',
-      modele: '',
-      annee: 0,
-      couleur: ''
-    },
-    statistiques: {
-      totalTrajets: 45,
-      totalPassagers: 132,
-      evaluationMoyenne: 4.8,
-      economiesCO2: 234
-    },
-    preferences: {
-      fumeur: false,
-      animaux: true,
-      musique: true,
-      discussion: true
-    }
-  };
+  userProfile: any; // Ensure this is properly typed based on your user profile structure
 
   /*historique = [
     {
@@ -198,10 +174,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
  
   recentTrajets: Trajet[] = [];
 
+  conducteurNames: Map<string, string> = new Map();
+
+  notificationMessage: string | null = null;
+  isSuccess: boolean = false;
+
   constructor(
     private trajetService: TrajetService,
-    private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     Chart.register(...registerables);
   }
@@ -426,7 +407,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   resetNewTrajet() {
     this.newTrajet = {
-      nomConducteur: '',
+      conducteurId: '',
       villeDepart: '',
       villeArrivee: '',
       date: '',
@@ -446,39 +427,51 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
   
   onSubmitTrajet() {
-    // Formatage des données avant envoi
-    const trajetToSend = {
-      nomConducteur: this.newTrajet.nomConducteur,
-      villeDepart: this.newTrajet.villeDepart,
-      villeArrivee: this.newTrajet.villeArrivee,
-      date: this.formatDate(this.newTrajet.date), // Utilisation du format correct
-      heure: this.newTrajet.heure,
-      placesDisponibles: parseInt(this.newTrajet.placesDisponibles.toString()),
-      prix: parseFloat(this.newTrajet.prix.toString()),
-      voiture: this.newTrajet.voiture
-    };
+    // Get the current user's data first
+    this.authService.getCurrentUser().subscribe({
+        next: (user) => {
+            // Format the date to match backend expectations
+            const formattedDate = this.formatDate(this.newTrajet.date);
+            
+            const trajetData = {
+                ...this.newTrajet,
+                conducteurId: user.uid, // Use the user's uid
+                date: formattedDate,
+                timestamp: new Date()
+            };
 
-    console.log('Données à envoyer:', trajetToSend); // Pour vérifier le format
-
-    this.trajetService.createTrajet(trajetToSend).subscribe({
-      next: (response) => {
-        console.log('Réponse du serveur:', response);
-        this.loadTrajets(); // Reload trajets
-        this.loadStatistics(); // Refresh statistics
-        this.closeAddTrajetModal();
-        alert('Trajet créé avec succès!');
-      },
-      error: (error) => {
-        console.error('Erreur détaillée:', error);
-        if (error.error && error.error.message) {
-          alert(error.error.message);
-        } else {
-          alert('Erreur lors de la création du trajet');
+            this.trajetService.createTrajet(trajetData).subscribe({
+                next: (response) => {
+                    console.log('Trajet created successfully:', response);
+                    this.showNotification('Trajet added successfully!', true);
+                    this.closeAddTrajetModal();
+                    this.loadTrajets();
+                },
+                error: (error) => {
+                    console.error('Error creating trajet:', error);
+                    this.showNotification('Error adding trajet. Please try again.', false);
+                }
+            });
+        },
+        error: (error) => {
+            console.error('Error getting current user:', error);
         }
-      }
     });
   }
-  
+
+  showNotification(message: string, success: boolean) {
+    this.notificationMessage = message;
+    this.isSuccess = success;
+
+    // Automatically close the notification after 3 seconds
+    setTimeout(() => {
+      this.closeNotification();
+    }, 3000);
+  }
+
+  closeNotification() {
+    this.notificationMessage = null;
+  }
 
   openEditProfileModal(): void {
     this.showEditProfileModal = true;
@@ -551,7 +544,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   closeEditTrajetModal() {
     this.showEditTrajetModal = false;
     this.trajetToEdit = {
-      nomConducteur: '',
+      conducteurId: '',
       villeDepart: '',
       villeArrivee: '',
       date: '',
@@ -573,14 +566,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 console.log('Trajet mis à jour:', response);
                 this.loadTrajets(); // Recharger la liste des trajets
                 this.closeEditTrajetModal();
-                alert('Trajet mis à jour avec succès!');
+                this.showNotification('Trajet mis à jour avec succès!', true);              
             },
             error: (error) => {
                 console.error('Erreur lors de la mise à jour:', error);
                 if (error.error && error.error.message) {
                     alert(error.error.message);
                 } else {
-                    alert('Erreur lors de la mise à jour du trajet');
+                  this.showNotification('Erreur lors de la mise à jour du trajet!', true); 
                 }
             }
         });
@@ -601,11 +594,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 console.log('Trajet supprimé avec succès');
                 this.loadTrajets(); // Reload trajets
                 this.loadStatistics(); // Refresh statistics
-                alert('Trajet supprimé avec succès!');
+                this.showNotification('Trajet supprimé avec succès!', true);  
             },
             error: (error) => {
                 console.error('Erreur lors de la suppression:', error);
-                alert('Erreur lors de la suppression du trajet');
+                this.showNotification('Erreur lors de la suppression du trajet!', true);  
             }
         });
     }
@@ -731,5 +724,51 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } else {
         return 'Date invalide';
     }
+  }
+
+  loadConducteurName(conducteurId: string) {
+    if (!this.conducteurNames.has(conducteurId)) {
+        this.authService.getUserByUid(conducteurId).subscribe({
+            next: (user) => {
+                if (user && user.username) {
+                    this.conducteurNames.set(conducteurId, user.username);
+                } else {
+                    this.conducteurNames.set(conducteurId, 'Unknown User');
+                }
+            },
+            error: (error) => {
+                console.error('Error loading conductor name:', error);
+                this.conducteurNames.set(conducteurId, 'Unknown');
+            }
+        });
+    }
+  }
+
+  getConducteurName(conducteurId: string): string {
+    if (!this.conducteurNames.has(conducteurId)) {
+        this.loadConducteurName(conducteurId); // Trigger loading if not already loaded
+        return 'Loading...'; // Return loading state
+    }
+    return this.conducteurNames.get(conducteurId) || 'Unknown User'; // Return the name or unknown
+  }
+
+  togglePreference(preference: string) {
+    // Toggle the preference
+    this.userProfile.preferences[preference] = !this.userProfile.preferences[preference];
+
+    // Save the updated preferences
+    this.savePreferences();
+  }
+
+  savePreferences() {
+    // Call the mock method to update preferences
+    this.trajetService.updateUserPreferences(this.userProfile.preferences).subscribe({
+      next: (response: any) => {
+        console.log('Preferences updated successfully:', response);
+      },
+      error: (error: any) => {
+        console.error('Error updating preferences:', error);
+      }
+    });
   }
 }

@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
+import 'package:map_flutter/config/app_config.dart';
 import 'package:map_flutter/screens/transport/screens/add_trajet_screen.dart';
+import 'package:map_flutter/screens/transport/screens/search_trajet_screen.dart';
 import 'package:map_flutter/screens/transport/screens/select_drivers_screen.dart';
 import 'dart:convert';
-//import 'package:geolocator/geolocator.dart';
-//import 'package:map_flutter/screens/navigationmenu/favorite.dart';
 import '../notification.dart';
 import '../../components/sidemenu.dart';
 import 'dart:ui';
-//import 'package:map_flutter/screens/navigationmenu/profil_screen.dart';
-import 'package:map_flutter/screens/transport/screens/select_transport_screen.dart';
 import 'package:map_flutter/components/bottom_navigation_bar.dart';
 import 'package:location/location.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const mapboxAccessToken =
     'pk.eyJ1Ijoic2ltb2FpdGVsZ2F6emFyIiwiYSI6ImNtMzVzeXYyazA2bWkybHMzb2Fxb3p6aGIifQ.ORYyvkZ2Z1H8WmouDkXtvQ';
@@ -36,22 +35,143 @@ class _MapScreenState extends State<MapScreen> {
   bool _tracking = false;
   List<LatLng> _route = [];
   bool _isMenuOpen = false;
-  bool _showAddressForm = false;
+  //bool _showAddressForm = false;
   List<Marker> _markers = [];
   List<Map<String, dynamic>> _suggestions = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _mapController.move(myPosition, 15);
+    // Initialiser la carte une seule fois
+    _initializeMap();
+  }
 
-      await _getCurrentLocation();
-
-      if (mounted) {
-        setState(() {});
+  Future<void> _initializeMap() async {
+    try {
+      final Location location = Location();
+      
+      // Vérifier les permissions une seule fois au démarrage
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          return;
+        }
       }
-    });
+
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+        if (permissionGranted != PermissionStatus.granted) {
+          return;
+        }
+      }
+
+      // Obtenir la position initiale
+      final LocationData locationData = await location.getLocation();
+      
+      if (mounted) {
+        setState(() {
+          _currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
+          _markers = [
+            Marker(
+              width: 120.0,
+              height: 80.0,
+              point: _currentPosition!,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.location_on,
+                    color: Colors.red,
+                    size: 30,
+                  ),
+                  Container(
+                    constraints: BoxConstraints(maxWidth: 120),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      'Vous êtes ici',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ];
+        });
+
+        // Centrer la carte sur la position initiale
+        _mapController.move(_currentPosition!, 15);
+      }
+
+      // Configurer les mises à jour de position uniquement lorsque nécessaire
+      location.onLocationChanged.listen((LocationData currentLocation) {
+        if (mounted && _tracking) { // Mettre à jour uniquement si le tracking est activé
+          setState(() {
+            _currentPosition = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+            // Mettre à jour le marqueur si nécessaire
+            if (_markers.isNotEmpty) {
+              _markers[0] = Marker(
+                width: 120.0,
+                height: 80.0,
+                point: _currentPosition!,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 120),
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: const Text(
+                        'Vous êtes ici',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          });
+        }
+      });
+
+    } catch (e) {
+      print("Erreur d'initialisation de la carte: $e");
+    }
   }
 
   @override
@@ -275,9 +395,9 @@ class _MapScreenState extends State<MapScreen> {
     return 'Unknown location';
   }
 
-  void _showLocationConfirmation(
+  void showLocationConfirmation(
       LatLng currentLocation, String destination) async {
-    String currentAddress = await _getAddressFromLatLng(currentLocation);
+   // String currentAddress = await _getAddressFromLatLng(currentLocation);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -425,6 +545,9 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+
+
+
   Future<void> _getSuggestions(String query) async {
     if (query.isEmpty) {
       setState(() {
@@ -460,6 +583,26 @@ class _MapScreenState extends State<MapScreen> {
     if (_currentPosition != null) {
       String currentAddress = await _getAddressFromLatLng(_currentPosition!);
       _fromController.text = currentAddress;
+    }
+
+    // Récupérer le mode actuel de l'utilisateur
+    final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    bool isDriverMode = false;
+
+    try {
+      final response = await http.get(
+        Uri.parse('${AppConfig.baseUrl}/utilisateur/$uid/role'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        isDriverMode = data['roles']['conducteur'] ?? false;
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération du rôle: $e');
     }
 
     showModalBottomSheet(
@@ -534,7 +677,7 @@ class _MapScreenState extends State<MapScreen> {
                 onSubmitted: (value) {
                   if (value.isNotEmpty) {
                     Navigator.pop(context);
-                    _showLocationConfirmation(_currentPosition!, value);
+                    showLocationConfirmation(_currentPosition!, value);
                   }
                 },
               ),
@@ -608,7 +751,7 @@ class _MapScreenState extends State<MapScreen> {
                         await _getRoute(suggestion['coordinates']);
                         if (mounted) {
                           Navigator.pop(context);
-                          _showLocationConfirmation(
+                          showLocationConfirmation(
                               _currentPosition!, suggestion['place_name']);
                         }
                       },
@@ -639,38 +782,74 @@ class _MapScreenState extends State<MapScreen> {
             // Ajouter un Spacer pour pousser le bouton vers le bas
             const Spacer(),
 
-            // Nouveau bouton Ajouter un trajet
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // Fermer la modal bottom sheet
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddTrajetScreen(),
+            // Afficher le bouton approprié en fonction du mode
+            if (isDriverMode)
+              // Bouton Ajouter un trajet (visible uniquement en mode conducteur)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddTrajetScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF008955),
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF008955),
-                  minimumSize:
-                      const Size(double.infinity, 50), // Largeur maximale
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Ajouter un trajet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'Ajouter un trajet',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
+              )
+            else
+              // Bouton Chercher un trajet (visible uniquement en mode passager)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SearchTrajetScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF008955),
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Chercher un trajet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
                   ),
                 ),
               ),
-            ),
+            const SizedBox(height: 16), // Espacement en bas
           ],
         ),
       ),
@@ -706,7 +885,7 @@ class _MapScreenState extends State<MapScreen> {
       ),
       onTap: () {
         Navigator.pop(context);
-        _showLocationConfirmation(_currentPosition!, address);
+        showLocationConfirmation(_currentPosition!, address);
       },
     );
   }
@@ -953,7 +1132,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
               child: const Text(
-                'Ajouter un trajet',
+                'Chercher  un trajet',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

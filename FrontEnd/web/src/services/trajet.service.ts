@@ -85,4 +85,16 @@ export class TrajetService {
   getRecentTrajets(): Observable<Trajet[]> {
     return this.http.get<Trajet[]>(`${API_URL}/recent`);
   }
+  updateUserPreferences(preferences: any) {
+    // Mock implementation: Log the preferences to the console
+    console.log('Updated preferences:', preferences);
+    return {
+      subscribe: (callback: any) => {
+        // Simulate a successful response
+        setTimeout(() => {
+          callback({ success: true });
+        }, 1000); // Simulate a delay
+      }
+    };
+  }
 }

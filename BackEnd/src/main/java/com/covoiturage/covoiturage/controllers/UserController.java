@@ -297,4 +297,118 @@ public class UserController {
                     .body(new MessageResponse("Error: " + e.getMessage()));
         }
     }
+
+    @GetMapping("/utilisateur/{uid}/role")
+    public ResponseEntity<?> getCurrentUserRole(@PathVariable String uid) {
+        try {
+            // Rechercher l'utilisateur par UID
+            User user = userRepository.findByUid(uid)
+                    .orElseThrow(() -> new RuntimeException("Error: User not found"));
+
+            // Obtenir les rôles de l'utilisateur
+            Set<Role> userRoles = user.getRoles();
+
+            // Vérifier si l'utilisateur est un conducteur
+            boolean isConducteur = userRoles.stream()
+                    .anyMatch(role -> role.getName() == ERole.CONDUCTEUR);
+
+            // Vérifier si l'utilisateur est un passager
+            boolean isPassager = userRoles.stream()
+                    .anyMatch(role -> role.getName() == ERole.PASSAGER);
+
+            // Préparer la réponse
+            Map<String, Object> response = new HashMap<>();
+            response.put("uid", uid);
+            response.put("roles", new HashMap<String, Boolean>() {{
+                put("conducteur", isConducteur);
+                put("passager", isPassager);
+            }});
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Error: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/utilisateur/{uid}/toggleRole")
+    public ResponseEntity<?> toggleUserRole(@PathVariable String uid) {
+        try {
+            // Rechercher l'utilisateur par UID
+            User user = userRepository.findByUid(uid)
+                    .orElseThrow(() -> new RuntimeException("Error: User not found"));
+
+            Set<Role> userRoles = user.getRoles();
+            Role conducteurRole = roleRepository.findByName(ERole.CONDUCTEUR)
+                    .orElseThrow(() -> new RuntimeException("Error: Role CONDUCTEUR not found"));
+            Role passagerRole = roleRepository.findByName(ERole.PASSAGER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role PASSAGER not found"));
+
+            // Vérifier le rôle actuel et basculer
+            if (userRoles.stream().anyMatch(role -> role.getName() == ERole.CONDUCTEUR)) {
+                // Si l'utilisateur est CONDUCTEUR, changer à PASSAGER
+                userRoles.remove(conducteurRole);
+                userRoles.add(passagerRole);
+            } else {
+                // Si l'utilisateur est PASSAGER, changer à CONDUCTEUR
+                userRoles.remove(passagerRole);
+                userRoles.add(conducteurRole);
+            }
+
+            user.setRoles(userRoles);
+            userRepository.save(user);
+
+            // Préparer la réponse
+            String newRole = userRoles.stream()
+                    .map(role -> role.getName().toString())
+                    .filter(roleName -> roleName.equals("CONDUCTEUR") || roleName.equals("PASSAGER"))
+                    .findFirst()
+                    .orElse("PASSAGER");
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("uid", uid);
+            response.put("roles", Collections.singletonMap(newRole.toLowerCase(), true));
+            response.put("message", "Rôle changé avec succès en " + newRole);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Error: " + e.getMessage()));
+        }
+    }
+
+
+
+//    @GetMapping("/utilisateur/{uid}/role")
+//    public ResponseEntity<?> getCurrentUserRole(@PathVariable String uid) {
+//        try {
+//            // Rechercher l'utilisateur par UID
+//            User user = userRepository.findByUid(uid)
+//                    .orElseThrow(() -> new RuntimeException("Error: User not found"));
+//
+//            // Obtenir les rôles de l'utilisateur
+//            Set<Role> userRoles = user.getRoles();
+//
+//            // Déterminer le rôle principal
+//            String currentRole = userRoles.stream()
+//                    .map(role -> role.getName().toString())
+//                    .filter(roleName -> roleName.equals("CONDUCTEUR") || roleName.equals("PASSAGER"))
+//                    .findFirst()
+//                    .orElse("PASSAGER"); // Par défaut PASSAGER si aucun rôle trouvé
+//
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("uid", uid);
+//            response.put("roles", Collections.singletonMap(currentRole.toLowerCase(), true));
+//
+//            return ResponseEntity.ok(response);
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new MessageResponse("Error: " + e.getMessage()));
+//        }
+//    }
+
+
 }
